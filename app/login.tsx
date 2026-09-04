@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import CustomBtn from '../src/layout/Button'
+import { Text, View } from 'react-native';
+import Button from '../src/layout/Button';
 import { useAuth } from '../auth';
 import Field from '../src/components/Field';
 
@@ -21,12 +21,8 @@ export default function Login() {
     }
   };
 
-  const funTest = () => {
-    console.log('Form import');
-  }
-
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center gap-4 p-6">
       <Field
         control={control}
         name="email"
@@ -47,28 +43,17 @@ export default function Login() {
       />
 
       {!!formState.errors.root && (
-        <Text style={styles.error}>{formState.errors.root.message}</Text>
+        <Text className="text-center text-red-600">{formState.errors.root.message}</Text>
       )}
 
       <Button
-        title={formState.isSubmitting ? 'Entrando...' : 'Entrar'}
+        text={formState.isSubmitting ? 'Entrando...' : 'Entrar'}
         onPress={handleSubmit(onSubmit)}
         disabled={formState.isSubmitting}
       />
-      <CustomBtn
-        text={'Botton custom'}
-        variant={'asdf'}
-        onPress={funTest}
-      ></CustomBtn>
-      <Link href="/register" style={styles.link}>
+      <Link href="/register" className="text-center text-blue-600">
         ¿No tienes cuenta? Regístrate
       </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, gap: 16 },
-  error: { color: '#c00', textAlign: 'center' },
-  link: { textAlign: 'center', color: '#06c' },
-});
