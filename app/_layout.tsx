@@ -1,12 +1,27 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { Stack } from 'expo-router';
+import { AuthProvider, useAuth } from '../auth';
 
-const RootLayout = () => {
+export default function RootLayout() {
   return (
-    <View>
-      <Text>RootLayout</Text>
-    </View>
-  )
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  );
 }
 
-export default RootLayout
+function RootNavigator() {
+  const { user } = useAuth();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={!!user}>
+        <Stack.Screen name="index" options={{ title: 'Inicio' }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!user}>
+        <Stack.Screen name="login" options={{ title: 'Iniciar sesión' }} />
+        <Stack.Screen name="register" options={{ title: 'Crear cuenta' }} />
+      </Stack.Protected>
+    </Stack>
+  );
+}
