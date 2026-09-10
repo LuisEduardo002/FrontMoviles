@@ -1,25 +1,28 @@
 /**
- * El vocabulario de la app, en inglés.
+ * El vocabulario de la app.
  *
- * El backend habla español (`nombre`, `correo`, `clave`...). Esa traducción
- * ocurre en un solo sitio, `src/api/`, y de ahí para acá todo se llama igual.
- * Así, si el servidor renombra un campo, solo cambia el archivo que traduce.
- *
- * Los VALORES de las listas (SOLICITANTE, ALTA, RED...) sí van en español:
- * no son nombres de código, son los datos que el servidor guarda y devuelve.
+ * El backend (helpdesk-uam-node) expone sus campos en inglés —`name`, `email`,
+ * `role`— así que aquí no hay traducción que hacer: los tipos son un espejo del
+ * `UserDTO` del servidor. Si el servidor renombra un campo, se ajusta en
+ * `src/api/`, que es la única capa que habla con él.
  */
 
-/** Roles del sistema. El backend asigna SOLICITANTE por defecto al registrarse. */
-export const ROLES = ['SOLICITANTE', 'AGENTE', 'COORDINADOR', 'ADMINISTRADOR'] as const;
-export type Role = (typeof ROLES)[number];
+/**
+ * Rol del usuario. En el backend la columna es `role TEXT DEFAULT 'user'`: no
+ * hay lista cerrada todavía, por eso aquí es un string libre y no una unión de
+ * valores. Cuando el servidor fije el catálogo de roles, se cierra aquí también.
+ */
+export type Role = string;
 
-/** Usuario de la sesión. Nunca incluye la contraseña ni su hash. */
+/** Usuario de la sesión. Nunca incluye la contraseña ni su hash (el DTO la omite). */
 export interface User {
-  id: string;
+  /** `serial` en Postgres: es un número, no un UUID. */
+  id: number;
   name: string;
   email: string;
   role: Role;
-  active: boolean;
+  /** ISO 8601, tal como lo serializa el backend. */
+  createdAt: string;
 }
 
 // --- Tickets ---------------------------------------------------------------

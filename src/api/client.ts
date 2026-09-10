@@ -9,7 +9,7 @@
 // La URL se lee del archivo .env. Tiene que escribirse EXACTAMENTE así, con
 // notación de punto: Expo busca ese texto en el código y lo reemplaza por el
 // valor al compilar. Guardarlo en una variable intermedia no funcionaría.
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001/api';
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api';
 
 /**
  * Token JWT de la sesión activa.
@@ -62,7 +62,19 @@ export async function request<T>(path: string, body?: unknown): Promise<T> {
   if (!response.ok) {
     // El backend usa el formato { error: "mensaje legible" }.
     const message = typeof data['error'] === 'string' ? data['error'] : null;
-    throw new Error(message ?? `Error ${response.status} al llamar ${path}`);
+
+    // Cuando falla la validación (Zod) añade el detalle campo por campo:
+    //   { error: "Datos inválidos", detalles: [{ campo, mensaje }] }
+    // Sin esto el usuario solo vería "Datos inválidos" y no sabría qué corregir.
+    const details = Array.isArray(data['detalles'])
+      ? (data['detalles'] as { campo?: string; mensaje?: string }[])
+          .map((detail) => detail.mensaje)
+          .filter((text): text is string => !!text)
+      : [];
+
+    throw new Error(
+      [message ?? `Error ${response.status} al llamar ${path}`, ...details].join('\n'),
+    );
   }
 
   return data as T;

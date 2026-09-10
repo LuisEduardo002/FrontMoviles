@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import Button from '../src/components/Button';
 import { useSession } from '../src/session/context';
@@ -19,7 +18,6 @@ export default function Home() {
       </View>
 
       <View className="gap-3">
-        <Button text="Reportar una solicitud" onPress={() => router.push('/tickets/new')} />
         <Button text="Cerrar sesión" onPress={signOut} secondary />
       </View>
     </View>

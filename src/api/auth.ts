@@ -1,53 +1,40 @@
 /**
- * Endpoints de autenticación (prefijo /api/auth) y la traducción entre el
- * español del servidor y el inglés de la app.
+ * Endpoints de autenticación (prefijo /api/auth).
+ *
+ * El backend expone los campos en inglés y con los mismos nombres que usa la
+ * app, así que aquí no hay traducción: las funciones existen para que las
+ * pantallas no tengan que conocer rutas ni formas de JSON.
  */
 
-import type { Role, User } from '../types';
+import type { User } from '../types';
 import { request } from './client';
 
-/** Forma EXACTA en que el backend devuelve un usuario. No cambiar a la ligera. */
-interface UserResponse {
-  id: string;
-  nombre: string;
-  correo: string;
-  rol: Role;
-  activo: boolean;
-}
-
+/** Respuesta de /register y /login: el token y el usuario que entró. */
 interface SessionResponse {
   token: string;
-  usuario: UserResponse;
+  user: User;
 }
 
-/** El único lugar donde se convierte la respuesta del servidor al tipo de la app. */
-function toUser(data: UserResponse): User {
-  return {
-    id: data.id,
-    name: data.nombre,
-    email: data.correo,
-    role: data.rol,
-    active: data.activo,
-  };
+/** POST /auth/login -> token de sesión y usuario. */
+export function login(email: string, password: string): Promise<SessionResponse> {
+  return request<SessionResponse>('/auth/login', { email, password });
 }
 
-/** POST /auth/login -> token de sesión y usuario que entró. */
-export async function login(email: string, password: string) {
-  const session = await request<SessionResponse>('/auth/login', {
-    correo: email,
-    clave: password,
-  });
-  return { token: session.token, user: toUser(session.usuario) };
+/**
+ * POST /auth/register -> crea el usuario y YA devuelve token.
+ *
+ * Por eso el registro no necesita un login posterior: con esta sola llamada la
+ * sesión queda abierta.
+ */
+export function register(
+  name: string,
+  email: string,
+  password: string,
+): Promise<SessionResponse> {
+  return request<SessionResponse>('/auth/register', { name, email, password });
 }
 
-/** POST /auth/registro -> el usuario creado (201). Ojo: NO devuelve token. */
-export async function register(name: string, email: string, password: string): Promise<User> {
-  return toUser(
-    await request<UserResponse>('/auth/registro', { nombre: name, correo: email, clave: password }),
-  );
-}
-
-/** GET /auth/perfil -> el usuario de la sesión actual. Requiere token. */
-export async function profile(): Promise<User> {
-  return toUser(await request<UserResponse>('/auth/perfil'));
+/** GET /auth/me -> el usuario de la sesión actual. Requiere token. */
+export function profile(): Promise<User> {
+  return request<User>('/auth/me');
 }

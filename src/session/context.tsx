@@ -42,18 +42,19 @@ export function SessionProvider({ children }: PropsWithChildren) {
     setUser(session.user);
   };
 
+  const signUp = async (name: string, email: string, password: string) => {
+    // El registro ya devuelve token: no hace falta un login posterior.
+    const session = await api.register(name.trim(), email.trim().toLowerCase(), password);
+    setToken(session.token);
+    setUser(session.user);
+  };
+
   return (
     <SessionContext
       value={{
         user,
         signIn,
-        // El registro NO devuelve token (solo crea el usuario), así que
-        // enseguida iniciamos sesión con las mismas credenciales para que el
-        // usuario entre de una vez y no tenga que escribirlas dos veces.
-        signUp: async (name, email, password) => {
-          await api.register(name.trim(), email.trim().toLowerCase(), password);
-          await signIn(email, password);
-        },
+        signUp,
         signOut: () => {
           setToken(null);
           setUser(null);

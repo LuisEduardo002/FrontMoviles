@@ -29,6 +29,7 @@ function Navigator() {
       {/* Con sesión iniciada */}
       <Stack.Protected guard={!!user}>
         <Stack.Screen name="index" options={{ title: 'HelpDesk UAM' }} />
+        <Stack.Screen name="users" options={{ title: 'Usuarios' }} />
         <Stack.Screen name="tickets/new" options={{ title: 'Nueva solicitud' }} />
       </Stack.Protected>
 
