@@ -6,23 +6,49 @@
  * y nada más.
  */
 
-// La URL se lee del archivo .env. Tiene que escribirse EXACTAMENTE así, con
-// notación de punto: Expo busca ese texto en el código y lo reemplaza por el
-// valor al compilar. Guardarlo en una variable intermedia no funcionaría.
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api';
+import { API_URL, REQUEST_TIMEOUT_MS } from '../config/env';
+import type { ApiError } from '../types';
 
 /**
- * Token JWT de la sesión activa.
+ * Token JWT de la sesión activa, en memoria.
  *
- * Vive en memoria: al cerrar la app se pierde y hay que volver a entrar.
- * ponytail: sin almacenamiento persistente. Para que la sesión sobreviva al
- * cierre, instalar `expo-secure-store` y guardarlo/leerlo aquí.
+ * La copia que sobrevive al cierre de la app está en `src/session/storage.ts`;
+ * esta es solo la que se adjunta a cada petición. La pone el contexto de sesión
+ * al entrar (token) y al salir (null).
  */
 let token: string | null = null;
 
-/** La llama el contexto de sesión al entrar (token) y al salir (null). */
 export function setToken(value: string | null): void {
   token = value;
+}
+
+/**
+ * Saca de la respuesta del servidor un mensaje legible para el usuario.
+ *
+ * NestJS responde sus errores así:
+ *   { statusCode: 409, message: "El correo ya está registrado.", error: "Conflict" }
+ * pero `message` también puede ser un arreglo con un texto por campo. Aquí se
+ * normaliza a un solo string, que es lo que una pantalla puede mostrar.
+ */
+function readErrorMessage(data: unknown, status: number, path: string): string {
+  const message = (data as Partial<ApiError> | null)?.message;
+
+  // El 500 va PRIMERO: este backend no valida el cuerpo de la petición, así que
+  // si falta un campo bcrypt revienta con `undefined` y NestJS responde
+  // { statusCode: 500, message: "Internal server error" }. Ese texto genérico
+  // no le dice nada al usuario, y como viene en `message` taparía al de abajo.
+  if (status === 500 && (typeof message !== 'string' || message === 'Internal server error')) {
+    return 'El servidor no pudo procesar los datos enviados. Revisa que no falte ningún campo.';
+  }
+
+  if (typeof message === 'string' && message) return message;
+
+  if (Array.isArray(message)) {
+    const lines = message.filter((line): line is string => typeof line === 'string');
+    if (lines.length > 0) return lines.join('\n');
+  }
+
+  return `Error ${status} al llamar ${path}`;
 }
 
 /**
@@ -32,10 +58,18 @@ export function setToken(value: string | null): void {
  * - Si hay sesión activa, adjunta la cabecera `Authorization: Bearer <token>`.
  * - Si el servidor responde con error, lanza un Error con SU mensaje, que es
  *   el que la pantalla muestra al usuario.
+ * - Si el servidor no responde en 10 segundos, corta y avisa: sin esto, con el
+ *   backend caído la petición se queda colgada y el usuario ve un spinner
+ *   eterno.
  *
  * @param path Ruta relativa a la API, empezando por "/". Ej: "/auth/login".
  */
 export async function request<T>(path: string, body?: unknown): Promise<T> {
+  // `AbortController` es el mando a distancia de la petición: `fetch` la cancela
+  // cuando se llama a `abort()`, y eso es lo que hace el temporizador.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
   let response: Response;
 
   try {
@@ -48,33 +82,33 @@ export async function request<T>(path: string, body?: unknown): Promise<T> {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: body === undefined ? undefined : JSON.stringify(body),
+      signal: controller.signal,
     });
-  } catch {
-    // `fetch` solo falla así cuando no hubo respuesta: servidor apagado, URL
-    // equivocada o el dispositivo no alcanza esa dirección (ver .env.example).
-    throw new Error(`No se pudo conectar con ${API_URL}. ¿Está encendido el servidor?`);
-  }
-
-  // El backend responde JSON siempre, pero una caída puede devolver HTML: si no
-  // se puede leer como JSON, se sigue con un objeto vacío en vez de reventar.
-  const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
-
-  if (!response.ok) {
-    // El backend usa el formato { error: "mensaje legible" }.
-    const message = typeof data['error'] === 'string' ? data['error'] : null;
-
-    // Cuando falla la validación (Zod) añade el detalle campo por campo:
-    //   { error: "Datos inválidos", detalles: [{ campo, mensaje }] }
-    // Sin esto el usuario solo vería "Datos inválidos" y no sabría qué corregir.
-    const details = Array.isArray(data['detalles'])
-      ? (data['detalles'] as { campo?: string; mensaje?: string }[])
-          .map((detail) => detail.mensaje)
-          .filter((text): text is string => !!text)
-      : [];
+  } catch (failure) {
+    // Dos causas posibles: se venció el temporizador (AbortError) o no hubo
+    // respuesta del todo (servidor apagado, IP equivocada, o el dispositivo no
+    // alcanza esa dirección).
+    if ((failure as Error).name === 'AbortError') {
+      throw new Error(`El servidor (${API_URL}) tardó demasiado en responder.`);
+    }
 
     throw new Error(
-      [message ?? `Error ${response.status} al llamar ${path}`, ...details].join('\n'),
+      `No se pudo conectar con ${API_URL}. ¿Está encendido el servidor y es correcta la IP?`,
     );
+  } finally {
+    // Se limpia siempre: si la petición terminó bien, dejar vivo el temporizador
+    // abortaría una petición que ya no existe.
+    clearTimeout(timeout);
+  }
+
+  // El backend responde JSON en /auth, pero una caída puede devolver HTML: si no
+  // se puede leer como JSON, se sigue con un objeto vacío en vez de reventar.
+  const data: unknown = await response.json().catch(() => ({}));
+
+  // `response.ok` es cualquier 2xx. Importante: este backend responde 201 al
+  // login (no define @HttpCode(200)), así que comparar contra 200 lo rompería.
+  if (!response.ok) {
+    throw new Error(readErrorMessage(data, response.status, path));
   }
 
   return data as T;

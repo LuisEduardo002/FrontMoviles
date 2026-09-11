@@ -1,73 +1,82 @@
 /**
- * El vocabulario de la app.
+ * El contrato con la API de NFHunter, en tipos.
  *
- * El backend (helpdesk-uam-node) expone sus campos en inglés —`name`, `email`,
- * `role`— así que aquí no hay traducción que hacer: los tipos son un espejo del
- * `UserDTO` del servidor. Si el servidor renombra un campo, se ajusta en
- * `src/api/`, que es la única capa que habla con él.
+ * Todo lo que entra o sale del backend pasa por aquí. Los nombres son los del
+ * servidor (NestJS + Prisma, siempre camelCase), así que no hay traducción: si
+ * el backend renombra un campo, se ajusta en `src/api/`, que es la única capa
+ * que habla con él.
  */
 
 /**
- * Rol del usuario. En el backend la columna es `role TEXT DEFAULT 'user'`: no
- * hay lista cerrada todavía, por eso aquí es un string libre y no una unión de
- * valores. Cuando el servidor fije el catálogo de roles, se cierra aquí también.
+ * Rol del usuario. En la base es `enum Role { USER, ADMIN }` con USER por
+ * defecto, así que la lista está cerrada: si llegara otro valor, sería un
+ * cambio del backend que hay que reflejar aquí.
  */
-export type Role = string;
+export const ROLES = ['USER', 'ADMIN'] as const;
+export type Role = (typeof ROLES)[number];
 
-/** Usuario de la sesión. Nunca incluye la contraseña ni su hash (el DTO la omite). */
-export interface User {
-  /** `serial` en Postgres: es un número, no un UUID. */
-  id: number;
-  name: string;
+/**
+ * El usuario tal como lo devuelve /auth. Son EXACTAMENTE estos tres campos.
+ *
+ * La tabla `users` tiene además `nickname`, `avatarUrl`, `levelTitle` y
+ * `totalPoints`, pero NINGÚN endpoint los expone hoy. Si una pantalla los
+ * necesita, hay que agregarlos en el backend: no se inventan aquí ni se
+ * guardan localmente como si vinieran del servidor.
+ */
+export interface AuthUser {
+  /** `uuid` de Postgres: es un string, no un número. */
+  id: string;
   email: string;
   role: Role;
-  /** ISO 8601, tal como lo serializa el backend. */
-  createdAt: string;
 }
 
-// --- Tickets ---------------------------------------------------------------
+/** Cuerpo de POST /auth/login. */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
 
-export const PRIORITIES = ['BAJA', 'MEDIA', 'ALTA', 'CRITICA'] as const;
-export type Priority = (typeof PRIORITIES)[number];
-
-export const STATUSES = [
-  'NUEVO',
-  'ASIGNADO',
-  'EN_PROCESO',
-  'ESPERA_INFORMACION',
-  'RESUELTO',
-  'CERRADO',
-] as const;
-export type TicketStatus = (typeof STATUSES)[number];
+/** Cuerpo de POST /auth/register. El apodo es único, igual que el correo. */
+export interface RegisterRequest {
+  nickname: string;
+  email: string;
+  password: string;
+}
 
 /**
- * Catálogo de categorías (F03 del documento de visión): la categoría es la que
- * determina el SLA y el grupo de agentes competentes.
+ * Respuesta de /auth/login y /auth/register (ambas responden 201).
  *
- * Está quemado aquí porque el backend todavía no expone el catálogo. Cuando
- * exista F04 ("catálogo configurable"), esta lista se pedirá al servidor.
+ * La llave del token es `access_token` —así la nombra NestJS—, no `token`.
  */
-export const CATEGORIES = [
-  'RED',
-  'AULAS',
-  'CREDENCIALES',
-  'PLATAFORMA_ACADEMICA',
-  'OTRO',
-] as const;
-export type Category = (typeof CATEGORIES)[number];
-
-/** Lo que el usuario llena en el formulario de una nueva solicitud. */
-export interface NewTicket {
-  subject: string;
-  description: string;
-  category: Category;
-  priority: Priority;
+export interface AuthResponse {
+  access_token: string;
+  user: AuthUser;
 }
 
-/** Un ticket ya registrado en el servidor. */
-export interface Ticket extends NewTicket {
-  id: string;
-  status: TicketStatus;
-  requesterId: string;
-  agentId: string | null;
+/**
+ * Forma de CUALQUIER error del backend.
+ *
+ * `message` es un string cuando la excepción la lanza el servicio a mano
+ * (`ConflictException('El correo ya está registrado.')`) y un arreglo con un
+ * texto por campo cuando se active el ValidationPipe. `error` es solo el nombre
+ * en inglés del código HTTP ("Conflict", "Unauthorized"): no sirve para mostrar.
+ */
+export interface ApiError {
+  statusCode: number;
+  message: string | string[];
+  error?: string;
+}
+
+/**
+ * Lo que viaja firmado dentro del JWT (`payload` en auth.service.ts).
+ *
+ * Importante: el id del usuario está en `sub`, no en `id`. `exp` e `iat` son
+ * segundos desde 1970 (no milisegundos), que es como los escribe el estándar.
+ */
+export interface JwtPayload {
+  sub: string;
+  email: string;
+  role: Role;
+  iat: number;
+  exp: number;
 }

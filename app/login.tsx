@@ -9,7 +9,7 @@ import { useSession } from '../src/session/context';
 type LoginForm = { email: string; password: string };
 
 export default function Login() {
-  const { signIn } = useSession();
+  const { login } = useSession();
 
   // `control` conecta los campos, `handleSubmit` valida antes de enviar y
   // `formState` trae los errores y si se está enviando en este momento.
@@ -19,7 +19,7 @@ export default function Login() {
 
   const submit = async ({ email, password }: LoginForm) => {
     try {
-      await signIn(email, password);
+      await login(email, password);
       // No hay que navegar: al cambiar la sesión, el layout raíz muestra las
       // pantallas privadas automáticamente.
     } catch (error) {
@@ -32,8 +32,8 @@ export default function Login() {
   return (
     <View className="flex-1 justify-center gap-5 bg-neutral-50 p-6">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-neutral-900">Mesa de ayuda</Text>
-        <Text className="text-neutral-500">Entra con tu cuenta institucional</Text>
+        <Text className="text-2xl font-bold text-neutral-900">NFHunter</Text>
+        <Text className="text-neutral-500">Entra para seguir la cacería</Text>
       </View>
 
       <Field
@@ -41,7 +41,7 @@ export default function Login() {
         name="email"
         label="Correo"
         keyboardType="email-address"
-        placeholder="nombre@autonoma.edu.co"
+        placeholder="tucorreo@ejemplo.com"
         rules={{
           required: 'El correo es obligatorio',
           pattern: { value: /^\S+@\S+\.\S+$/, message: 'Correo inválido' },

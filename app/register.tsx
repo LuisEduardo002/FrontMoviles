@@ -5,18 +5,18 @@ import Button from '../src/components/Button';
 import Field from '../src/components/Field';
 import { useSession } from '../src/session/context';
 
-type RegisterForm = { name: string; email: string; password: string; confirmation: string };
+type RegisterForm = { nickname: string; email: string; password: string; confirmation: string };
 
 export default function Register() {
-  const { signUp } = useSession();
+  const { register } = useSession();
   const { control, handleSubmit, setError, getValues, formState } = useForm<RegisterForm>({
-    defaultValues: { name: '', email: '', password: '', confirmation: '' },
+    defaultValues: { nickname: '', email: '', password: '', confirmation: '' },
   });
 
   // `confirmation` no se envía: solo sirve para verificar que no hubo errata.
-  const submit = async ({ name, email, password }: RegisterForm) => {
+  const submit = async ({ nickname, email, password }: RegisterForm) => {
     try {
-      await signUp(name, email, password);
+      await register(nickname, email, password);
     } catch (error) {
       setError('root', { message: (error as Error).message });
     }
@@ -28,18 +28,20 @@ export default function Register() {
       contentContainerClassName="gap-5 p-6"
       keyboardShouldPersistTaps="handled">
       <Text className="text-neutral-500">
-        Se creará una cuenta de solicitante para reportar y seguir tus casos.
+        Crea tu cuenta para empezar a rastrear tags y sumar puntos.
       </Text>
 
       <Field
         control={control}
-        name="name"
-        label="Nombre completo"
-        autoCapitalize="words"
-        placeholder="Ana María Restrepo"
+        name="nickname"
+        label="Apodo"
+        autoCapitalize="none"
+        placeholder="cazador_nocturno"
         rules={{
-          required: 'El nombre es obligatorio',
+          required: 'El apodo es obligatorio',
           minLength: { value: 2, message: 'Mínimo 2 caracteres' },
+          // La columna es VARCHAR(50): más largo lo rechaza la base de datos.
+          maxLength: { value: 50, message: 'Máximo 50 caracteres' },
         }}
       />
       <Field
@@ -47,7 +49,7 @@ export default function Register() {
         name="email"
         label="Correo"
         keyboardType="email-address"
-        placeholder="nombre@autonoma.edu.co"
+        placeholder="tucorreo@ejemplo.com"
         rules={{
           required: 'El correo es obligatorio',
           pattern: { value: /^\S+@\S+\.\S+$/, message: 'Correo inválido' },
@@ -61,8 +63,9 @@ export default function Register() {
         placeholder="••••••••"
         rules={{
           required: 'La contraseña es obligatoria',
-          // 8 caracteres es lo que exige el backend: si aquí se pide menos, el
-          // servidor rechazaría el registro y el usuario no sabría por qué.
+          // El backend todavía no valida el largo (no tiene ValidationPipe), así
+          // que este mínimo es nuestro: es la única barrera contra claves de
+          // tres letras.
           minLength: { value: 8, message: 'Mínimo 8 caracteres' },
         }}
       />

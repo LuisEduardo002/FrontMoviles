@@ -10,6 +10,7 @@
  */
 
 import { Stack } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 import '../global.css';
 import { SessionProvider, useSession } from '../src/session/context';
 
@@ -22,15 +23,24 @@ export default function RootLayout() {
 }
 
 function Navigator() {
-  const { user } = useSession();
+  const { user, isLoading } = useSession();
+
+  // Mientras se busca el token guardado no se sabe todavía si hay sesión. Sin
+  // esta espera, la app mostraría el login un instante y luego saltaría al
+  // inicio: un parpadeo feo cada vez que se abre.
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-neutral-50">
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <Stack screenOptions={{ headerTitleStyle: { fontWeight: '600' } }}>
       {/* Con sesión iniciada */}
       <Stack.Protected guard={!!user}>
-        <Stack.Screen name="index" options={{ title: 'HelpDesk UAM' }} />
-        <Stack.Screen name="users" options={{ title: 'Usuarios' }} />
-        <Stack.Screen name="tickets/new" options={{ title: 'Nueva solicitud' }} />
+        <Stack.Screen name="index" options={{ title: 'NFHunter' }} />
       </Stack.Protected>
 
       {/* Sin sesión */}
