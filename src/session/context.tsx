@@ -27,6 +27,13 @@ interface Session {
 
 const SessionContext = createContext<Session | null>(null);
 
+/**
+ * SOLO PARA PRUEBAS: en true entra directo a los tabs sin pedir login.
+ * Ponlo en false cuando quieras volver a exigir correo + contraseña.
+ */
+const BYPASS_AUTH_FOR_TESTS = true;
+const DEV_USER: AuthUser = { id: 'dev-id', email: 'dev@prueba.com', role: 'USER' };
+
 /** Atajo para leer la sesión desde cualquier pantalla: `const { user } = useSession()`. */
 export function useSession(): Session {
   const value = use(SessionContext);
@@ -57,6 +64,13 @@ export function SessionProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const restore = async () => {
       try {
+        // Atajo de pruebas: finge una sesión para ver los tabs sin logearte.
+        if (__DEV__ && BYPASS_AUTH_FOR_TESTS) {
+          setToken('dev-token');
+          setUser(DEV_USER);
+          return;
+        }
+
         const stored = await loadToken();
         if (!stored) return;
 

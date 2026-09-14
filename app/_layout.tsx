@@ -38,9 +38,9 @@ function Navigator() {
 
   return (
     <Stack screenOptions={{ headerTitleStyle: { fontWeight: '600' } }}>
-      {/* Con sesión iniciada */}
+      {/* Con sesión iniciada: todo el grupo de tabs */}
       <Stack.Protected guard={!!user}>
-        <Stack.Screen name="index" options={{ title: 'NFHunter' }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack.Protected>
 
       {/* Sin sesión */}
