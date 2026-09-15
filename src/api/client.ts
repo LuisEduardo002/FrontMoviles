@@ -54,7 +54,9 @@ function readErrorMessage(data: unknown, status: number, path: string): string {
 /**
  * Hace una petición a la API y devuelve el JSON ya tipado.
  *
- * - Sin `body` -> GET. Con `body` -> POST enviándolo como JSON.
+ * - Sin `body` ni `method` -> GET. Con `body` y sin `method` -> POST (así la
+ *   llaman `login`/`register` y se mantiene compatibilidad).
+ * - Con `method` explícito se usa tal cual: 'POST' | 'PATCH' | 'PUT' | 'DELETE'.
  * - Si hay sesión activa, adjunta la cabecera `Authorization: Bearer <token>`.
  * - Si el servidor responde con error, lanza un Error con SU mensaje, que es
  *   el que la pantalla muestra al usuario.
@@ -64,7 +66,9 @@ function readErrorMessage(data: unknown, status: number, path: string): string {
  *
  * @param path Ruta relativa a la API, empezando por "/". Ej: "/auth/login".
  */
-export async function request<T>(path: string, body?: unknown): Promise<T> {
+export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+
+export async function request<T>(path: string, body?: unknown, method?: HttpMethod): Promise<T> {
   // `AbortController` es el mando a distancia de la petición: `fetch` la cancela
   // cuando se llama a `abort()`, y eso es lo que hace el temporizador.
   const controller = new AbortController();
@@ -74,7 +78,7 @@ export async function request<T>(path: string, body?: unknown): Promise<T> {
 
   try {
     response = await fetch(`${API_URL}${path}`, {
-      method: body === undefined ? 'GET' : 'POST',
+      method: method ?? (body === undefined ? 'GET' : 'POST'),
       headers: {
         'Content-Type': 'application/json',
         // Sintaxis de "propagación condicional": si no hay token, no se añade

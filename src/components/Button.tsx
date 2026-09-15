@@ -1,5 +1,12 @@
 import { Pressable, Text } from 'react-native';
 
+/**
+ * El botón del proyecto (ver ESTILOS.md). No escribas otro Pressable con
+ * fondo primario: usa este, con `secondary` para la variante de borde.
+ *
+ * Traducción dark NFHunter de la guía: primario `bg-primary`, secundario
+ * `border-secondary` con texto claro.
+ */
 interface Props {
   text: string;
   onPress: () => void;
@@ -16,9 +23,9 @@ export default function Button({ text, onPress, disabled, secondary, className }
       onPress={onPress}
       disabled={disabled}
       className={`items-center rounded-xl p-4 active:opacity-80 disabled:opacity-50 ${
-        secondary ? 'border border-neutral-300' : 'bg-blue-600'
+        secondary ? 'border border-secondary' : 'bg-primary'
       } ${className ?? ''}`}>
-      <Text className={`font-semibold ${secondary ? 'text-neutral-700' : 'text-white'}`}>
+      <Text className={`font-semibold ${secondary ? 'text-neutral-100' : 'text-white'}`}>
         {text}
       </Text>
     </Pressable>

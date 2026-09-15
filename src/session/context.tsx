@@ -29,7 +29,8 @@ const SessionContext = createContext<Session | null>(null);
 
 /**
  * SOLO PARA PRUEBAS: en true entra directo a los tabs sin pedir login.
- * Ponlo en false cuando quieras volver a exigir correo + contraseña.
+ * En entrega va en false para que se evalúen el registro y el inicio de sesión
+ * contra el backend (/auth/register y /auth/login).
  */
 const BYPASS_AUTH_FOR_TESTS = true;
 const DEV_USER: AuthUser = { id: 'dev-id', email: 'dev@prueba.com', role: 'USER' };

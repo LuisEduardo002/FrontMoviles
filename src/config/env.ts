@@ -31,3 +31,18 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.114.24
 
 /** Cuánto se espera una respuesta antes de darla por perdida (10 segundos). */
 export const REQUEST_TIMEOUT_MS = 10_000;
+
+/**
+ * Fuente de datos de los CRUD del panel admin.
+ *
+ * - `true` (valor por defecto): usa el almacén en memoria de
+ *   `src/api/mockStore.ts`. El CRUD funciona de extremo a extremo sin backend,
+ *   ideal para la entrega y para desarrollar el front.
+ * - `false`: llama al backend real con las rutas de `src/api/users.ts`,
+ *   `src/api/events.ts` y `src/api/scans.ts`.
+ *
+ * Para conectar el backend cuando exista: `EXPO_PUBLIC_USE_MOCK=false` en
+ * `.env` y recarga completa de la app. Si una ruta del backend se llama
+ * distinto, se cambia SOLO en esos tres archivos, nada más.
+ */
+export const USE_MOCK = (process.env.EXPO_PUBLIC_USE_MOCK ?? 'true') !== 'false';
