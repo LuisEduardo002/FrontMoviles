@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Keyboard, Pressable, Text, View } from 'react-native';
 import Button from '../src/components/Button';
 import Field from '../src/components/Field';
 import { useSession } from '../src/session/context';
@@ -30,10 +30,12 @@ export default function Login() {
   };
 
   return (
-    <View className="flex-1 justify-center gap-5 bg-neutral-50 p-6">
+    // Tocar fuera de los campos cierra el teclado (si no, tapa el botón Entrar).
+    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
+      <View className="flex-1 justify-center gap-5 p-6">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-neutral-900">NFHunter</Text>
-        <Text className="text-neutral-500">Entra para seguir la cacería</Text>
+        <Text className="text-2xl font-bold text-white">NFHunter</Text>
+        <Text className="text-neutral-400">Entra para seguir la cacería</Text>
       </View>
 
       <Field
@@ -45,6 +47,7 @@ export default function Login() {
         rules={{
           required: 'El correo es obligatorio',
           pattern: { value: /^\S+@\S+\.\S+$/, message: 'Correo inválido' },
+          maxLength: { value: 100, message: 'Máximo 100 caracteres' },
         }}
       />
       <Field
@@ -53,11 +56,14 @@ export default function Login() {
         label="Contraseña"
         secureTextEntry
         placeholder="••••••••"
-        rules={{ required: 'La contraseña es obligatoria' }}
+        rules={{
+          required: 'La contraseña es obligatoria',
+          maxLength: { value: 72, message: 'Máximo 72 caracteres' },
+        }}
       />
 
       {!!formState.errors.root && (
-        <Text className="rounded-lg bg-red-50 p-3 text-center text-red-700">
+        <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
           {formState.errors.root.message}
         </Text>
       )}
@@ -68,9 +74,10 @@ export default function Login() {
         disabled={formState.isSubmitting}
       />
 
-      <Link href="/register" className="text-center text-blue-600">
+      <Link href="/register" className="text-center font-semibold text-neutral-100">
         ¿No tienes cuenta? Regístrate
       </Link>
-    </View>
+      </View>
+    </Pressable>
   );
 }

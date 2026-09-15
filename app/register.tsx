@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { ScrollView, Text } from 'react-native';
+import { Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
 import Button from '../src/components/Button';
 import Field from '../src/components/Field';
 import { useSession } from '../src/session/context';
@@ -23,13 +23,19 @@ export default function Register() {
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-neutral-50"
-      contentContainerClassName="gap-5 p-6"
-      keyboardShouldPersistTaps="handled">
-      <Text className="text-neutral-500">
-        Crea tu cuenta para empezar a rastrear tags y sumar puntos.
-      </Text>
+    // Tocar fuera de los campos cierra el teclado; arrastrar también lo oculta.
+    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-5 p-6"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag">
+      <View className="gap-1">
+        <Text className="text-2xl font-bold text-white">Crear cuenta</Text>
+        <Text className="text-neutral-400">
+          Crea tu cuenta para empezar a rastrear tags y sumar puntos.
+        </Text>
+      </View>
 
       <Field
         control={control}
@@ -82,7 +88,7 @@ export default function Register() {
       />
 
       {!!formState.errors.root && (
-        <Text className="rounded-lg bg-red-50 p-3 text-center text-red-700">
+        <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
           {formState.errors.root.message}
         </Text>
       )}
@@ -93,9 +99,10 @@ export default function Register() {
         disabled={formState.isSubmitting}
       />
 
-      <Link href="/login" className="text-center text-blue-600">
+      <Link href="/login" className="text-center font-semibold text-neutral-100">
         ¿Ya tienes cuenta? Inicia sesión
       </Link>
-    </ScrollView>
+      </ScrollView>
+    </Pressable>
   );
 }

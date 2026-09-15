@@ -30,17 +30,28 @@ function Navigator() {
   // inicio: un parpadeo feo cada vez que se abre.
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-neutral-50">
-        <ActivityIndicator />
+      <View className="flex-1 items-center justify-center bg-base">
+        <ActivityIndicator color="#fff" />
       </View>
     );
   }
 
   return (
-    <Stack screenOptions={{ headerTitleStyle: { fontWeight: '600' } }}>
-      {/* Con sesión iniciada: todo el grupo de tabs */}
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: '#1c0a1c' },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: '600' },
+      }}>
+      {/* Con sesión iniciada: panel admin + formularios de cada entidad */}
       <Stack.Protected guard={!!user}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="users/new" options={{ title: 'Nuevo usuario' }} />
+        <Stack.Screen name="users/[id]" options={{ title: 'Detalle de usuario' }} />
+        <Stack.Screen name="events/new" options={{ title: 'Nuevo evento' }} />
+        <Stack.Screen name="events/[id]" options={{ title: 'Detalle de evento' }} />
+        <Stack.Screen name="scans/new" options={{ title: 'Nuevo escaneo' }} />
+        <Stack.Screen name="scans/[id]" options={{ title: 'Detalle de escaneo' }} />
       </Stack.Protected>
 
       {/* Sin sesión */}

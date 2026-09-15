@@ -80,3 +80,83 @@ export interface JwtPayload {
   iat: number;
   exp: number;
 }
+
+// ---------------------------------------------------------------------------
+// Entidades del panel de administración.
+// Nombres de campo en camelCase, igual que los expone NestJS + Prisma.
+// Cuando el backend exista, estos tipos deben calcar su JSON: la única capa
+// que traduce es `src/api/`.
+// ---------------------------------------------------------------------------
+
+/** Fila de `users` tal como la administra el panel. */
+export interface AdminUser {
+  id: string;
+  nickname: string;
+  email: string;
+  role: Role;
+  totalPoints: number;
+  levelTitle: string;
+  createdAt: string;
+}
+
+/** POST /users. La contraseña solo viaja al crear (nunca vuelve del server). */
+export interface CreateUserDto {
+  nickname: string;
+  email: string;
+  password: string;
+  role: Role;
+  totalPoints: number;
+  levelTitle: string;
+}
+
+/** PATCH /users/:id. Solo los campos presentes se actualizan. */
+export type UpdateUserDto = Partial<Omit<CreateUserDto, 'password'> & { password: string }>;
+
+/** Fila de `events`: agrupa actividades (festival, temporada, rally...). */
+export interface AdminEvent {
+  id: string;
+  name: string;
+  description: string;
+  /** ISO 8601 (`2026-03-01`). En formularios se captura como texto YYYY-MM-DD. */
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateEventDto {
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export type UpdateEventDto = Partial<CreateEventDto>;
+
+/**
+ * Fila de `scans_history`: bitácora de cada escaneo NFC exitoso.
+ * Conecta un User con un NfcTag + dónde/cuándo/cuántos puntos.
+ */
+export interface ScanHistory {
+  id: string;
+  userId: string;
+  /** Identificador del tag escaneado (columna `tagId` / `nfcTagId` según backend). */
+  tagCode: string;
+  location: string;
+  pointsEarned: number;
+  /** ISO 8601 con hora (`2026-03-01T10:30:00.000Z`). */
+  scannedAt: string;
+  /** Relación precargada cuando el backend la incluya (`?include=user`). */
+  user?: Pick<AdminUser, 'id' | 'nickname' | 'email'>;
+}
+
+export interface CreateScanDto {
+  userId: string;
+  tagCode: string;
+  location: string;
+  pointsEarned: number;
+  scannedAt: string;
+}
+
+export type UpdateScanDto = Partial<CreateScanDto>;

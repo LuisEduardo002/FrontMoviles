@@ -41,12 +41,12 @@ export default function Field<T extends FieldValues>({
       rules={rules}
       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
         <View className="gap-1.5">
-          <Text className="font-semibold text-neutral-700">{label}</Text>
+          <Text className="font-semibold text-neutral-200">{label}</Text>
           <TextInput
             // El `className` que llegue desde fuera se suma al de aquí; si se
             // pasara dentro de `...input` reemplazaría estos estilos base.
-            className={`rounded-xl border bg-white p-3.5 ${
-              error ? 'border-red-500' : 'border-neutral-300'
+            className={`rounded-xl border bg-tertiary p-3.5 text-white ${
+              error ? 'border-red-500' : 'border-secondary'
             } ${className ?? ''}`}
             value={value}
             onChangeText={onChange}
@@ -56,7 +56,7 @@ export default function Field<T extends FieldValues>({
             {...input}
           />
           {/* El mensaje sale de las `rules`: quien define la regla define el texto. */}
-          {!!error && <Text className="text-xs text-red-600">{error.message}</Text>}
+          {!!error && <Text className="text-xs text-red-400">{error.message}</Text>}
         </View>
       )}
     />

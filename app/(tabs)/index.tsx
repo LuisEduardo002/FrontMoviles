@@ -1,51 +1,61 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
+import { useSession } from '../../src/session/context';
 
 /**
- * Pantalla "Agregar Tag NFC": minimalista, invita a la acción.
- * Solo UI por ahora: los botones no escanean de verdad.
+ * Panel principal del administrador: accesos a los tres CRUD
+ * (usuarios, eventos, historial de escaneos) + estado de la sesión.
  */
-export default function AgregarTag() {
+const SECTIONS = [
+  {
+    href: '/(tabs)/users',
+    icon: 'account-multiple',
+    title: 'Usuarios',
+    description: 'Perfiles, roles, puntos y niveles.',
+  },
+  {
+    href: '/(tabs)/events',
+    icon: 'calendar-month',
+    title: 'Eventos',
+    description: 'Festivales, temporadas y rallies.',
+  },
+  {
+    href: '/(tabs)/scans',
+    icon: 'nfc-variant',
+    title: 'Historial de escaneos',
+    description: 'Quién escaneó qué tag, dónde y cuándo.',
+  },
+] as const;
+
+export default function Panel() {
+  const { user } = useSession();
+
   return (
-    <View className="flex-1 items-center gap-8 bg-base px-6 py-10">
-      <View className="items-center gap-2">
-        <Text className="text-2xl font-bold text-white">Vincular nuevo Tag</Text>
-        <Text className="text-center text-sm text-neutral-400">
-          Vincula un tag físico a tu cuenta para empezar la cacería
+    <View className="flex-1 gap-6 bg-base p-6">
+      <View className="gap-1">
+        <Text className="text-2xl font-bold text-white">Panel de administración</Text>
+        <Text className="text-neutral-400">
+          {user?.email ?? 'Admin'} · {user?.role ?? 'ADMIN'}
         </Text>
       </View>
 
-      {/* Ilustración central: teléfono acercándose a un tag NFC */}
-      <View className="items-center justify-center">
-        <View className="h-56 w-56 items-center justify-center rounded-full bg-secondary/20">
-          <View className="h-44 w-44 items-center justify-center rounded-full border border-secondary bg-tertiary">
-            <View className="flex-row items-center gap-3">
-              <MaterialCommunityIcons name="cellphone" size={56} color="#fff" />
-              <MaterialCommunityIcons name="nfc" size={40} color="#722770" />
+      <View className="gap-4">
+        {SECTIONS.map((section) => (
+          <Pressable
+            key={section.href}
+            onPress={() => router.push(section.href)}
+            className="flex-row items-center gap-4 rounded-2xl border border-secondary bg-tertiary p-5 active:opacity-80">
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-primary">
+              <MaterialCommunityIcons name={section.icon} size={24} color="#fff" />
             </View>
-            <View className="mt-3 rounded-full bg-primary px-4 py-1">
-              <Text className="text-xs font-bold tracking-widest text-white">NFC</Text>
+            <View className="flex-1 gap-0.5">
+              <Text className="text-lg font-bold text-white">{section.title}</Text>
+              <Text className="text-sm text-neutral-400">{section.description}</Text>
             </View>
-          </View>
-        </View>
-      </View>
-
-      <Text className="text-center text-base text-neutral-200">
-        Acerca el Tag NFC a tu dispositivo
-      </Text>
-
-      <View className="w-full gap-3">
-        <Pressable
-          onPress={() => {}}
-          className="items-center rounded-2xl bg-primary p-4 active:opacity-80">
-          <Text className="text-base font-semibold text-white">Escanear ahora</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => {}}
-          className="items-center rounded-2xl border border-secondary p-4 active:opacity-80">
-          <Text className="text-base font-semibold text-white">Ingresar código manual</Text>
-        </Pressable>
+            <MaterialCommunityIcons name="chevron-right" size={24} color="#a1a1aa" />
+          </Pressable>
+        ))}
       </View>
     </View>
   );
