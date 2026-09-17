@@ -9,7 +9,7 @@
 
 import { USE_MOCK } from '../config/env';
 import type { AdminUser, CreateUserDto, UpdateUserDto } from '../types';
-import { request } from './client';
+import { ApiRequestError, request } from './client';
 import * as mock from './mockStore';
 
 const PATH = '/users';
@@ -36,6 +36,12 @@ export function updateUser(id: string, patch: UpdateUserDto): Promise<AdminUser>
 }
 
 export async function deleteUser(id: string): Promise<void> {
+  if (!UUID_RE.test(id)) {
+    throw new ApiRequestError('El identificador del usuario no tiene formato UUID.', 400);
+  }
+
   if (USE_MOCK) return mock.mockDeleteUser(id);
   await request<void>(`${PATH}/${id}`, undefined, 'DELETE');
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

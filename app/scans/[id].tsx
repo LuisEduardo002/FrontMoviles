@@ -1,13 +1,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import FormError from '../../src/components/FormError';
 import UserSelect from '../../src/components/UserSelect';
-import { deleteScan, getScan, updateScan } from '../../src/api/scans';
-import { listUsers } from '../../src/api/users';
+import { deleteScan, getScan, listScanUsers, updateScan } from '../../src/api/scans';
 import type { AdminUser, ScanHistory, UpdateScanDto } from '../../src/types';
 import { DATE_RE, formatDateTime } from '../../src/utils/format';
 
@@ -35,12 +34,21 @@ export default function ScanDetail() {
     defaultValues: { userId: '', tagCode: '', location: '', pointsEarned: '0', scannedAt: '' },
   });
 
+  const showMessage = (title: string, message: string, onClose?: () => void) => {
+    if (Platform.OS === 'web') {
+      globalThis.alert(`${title}\n\n${message}`);
+      onClose?.();
+      return;
+    }
+    Alert.alert(title, message, [{ text: 'OK', onPress: onClose }]);
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
         setLoadError(null);
-        const [scan, userList] = await Promise.all([getScan(id), listUsers()]);
+        const [scan, userList] = await Promise.all([getScan(id), listScanUsers()]);
         setUsers(userList);
         setOriginal(scan);
         reset({
@@ -86,7 +94,7 @@ export default function ScanDetail() {
         },
         { keepErrors: false },
       );
-      Alert.alert('Escaneo actualizado', 'Los cambios quedaron guardados.');
+      showMessage('Escaneo actualizado', 'Los cambios quedaron guardados.');
     } catch (failure) {
       setError('root', { message: (failure as Error).message });
     }
@@ -94,14 +102,17 @@ export default function ScanDetail() {
 
   const confirmDelete = () => {
     if (!original) return;
-    Alert.alert(
-      'Eliminar escaneo',
-      `¿Eliminar el registro de ${original.tagCode}? Esta acción no se puede deshacer.`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Eliminar', style: 'destructive', onPress: () => void remove() },
-      ],
-    );
+    const message = `¿Eliminar el registro de ${original.tagCode}? Esta acción no se puede deshacer.`;
+
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(message)) void remove();
+      return;
+    }
+
+    Alert.alert('Eliminar escaneo', message, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Eliminar', style: 'destructive', onPress: () => void remove() },
+    ]);
   };
 
   const remove = async () => {
@@ -109,7 +120,8 @@ export default function ScanDetail() {
     try {
       setDeleting(true);
       await deleteScan(original.id);
-      Alert.alert('Escaneo eliminado', '', [{ text: 'OK', onPress: () => router.back() }]);
+      setDeleting(false);
+      showMessage('Escaneo eliminado', 'El escaneo se eliminó correctamente.', () => router.back());
     } catch (failure) {
       setDeleting(false);
       setError('root', { message: (failure as Error).message });
@@ -198,6 +210,7 @@ export default function ScanDetail() {
           name="scannedAt"
           label="Fecha del escaneo (AAAA-MM-DD)"
           placeholder="2026-09-15"
+          format="date"
           rules={{
             required: 'La fecha es obligatoria',
             pattern: { value: DATE_RE, message: 'Usa el formato AAAA-MM-DD' },

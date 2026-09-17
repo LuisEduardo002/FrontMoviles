@@ -1,34 +1,45 @@
 import { router } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
-import { Alert, Keyboard, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { useForm } from 'react-hook-form';
+import { Alert, Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import FormError from '../../src/components/FormError';
 import { createEvent } from '../../src/api/events';
-import { DATE_RE } from '../../src/utils/format';
+import { useSession } from '../../src/session/context';
+import { DATE_RE, toApiDate } from '../../src/utils/format';
 
 type EventForm = {
   name: string;
   description: string;
   startDate: string;
   endDate: string;
-  isActive: boolean;
 };
 
 /** Crear evento. Fechas en texto YYYY-MM-DD (sin date-picker nativo). */
 export default function NewEvent() {
+  const { user } = useSession();
+  const isAdmin = user?.role === 'ADMIN';
   const { control, handleSubmit, setError, getValues, formState } = useForm<EventForm>({
-    defaultValues: { name: '', description: '', startDate: '', endDate: '', isActive: true },
+    defaultValues: { name: '', description: '', startDate: '', endDate: '' },
   });
+
+  if (!isAdmin) {
+    return (
+      <View className="flex-1 items-center justify-center gap-5 bg-base p-6">
+        <Text className="text-center text-xl font-bold text-white">Sin permisos</Text>
+        <FormError message="Solo los administradores pueden crear eventos." />
+        <Button text="Volver" onPress={() => router.back()} secondary />
+      </View>
+    );
+  }
 
   const submit = async (values: EventForm) => {
     try {
       await createEvent({
         name: values.name.trim(),
-        description: values.description.trim(),
-        startDate: values.startDate.trim(),
-        endDate: values.endDate.trim(),
-        isActive: values.isActive,
+        description: values.description.trim() || undefined,
+        startDate: toApiDate(values.startDate.trim()),
+        endDate: toApiDate(values.endDate.trim()),
       });
       Alert.alert('Evento creado', `${values.name} quedó registrado.`, [
         { text: 'OK', onPress: () => router.back() },
@@ -77,6 +88,7 @@ export default function NewEvent() {
           name="startDate"
           label="Fecha de inicio (AAAA-MM-DD)"
           placeholder="2026-09-20"
+          format="date"
           rules={{
             required: 'La fecha de inicio es obligatoria',
             pattern: { value: DATE_RE, message: 'Usa el formato AAAA-MM-DD' },
@@ -88,6 +100,7 @@ export default function NewEvent() {
           name="endDate"
           label="Fecha de fin (AAAA-MM-DD)"
           placeholder="2026-09-22"
+          format="date"
           rules={{
             required: 'La fecha de fin es obligatoria',
             pattern: { value: DATE_RE, message: 'Usa el formato AAAA-MM-DD' },
@@ -95,17 +108,6 @@ export default function NewEvent() {
             validate: (value) =>
               value >= getValues('startDate') || 'La fecha de fin no puede ser anterior al inicio',
           }}
-        />
-
-        <Controller
-          control={control}
-          name="isActive"
-          render={({ field: { value, onChange } }) => (
-            <View className="flex-row items-center justify-between rounded-xl border border-secondary bg-tertiary p-3.5">
-              <Text className="font-semibold text-neutral-200">Evento activo</Text>
-              <Switch value={value} onValueChange={onChange} />
-            </View>
-          )}
         />
 
         <FormError message={formState.errors.root?.message} />

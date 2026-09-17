@@ -8,7 +8,7 @@
 
 import { createContext, use, useEffect, useState, type PropsWithChildren } from 'react';
 import * as api from '../api/auth';
-import { setToken as setRequestToken } from '../api/client';
+import { setToken as setRequestToken, setUnauthorizedHandler } from '../api/client';
 import type { AuthResponse, AuthUser } from '../types';
 import { decodeJwt, isExpired } from './jwt';
 import { loadToken, removeToken, saveToken } from './storage';
@@ -28,11 +28,10 @@ interface Session {
 const SessionContext = createContext<Session | null>(null);
 
 /**
- * SOLO PARA PRUEBAS: en true entra directo a los tabs sin pedir login.
- * En entrega va en false para que se evalúen el registro y el inicio de sesión
- * contra el backend (/auth/register y /auth/login).
+ * Solo puede activarse temporalmente durante pruebas locales para entrar directo
+ * a los tabs sin pedir login. En producción debe permanecer desactivado.
  */
-const BYPASS_AUTH_FOR_TESTS = true;
+const BYPASS_AUTH_FOR_TESTS = false;
 const DEV_USER: AuthUser = { id: 'dev-id', email: 'dev@prueba.com', role: 'USER' };
 
 /** Atajo para leer la sesión desde cualquier pantalla: `const { user } = useSession()`. */
@@ -63,9 +62,16 @@ export function SessionProvider({ children }: PropsWithChildren) {
    * borra y se arranca sin sesión.
    */
   useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setRequestToken(null);
+      setToken(null);
+      setUser(null);
+      void removeToken();
+    });
+
     const restore = async () => {
       try {
-        // Atajo de pruebas: finge una sesión para ver los tabs sin logearte.
+        // Atajo opcional de pruebas: finge una sesión sin llamar al backend.
         if (__DEV__ && BYPASS_AUTH_FOR_TESTS) {
           setToken('dev-token');
           setUser(DEV_USER);
@@ -92,6 +98,8 @@ export function SessionProvider({ children }: PropsWithChildren) {
     };
 
     void restore();
+
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   /**

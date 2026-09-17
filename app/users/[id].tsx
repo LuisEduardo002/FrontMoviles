@@ -1,11 +1,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import FormError from '../../src/components/FormError';
 import RoleSegment from '../../src/components/RoleSegment';
+import { ApiRequestError } from '../../src/api/client';
 import { deleteUser, getUser, updateUser } from '../../src/api/users';
 import type { AdminUser, Role, UpdateUserDto } from '../../src/types';
 
@@ -42,6 +43,14 @@ export default function UserDetail() {
     },
   });
 
+  const showMessage = (title: string, message: string, onClose?: () => void) => {
+    if (Platform.OS === 'web') {
+      globalThis.alert(`${title}\n\n${message}`);
+      onClose?.();
+      return;
+    }
+    Alert.alert(title, message, [{ text: 'OK', onPress: onClose }]);
+  };
   useEffect(() => {
     const load = async () => {
       try {
@@ -56,7 +65,7 @@ export default function UserDetail() {
           password: '',
           role: user.role,
           totalPoints: String(user.totalPoints),
-          levelTitle: user.levelTitle,
+          levelTitle: user.levelTitle ?? '',
         });
       } catch (failure) {
         setLoadError((failure as Error).message);
@@ -93,11 +102,11 @@ export default function UserDetail() {
           password: '',
           role: updated.role,
           totalPoints: String(updated.totalPoints),
-          levelTitle: updated.levelTitle,
+          levelTitle: updated.levelTitle ?? '',
         },
         { keepErrors: false },
       );
-      Alert.alert('Usuario actualizado', 'Los cambios quedaron guardados.');
+      showMessage('Usuario actualizado', 'Los cambios quedaron guardados.');
     } catch (failure) {
       setError('root', { message: (failure as Error).message });
     }
@@ -105,18 +114,17 @@ export default function UserDetail() {
 
   const confirmDelete = () => {
     if (!original) return;
-    Alert.alert(
-      'Eliminar usuario',
-      `¿Eliminar a ${original.nickname}? Esta acción no se puede deshacer.`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: () => void remove(),
-        },
-      ],
-    );
+    const message = `¿Eliminar a ${original.nickname}? Esta acción no se puede deshacer.`;
+
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(message)) void remove();
+      return;
+    }
+
+    Alert.alert('Eliminar usuario', message, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Eliminar', style: 'destructive', onPress: () => void remove() },
+    ]);
   };
 
   const remove = async () => {
@@ -124,9 +132,19 @@ export default function UserDetail() {
     try {
       setDeleting(true);
       await deleteUser(original.id);
-      Alert.alert('Usuario eliminado', '', [{ text: 'OK', onPress: () => router.back() }]);
+      showMessage('Usuario eliminado', 'El usuario se eliminó correctamente.', () => router.back());
     } catch (failure) {
       setDeleting(false);
+      if (failure instanceof ApiRequestError && failure.status === 403) {
+        setError('root', { message: 'No tienes permisos de administrador' });
+        return;
+      }
+
+      if (failure instanceof ApiRequestError && failure.status === 404) {
+        showMessage('Usuario no encontrado', 'La lista se actualizará porque ya no existe.', () => router.back());
+        return;
+      }
+
       setError('root', { message: (failure as Error).message });
     }
   };

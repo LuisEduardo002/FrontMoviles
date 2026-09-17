@@ -6,8 +6,7 @@ import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import FormError from '../../src/components/FormError';
 import UserSelect from '../../src/components/UserSelect';
-import { createScan } from '../../src/api/scans';
-import { listUsers } from '../../src/api/users';
+import { createScan, listScanUsers } from '../../src/api/scans';
 import type { AdminUser } from '../../src/types';
 import { DATE_RE, todayIsoDate } from '../../src/utils/format';
 
@@ -40,7 +39,7 @@ export default function NewScan() {
   useEffect(() => {
     const load = async () => {
       try {
-        setUsers(await listUsers());
+        setUsers(await listScanUsers());
       } catch {
         setUsers([]);
       } finally {
@@ -141,6 +140,7 @@ export default function NewScan() {
           name="scannedAt"
           label="Fecha del escaneo (AAAA-MM-DD)"
           placeholder="2026-09-15"
+          format="date"
           rules={{
             required: 'La fecha es obligatoria',
             pattern: { value: DATE_RE, message: 'Usa el formato AAAA-MM-DD' },

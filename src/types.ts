@@ -95,7 +95,7 @@ export interface AdminUser {
   email: string;
   role: Role;
   totalPoints: number;
-  levelTitle: string;
+  levelTitle: string | null;
   createdAt: string;
 }
 
@@ -105,18 +105,25 @@ export interface CreateUserDto {
   email: string;
   password: string;
   role: Role;
-  totalPoints: number;
   levelTitle: string;
 }
 
 /** PATCH /users/:id. Solo los campos presentes se actualizan. */
-export type UpdateUserDto = Partial<Omit<CreateUserDto, 'password'> & { password: string }>;
+export interface UpdateUserDto {
+  nickname?: string;
+  email?: string;
+  password?: string;
+  role?: Role;
+  levelTitle?: string;
+  totalPoints?: number;
+  avatarUrl?: string;
+}
 
 /** Fila de `events`: agrupa actividades (festival, temporada, rally...). */
 export interface AdminEvent {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   /** ISO 8601 (`2026-03-01`). En formularios se captura como texto YYYY-MM-DD. */
   startDate: string;
   endDate: string;
@@ -126,10 +133,9 @@ export interface AdminEvent {
 
 export interface CreateEventDto {
   name: string;
-  description: string;
+  description?: string;
   startDate: string;
   endDate: string;
-  isActive: boolean;
 }
 
 export type UpdateEventDto = Partial<CreateEventDto>;

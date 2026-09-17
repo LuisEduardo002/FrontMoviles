@@ -24,6 +24,7 @@ type Props<T extends FieldValues> = TextInputProps & {
   label: string;
   /** Reglas de validación: required, minLength, pattern, validate... */
   rules?: RegisterOptions<T, Path<T>>;
+  format?: 'date';
 };
 
 export default function Field<T extends FieldValues>({
@@ -31,6 +32,7 @@ export default function Field<T extends FieldValues>({
   name,
   label,
   rules,
+  format,
   className,
   ...input
 }: Props<T>) {
@@ -49,7 +51,7 @@ export default function Field<T extends FieldValues>({
               error ? 'border-red-500' : 'border-secondary'
             } ${className ?? ''}`}
             value={value}
-            onChangeText={onChange}
+            onChangeText={(text) => onChange(format === 'date' ? formatDateInput(text) : text)}
             onBlur={onBlur}
             autoCapitalize="none"
             placeholderTextColor="#a3a3a3"
@@ -61,4 +63,11 @@ export default function Field<T extends FieldValues>({
       )}
     />
   );
+}
+
+function formatDateInput(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
 }

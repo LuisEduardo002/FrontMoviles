@@ -69,7 +69,7 @@ export async function mockCreateUser(body: CreateUserDto): Promise<AdminUser> {
     nickname: body.nickname.trim(),
     email: body.email.trim().toLowerCase(),
     role: body.role satisfies Role,
-    totalPoints: body.totalPoints,
+    totalPoints: 0,
     levelTitle: body.levelTitle.trim(),
     createdAt: nowIso(),
   };
@@ -127,7 +127,13 @@ export async function mockGetEvent(id: string): Promise<AdminEvent> {
 
 export async function mockCreateEvent(body: CreateEventDto): Promise<AdminEvent> {
   await delay();
-  const created: AdminEvent = { id: newId('e'), ...body, createdAt: nowIso() };
+  const created: AdminEvent = {
+    id: newId('e'),
+    ...body,
+    description: body.description ?? null,
+    isActive: true,
+    createdAt: nowIso(),
+  };
   events.push(created);
   return { ...created };
 }
