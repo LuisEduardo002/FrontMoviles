@@ -1,16 +1,18 @@
 /**
  * Almacén en memoria para los CRUD del panel admin.
  *
- * Existe porque el backend de users/events/scans_history todavía no está
+ * Existe porque el backend de users/events todavía no está
  * listo: con esto la app demuestra el CRUD de extremo a extremo (crear, buscar,
  * modificar con solo lo cambiado, eliminar con confirmación) sin servidor.
  *
  * Cuando el backend exista: `EXPO_PUBLIC_USE_MOCK=false` y estos datos se
- * ignoran. Los módulos `users.ts`, `events.ts` y `scans.ts` ya saben a qué
+ * ignoran. Los módulos `users.ts` y `events.ts` ya saben a qué
  * rutas llamar; aquí no hay nada que migrar.
+ *
+ * Los tags NFC (`src/api/tags.ts`) siempre van al backend (`/nfc-tags`).
  */
 
-import type { AdminEvent, AdminUser, CreateEventDto, CreateScanDto, CreateUserDto, Role, ScanHistory, UpdateEventDto, UpdateScanDto, UpdateUserDto } from '../types';
+import type { AdminEvent, AdminUser, CreateEventDto, CreateUserDto, Role, UpdateEventDto, UpdateUserDto } from '../types';
 
 const delay = (ms = 350) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -30,19 +32,6 @@ const events: AdminEvent[] = [
   { id: 'e-2', name: 'Temporada Parques', description: 'Tags escondidos en los parques del norte.', startDate: '2026-10-01', endDate: '2026-10-31', isActive: true, createdAt: '2026-08-15T10:00:00.000Z' },
   { id: 'e-3', name: 'Rally Universitario', description: 'Competencia entre campus.', startDate: '2026-06-01', endDate: '2026-06-05', isActive: false, createdAt: '2026-05-01T10:00:00.000Z' },
 ];
-
-const scans: ScanHistory[] = [
-  { id: 's-1', userId: 'u-ana', tagCode: 'TAG-PLAZA-001', location: 'Plaza central, frente a la fuente', pointsEarned: 50, scannedAt: '2026-09-10T18:32:00.000Z' },
-  { id: 's-2', userId: 'u-bruno', tagCode: 'TAG-PARQUE-014', location: 'Parque norte, entrada principal', pointsEarned: 30, scannedAt: '2026-09-11T10:05:00.000Z' },
-  { id: 's-3', userId: 'u-ana', tagCode: 'TAG-MUSEO-003', location: 'Museo de la ciudad, sala 2', pointsEarned: 80, scannedAt: '2026-09-12T16:20:00.000Z' },
-  { id: 's-4', userId: 'u-carla', tagCode: 'TAG-CAMPUS-007', location: 'Campus universitario, biblioteca', pointsEarned: 20, scannedAt: '2026-09-13T09:41:00.000Z' },
-  { id: 's-5', userId: 'u-bruno', tagCode: 'TAG-PLAZA-002', location: 'Plaza central, quiosco', pointsEarned: 50, scannedAt: '2026-09-14T19:02:00.000Z' },
-];
-
-function withUser(scan: ScanHistory): ScanHistory {
-  const user = users.find((u) => u.id === scan.userId);
-  return { ...scan, user: user ? { id: user.id, nickname: user.nickname, email: user.email } : undefined };
-}
 
 // --- Users ---------------------------------------------------------------
 
@@ -106,8 +95,6 @@ export async function mockDeleteUser(id: string): Promise<void> {
   await delay();
   const index = users.findIndex((u) => u.id === id);
   if (index === -1) throw new Error('Usuario no encontrado.');
-  const hasScans = scans.some((s) => s.userId === id);
-  if (hasScans) throw new Error('No se puede eliminar: el usuario tiene escaneos registrados.');
   users.splice(index, 1);
 }
 
@@ -151,46 +138,4 @@ export async function mockDeleteEvent(id: string): Promise<void> {
   const index = events.findIndex((e) => e.id === id);
   if (index === -1) throw new Error('Evento no encontrado.');
   events.splice(index, 1);
-}
-
-// --- Scans ---------------------------------------------------------------
-
-export async function mockListScans(): Promise<ScanHistory[]> {
-  await delay();
-  return [...scans].sort((a, b) => b.scannedAt.localeCompare(a.scannedAt)).map(withUser);
-}
-
-export async function mockGetScan(id: string): Promise<ScanHistory> {
-  await delay(250);
-  const found = scans.find((s) => s.id === id);
-  if (!found) throw new Error('Escaneo no encontrado.');
-  return withUser({ ...found });
-}
-
-export async function mockCreateScan(body: CreateScanDto): Promise<ScanHistory> {
-  await delay();
-  if (!users.some((u) => u.id === body.userId)) throw new Error('El usuario indicado no existe.');
-  const created: ScanHistory = { id: newId('s'), ...body };
-  scans.push(created);
-  const owner = users.find((u) => u.id === body.userId);
-  if (owner) owner.totalPoints += body.pointsEarned;
-  return withUser({ ...created });
-}
-
-export async function mockUpdateScan(id: string, patch: UpdateScanDto): Promise<ScanHistory> {
-  await delay();
-  const index = scans.findIndex((s) => s.id === id);
-  if (index === -1) throw new Error('Escaneo no encontrado.');
-  if (patch.userId !== undefined && !users.some((u) => u.id === patch.userId)) {
-    throw new Error('El usuario indicado no existe.');
-  }
-  scans[index] = { ...scans[index], ...patch };
-  return withUser({ ...scans[index] });
-}
-
-export async function mockDeleteScan(id: string): Promise<void> {
-  await delay();
-  const index = scans.findIndex((s) => s.id === id);
-  if (index === -1) throw new Error('Escaneo no encontrado.');
-  scans.splice(index, 1);
 }

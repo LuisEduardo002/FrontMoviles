@@ -140,29 +140,46 @@ export interface CreateEventDto {
 
 export type UpdateEventDto = Partial<CreateEventDto>;
 
-/**
- * Fila de `scans_history`: bitácora de cada escaneo NFC exitoso.
- * Conecta un User con un NfcTag + dónde/cuándo/cuántos puntos.
- */
-export interface ScanHistory {
+// ---------------------------------------------------------------------------
+// Tags NFC (tabla `nfc_tags`).
+// Calca el modelo Prisma del backend. La única diferencia es `location`: en la
+// base es `geography(Point, 4326)` (PostGIS) y aquí viaja como texto
+// "lat,lng" (ej. "4.7110,-74.0721"); la conversión la hace el backend.
+// `eventId` se tipa como string para calcar `AdminEvent.id` del panel.
+// ---------------------------------------------------------------------------
+
+/** Fila de `nfc_tags` tal como la administra el panel. */
+export interface NfcTag {
   id: string;
-  userId: string;
-  /** Identificador del tag escaneado (columna `tagId` / `nfcTagId` según backend). */
-  tagCode: string;
+  code: string;
+  name: string;
+  description: string | null;
+  pointsReward: number;
+  /** Texto "lat,lng". El backend lo convierte a Point geográfico. */
   location: string;
-  pointsEarned: number;
-  /** ISO 8601 con hora (`2026-03-01T10:30:00.000Z`). */
-  scannedAt: string;
-  /** Relación precargada cuando el backend la incluya (`?include=user`). */
-  user?: Pick<AdminUser, 'id' | 'nickname' | 'email'>;
+  isHidden: boolean;
+  clueText: string | null;
+  cardTitle: string | null;
+  cardImageUrl: string | null;
+  cardFunFact: string | null;
+  eventId: string | null;
+  createdAt: string;
 }
 
-export interface CreateScanDto {
-  userId: string;
-  tagCode: string;
+/** POST /nfc-tags. Solo `code`, `name` y `location` son obligatorios. */
+export interface CreateTagDto {
+  code: string;
+  name: string;
+  description?: string;
+  pointsReward?: number;
   location: string;
-  pointsEarned: number;
-  scannedAt: string;
+  isHidden?: boolean;
+  clueText?: string;
+  cardTitle?: string;
+  cardImageUrl?: string;
+  cardFunFact?: string;
+  eventId?: string;
 }
 
-export type UpdateScanDto = Partial<CreateScanDto>;
+/** PATCH /nfc-tags/:id. Solo los campos presentes se actualizan. */
+export type UpdateTagDto = Partial<CreateTagDto>;

@@ -5,7 +5,7 @@ import { useSession } from '../../src/session/context';
 
 /**
  * Panel principal del administrador: accesos a los tres CRUD
- * (usuarios, eventos, historial de escaneos) + estado de la sesión.
+ * (usuarios, eventos, tags NFC) + estado de la sesión.
  */
 const SECTIONS = [
   {
@@ -21,10 +21,10 @@ const SECTIONS = [
     description: 'Festivales, temporadas y rallies.',
   },
   {
-    href: '/(tabs)/scans',
+    href: '/(tabs)/tags',
     icon: 'nfc-variant',
-    title: 'Historial de escaneos',
-    description: 'Quién escaneó qué tag, dónde y cuándo.',
+    title: 'Tags NFC',
+    description: 'Crea, edita y elimina puntos NFC.',
   },
 ] as const;
 
