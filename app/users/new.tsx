@@ -13,7 +13,6 @@ type UserForm = {
   email: string;
   password: string;
   role: Role;
-  totalPoints: string;
   levelTitle: string;
 };
 
@@ -28,7 +27,6 @@ export default function NewUser() {
       email: '',
       password: '',
       role: 'USER',
-      totalPoints: '0',
       levelTitle: 'Aprendiz',
     },
   });
@@ -40,7 +38,6 @@ export default function NewUser() {
         email: values.email.trim().toLowerCase(),
         password: values.password,
         role: values.role,
-        totalPoints: Number(values.totalPoints),
         levelTitle: values.levelTitle.trim(),
       });
       Alert.alert('Usuario creado', `${values.nickname} quedó registrado.`, [
@@ -108,22 +105,6 @@ export default function NewUser() {
           )}
         />
 
-        <Field
-          control={control}
-          name="totalPoints"
-          label="Puntos totales"
-          keyboardType="numeric"
-          placeholder="0"
-          rules={{
-            required: 'Los puntos son obligatorios',
-            validate: (value) => {
-              const n = Number(value);
-              if (!Number.isInteger(n) || n < 0) return 'Debe ser un entero mayor o igual a 0';
-              if (n > 999999) return 'Máximo 999999';
-              return true;
-            },
-          }}
-        />
         <Field
           control={control}
           name="levelTitle"

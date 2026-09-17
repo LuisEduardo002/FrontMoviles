@@ -12,8 +12,7 @@ import {
 } from 'react-native';
 import Button from '../../src/components/Button';
 import SearchBar from '../../src/components/SearchBar';
-import { listScans } from '../../src/api/scans';
-import { listUsers } from '../../src/api/users';
+import { listScans, listScanUsers } from '../../src/api/scans';
 import type { AdminUser, ScanHistory } from '../../src/types';
 import { formatDateTime } from '../../src/utils/format';
 
@@ -56,7 +55,7 @@ export default function Scans() {
       if (refresh) setRefreshing(true);
       else setLoading(true);
       setError(null);
-      const [scanList, userList] = await Promise.all([listScans(), listUsers()]);
+      const [scanList, userList] = await Promise.all([listScans(), listScanUsers()]);
       setScans(scanList);
       setUsers(userList);
     } catch (failure) {

@@ -1,20 +1,20 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { useForm } from 'react-hook-form';
+import { ActivityIndicator, Alert, Keyboard, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
 import FormError from '../../src/components/FormError';
 import { deleteEvent, getEvent, updateEvent } from '../../src/api/events';
+import { useSession } from '../../src/session/context';
 import type { AdminEvent, UpdateEventDto } from '../../src/types';
-import { DATE_RE } from '../../src/utils/format';
+import { DATE_RE, toApiDate, toDateInputValue } from '../../src/utils/format';
 
 type EventForm = {
   name: string;
   description: string;
   startDate: string;
   endDate: string;
-  isActive: boolean;
 };
 
 /**
@@ -22,6 +22,8 @@ type EventForm = {
  * Precarga los datos y al guardar solo envía lo que cambió.
  */
 export default function EventDetail() {
+  const { user } = useSession();
+  const isAdmin = user?.role === 'ADMIN';
   const { id } = useLocalSearchParams<{ id: string }>();
   const [original, setOriginal] = useState<AdminEvent | null>(null);
   const [isLoading, setLoading] = useState(true);
@@ -29,8 +31,17 @@ export default function EventDetail() {
   const [isDeleting, setDeleting] = useState(false);
 
   const { control, handleSubmit, setError, reset, getValues, formState } = useForm<EventForm>({
-    defaultValues: { name: '', description: '', startDate: '', endDate: '', isActive: true },
+    defaultValues: { name: '', description: '', startDate: '', endDate: '' },
   });
+
+  const showMessage = (title: string, message: string, onClose?: () => void) => {
+    if (Platform.OS === 'web') {
+      globalThis.alert(`${title}\n\n${message}`);
+      onClose?.();
+      return;
+    }
+    Alert.alert(title, message, [{ text: 'OK', onPress: onClose }]);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -41,10 +52,9 @@ export default function EventDetail() {
         setOriginal(event);
         reset({
           name: event.name,
-          description: event.description,
-          startDate: event.startDate,
-          endDate: event.endDate,
-          isActive: event.isActive,
+          description: event.description ?? '',
+          startDate: toDateInputValue(event.startDate),
+          endDate: toDateInputValue(event.endDate),
         });
       } catch (failure) {
         setLoadError((failure as Error).message);
@@ -60,9 +70,8 @@ export default function EventDetail() {
     const patch: UpdateEventDto = {};
     if (formState.dirtyFields.name) patch.name = values.name.trim();
     if (formState.dirtyFields.description) patch.description = values.description.trim();
-    if (formState.dirtyFields.startDate) patch.startDate = values.startDate.trim();
-    if (formState.dirtyFields.endDate) patch.endDate = values.endDate.trim();
-    if (formState.dirtyFields.isActive) patch.isActive = values.isActive;
+    if (formState.dirtyFields.startDate) patch.startDate = toApiDate(values.startDate.trim());
+    if (formState.dirtyFields.endDate) patch.endDate = toApiDate(values.endDate.trim());
 
     if (Object.keys(patch).length === 0) {
       Alert.alert('Sin cambios', 'No modificaste ningún campo.');
@@ -75,14 +84,13 @@ export default function EventDetail() {
       reset(
         {
           name: updated.name,
-          description: updated.description,
-          startDate: updated.startDate,
-          endDate: updated.endDate,
-          isActive: updated.isActive,
+          description: updated.description ?? '',
+          startDate: toDateInputValue(updated.startDate),
+          endDate: toDateInputValue(updated.endDate),
         },
         { keepErrors: false },
       );
-      Alert.alert('Evento actualizado', 'Los cambios quedaron guardados.');
+      showMessage('Evento actualizado', 'Los cambios quedaron guardados.');
     } catch (failure) {
       setError('root', { message: (failure as Error).message });
     }
@@ -90,14 +98,17 @@ export default function EventDetail() {
 
   const confirmDelete = () => {
     if (!original) return;
-    Alert.alert(
-      'Eliminar evento',
-      `¿Eliminar "${original.name}"? Esta acción no se puede deshacer.`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Eliminar', style: 'destructive', onPress: () => void remove() },
-      ],
-    );
+    const message = `¿Eliminar "${original.name}"? Esta acción no se puede deshacer.`;
+
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(message)) void remove();
+      return;
+    }
+
+    Alert.alert('Eliminar evento', message, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Eliminar', style: 'destructive', onPress: () => void remove() },
+    ]);
   };
 
   const remove = async () => {
@@ -105,7 +116,8 @@ export default function EventDetail() {
     try {
       setDeleting(true);
       await deleteEvent(original.id);
-      Alert.alert('Evento eliminado', '', [{ text: 'OK', onPress: () => router.back() }]);
+      setDeleting(false);
+      showMessage('Evento eliminado', 'El evento se eliminó correctamente.', () => router.back());
     } catch (failure) {
       setDeleting(false);
       setError('root', { message: (failure as Error).message });
@@ -147,6 +159,7 @@ export default function EventDetail() {
           name="name"
           label="Nombre"
           placeholder="Festival Centro 2026"
+          editable={isAdmin}
           rules={{
             required: 'El nombre es obligatorio',
             maxLength: { value: 80, message: 'Máximo 80 caracteres' },
@@ -157,6 +170,7 @@ export default function EventDetail() {
           name="description"
           label="Descripción"
           placeholder="Rally de escaneos por el centro histórico"
+          editable={isAdmin}
           multiline
           numberOfLines={3}
           rules={{
@@ -169,6 +183,8 @@ export default function EventDetail() {
           name="startDate"
           label="Fecha de inicio (AAAA-MM-DD)"
           placeholder="2026-09-20"
+          format="date"
+          editable={isAdmin}
           rules={{
             required: 'La fecha de inicio es obligatoria',
             pattern: { value: DATE_RE, message: 'Usa el formato AAAA-MM-DD' },
@@ -180,6 +196,8 @@ export default function EventDetail() {
           name="endDate"
           label="Fecha de fin (AAAA-MM-DD)"
           placeholder="2026-09-22"
+          format="date"
+          editable={isAdmin}
           rules={{
             required: 'La fecha de fin es obligatoria',
             pattern: { value: DATE_RE, message: 'Usa el formato AAAA-MM-DD' },
@@ -189,30 +207,23 @@ export default function EventDetail() {
           }}
         />
 
-        <Controller
-          control={control}
-          name="isActive"
-          render={({ field: { value, onChange } }) => (
-            <View className="flex-row items-center justify-between rounded-xl border border-secondary bg-tertiary p-3.5">
-              <Text className="font-semibold text-neutral-200">Evento activo</Text>
-              <Switch value={value} onValueChange={onChange} />
-            </View>
-          )}
-        />
-
         <FormError message={formState.errors.root?.message} />
 
-        <Button
-          text={formState.isSubmitting ? 'Guardando…' : 'Guardar cambios'}
-          onPress={handleSubmit(submit)}
-          disabled={formState.isSubmitting || isDeleting}
-        />
-        <Button
-          text={isDeleting ? 'Eliminando…' : 'Eliminar evento'}
-          onPress={confirmDelete}
-          disabled={formState.isSubmitting || isDeleting}
-          secondary
-        />
+        {isAdmin && (
+          <>
+            <Button
+              text={formState.isSubmitting ? 'Guardando…' : 'Guardar cambios'}
+              onPress={handleSubmit(submit)}
+              disabled={formState.isSubmitting || isDeleting}
+            />
+            <Button
+              text={isDeleting ? 'Eliminando…' : 'Eliminar evento'}
+              onPress={confirmDelete}
+              disabled={formState.isSubmitting || isDeleting}
+              secondary
+            />
+          </>
+        )}
       </ScrollView>
     </Pressable>
   );

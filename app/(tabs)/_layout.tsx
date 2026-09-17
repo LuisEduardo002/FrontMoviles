@@ -1,5 +1,6 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
+import { useSession } from '../../src/session/context';
 
 /**
  * Tabs del panel de administración NFHunter.
@@ -14,6 +15,9 @@ import { Tabs } from 'expo-router';
  * fondo #1c0a1c, bordes #391338, acento #722770.
  */
 export default function TabsLayout() {
+  const { user } = useSession();
+  const isAdmin = user?.role === 'ADMIN';
+
   return (
     <Tabs
       screenOptions={{
@@ -33,15 +37,17 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="users"
-        options={{
-          title: 'Usuarios',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-multiple" color={color} size={size} />
-          ),
-        }}
-      />
+      {isAdmin && (
+        <Tabs.Screen
+          name="users"
+          options={{
+            title: 'Usuarios',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="account-multiple" color={color} size={size} />
+            ),
+          }}
+        />
+      )}
       <Tabs.Screen
         name="events"
         options={{
@@ -51,15 +57,17 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="scans"
-        options={{
-          title: 'Historial',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="nfc-variant" color={color} size={size} />
-          ),
-        }}
-      />
+      {isAdmin && (
+        <Tabs.Screen
+          name="scans"
+          options={{
+            title: 'Historial',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="nfc-variant" color={color} size={size} />
+            ),
+          }}
+        />
+      )}
       <Tabs.Screen
         name="perfil"
         options={{

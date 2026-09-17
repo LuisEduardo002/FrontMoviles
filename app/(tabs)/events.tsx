@@ -12,6 +12,7 @@ import {
 import Button from '../../src/components/Button';
 import SearchBar from '../../src/components/SearchBar';
 import { listEvents } from '../../src/api/events';
+import { useSession } from '../../src/session/context';
 import type { AdminEvent } from '../../src/types';
 import { formatDate } from '../../src/utils/format';
 
@@ -23,7 +24,7 @@ const FILTERS: { label: string; value: Filter }[] = [
   { label: 'Inactivos', value: 'INACTIVE' },
 ];
 
-function EventCard({ event, onOpen }: { event: AdminEvent; onOpen: () => void }) {
+function EventCard({ event, onOpen, isAdmin }: { event: AdminEvent; onOpen: () => void; isAdmin: boolean }) {
   return (
     <View className="gap-3 rounded-2xl border border-secondary bg-tertiary p-5">
       <View className="gap-1">
@@ -37,19 +38,21 @@ function EventCard({ event, onOpen }: { event: AdminEvent; onOpen: () => void })
           </Text>
         </View>
         <Text className="text-sm text-neutral-400" numberOfLines={2}>
-          {event.description}
+          {event.description ?? 'Sin descripción'}
         </Text>
         <Text className="text-xs text-neutral-400">
           {formatDate(event.startDate)} → {formatDate(event.endDate)}
         </Text>
       </View>
-      <Button text="Ver / editar" onPress={onOpen} secondary />
+      <Button text={isAdmin ? 'Ver / editar' : 'Ver detalle'} onPress={onOpen} secondary />
     </View>
   );
 }
 
 /** Lista de eventos con búsqueda por texto + filtro por estado. */
 export default function Events() {
+  const { user } = useSession();
+  const isAdmin = user?.role === 'ADMIN';
   const [events, setEvents] = useState<AdminEvent[]>([]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('ALL');
@@ -83,7 +86,7 @@ export default function Events() {
       if (filter === 'ACTIVE' && !e.isActive) return false;
       if (filter === 'INACTIVE' && e.isActive) return false;
       if (!q) return true;
-      return [e.name, e.description].some((field) => field.toLowerCase().includes(q));
+      return [e.name, e.description ?? ''].some((field) => field.toLowerCase().includes(q));
     });
   }, [events, query, filter]);
 
@@ -101,7 +104,11 @@ export default function Events() {
         data={filtered}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <EventCard event={item} onOpen={() => router.push({ pathname: '/events/[id]', params: { id: item.id } })} />
+          <EventCard
+            event={item}
+            isAdmin={isAdmin}
+            onOpen={() => router.push({ pathname: '/events/[id]', params: { id: item.id } })}
+          />
         )}
         contentContainerClassName="gap-4 p-6"
         refreshControl={
@@ -138,7 +145,7 @@ export default function Events() {
                 );
               })}
             </View>
-            <Button text="Nuevo evento" onPress={() => router.push('/events/new')} />
+            {isAdmin && <Button text="Nuevo evento" onPress={() => router.push('/events/new')} />}
             {!!error && (
               <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
                 {error}

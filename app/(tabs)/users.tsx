@@ -60,7 +60,7 @@ export default function Users() {
     const q = query.trim().toLowerCase();
     if (!q) return users;
     return users.filter((u) =>
-      [u.nickname, u.email, u.levelTitle].some((field) => field.toLowerCase().includes(q)),
+      [u.nickname, u.email, u.levelTitle ?? ''].some((field) => field.toLowerCase().includes(q)),
     );
   }, [users, query]);
 

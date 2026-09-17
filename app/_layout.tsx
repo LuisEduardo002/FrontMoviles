@@ -43,8 +43,8 @@ function Navigator() {
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: '600' },
       }}>
-      {/* Con sesión iniciada: panel admin + formularios de cada entidad */}
-      <Stack.Protected guard={!!user}>
+      {/* El panel completo y sus formularios son exclusivos de ADMIN. */}
+      <Stack.Protected guard={user?.role === 'ADMIN'}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="users/new" options={{ title: 'Nuevo usuario' }} />
         <Stack.Screen name="users/[id]" options={{ title: 'Detalle de usuario' }} />
@@ -52,6 +52,11 @@ function Navigator() {
         <Stack.Screen name="events/[id]" options={{ title: 'Detalle de evento' }} />
         <Stack.Screen name="scans/new" options={{ title: 'Nuevo escaneo' }} />
         <Stack.Screen name="scans/[id]" options={{ title: 'Detalle de escaneo' }} />
+      </Stack.Protected>
+
+      {/* Usuario autenticado sin permisos de administración. */}
+      <Stack.Protected guard={!!user && user.role !== 'ADMIN'}>
+        <Stack.Screen name="unauthorized" options={{ title: 'Acceso restringido' }} />
       </Stack.Protected>
 
       {/* Sin sesión */}

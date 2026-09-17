@@ -17,9 +17,24 @@ import type { ApiError } from '../types';
  * al entrar (token) y al salir (null).
  */
 let token: string | null = null;
+let unauthorizedHandler: (() => void) | null = null;
+
+export class ApiRequestError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ApiRequestError';
+  }
+}
 
 export function setToken(value: string | null): void {
   token = value;
+}
+
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler;
 }
 
 /**
@@ -77,8 +92,11 @@ export async function request<T>(path: string, body?: unknown, method?: HttpMeth
   let response: Response;
 
   try {
+    const requestUrl = `${API_URL}${path}`;
+    const requestMethod = method ?? (body === undefined ? 'GET' : 'POST');
+    if (__DEV__) console.info(`[API] ${requestMethod} ${requestUrl}`);
     response = await fetch(`${API_URL}${path}`, {
-      method: method ?? (body === undefined ? 'GET' : 'POST'),
+      method: requestMethod,
       headers: {
         'Content-Type': 'application/json',
         // Sintaxis de "propagación condicional": si no hay token, no se añade
@@ -105,6 +123,8 @@ export async function request<T>(path: string, body?: unknown, method?: HttpMeth
     clearTimeout(timeout);
   }
 
+  if (__DEV__) console.info(`[API] ${response.status} ${API_URL}${path}`);
+
   // El backend responde JSON en /auth, pero una caída puede devolver HTML: si no
   // se puede leer como JSON, se sigue con un objeto vacío en vez de reventar.
   const data: unknown = await response.json().catch(() => ({}));
@@ -112,7 +132,8 @@ export async function request<T>(path: string, body?: unknown, method?: HttpMeth
   // `response.ok` es cualquier 2xx. Importante: este backend responde 201 al
   // login (no define @HttpCode(200)), así que comparar contra 200 lo rompería.
   if (!response.ok) {
-    throw new Error(readErrorMessage(data, response.status, path));
+    if (response.status === 401) unauthorizedHandler?.();
+    throw new ApiRequestError(readErrorMessage(data, response.status, path), response.status);
   }
 
   return data as T;

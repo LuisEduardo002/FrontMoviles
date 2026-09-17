@@ -26,6 +26,16 @@ export function formatDateTime(iso: string): string {
 /** Valida el formato que piden los formularios: YYYY-MM-DD. */
 export const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Convierte una fecha ISO del backend al formato corto usado por los campos. */
+export function toDateInputValue(value: string): string {
+  return value.slice(0, 10);
+}
+
+/** Convierte YYYY-MM-DD al ISO que esperan los DTOs de eventos. */
+export function toApiDate(value: string): string {
+  return `${value}T12:00:00.000Z`;
+}
+
 /** Hoy en YYYY-MM-DD, para precargar `scannedAt` en el formulario de escaneos. */
 export function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);

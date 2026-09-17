@@ -35,14 +35,16 @@ export const REQUEST_TIMEOUT_MS = 10_000;
 /**
  * Fuente de datos de los CRUD del panel admin.
  *
- * - `true` (valor por defecto): usa el almacén en memoria de
- *   `src/api/mockStore.ts`. El CRUD funciona de extremo a extremo sin backend,
- *   ideal para la entrega y para desarrollar el front.
- * - `false`: llama al backend real con las rutas de `src/api/users.ts`,
+ * - `true`: usa el almacén en memoria de `src/api/mockStore.ts` para desarrollar
+ *   el front sin backend.
+ * - `false` (valor por defecto): llama al backend real con las rutas de `src/api/users.ts`,
  *   `src/api/events.ts` y `src/api/scans.ts`.
  *
- * Para conectar el backend cuando exista: `EXPO_PUBLIC_USE_MOCK=false` en
- * `.env` y recarga completa de la app. Si una ruta del backend se llama
- * distinto, se cambia SOLO en esos tres archivos, nada más.
+ * Para usar mocks temporalmente: `EXPO_PUBLIC_USE_MOCK=true` en `.env` y
+ * recarga completa de la app. Si una ruta del backend se llama distinto, se
+ * cambia SOLO en esos tres archivos, nada más.
  */
-export const USE_MOCK = (process.env.EXPO_PUBLIC_USE_MOCK ?? 'true') !== 'false';
+export const USE_MOCK = (process.env.EXPO_PUBLIC_USE_MOCK ?? 'false') !== 'false';
+
+/** El backend aún no publica /scans-history; se mantiene el historial local por ahora. */
+export const USE_MOCK_SCANS = (process.env.EXPO_PUBLIC_USE_MOCK_SCANS ?? 'true') !== 'false';
