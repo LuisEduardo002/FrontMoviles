@@ -59,9 +59,9 @@ export default function TabsLayout() {
       />
       {isAdmin && (
         <Tabs.Screen
-          name="scans"
+          name="tags"
           options={{
-            title: 'Historial',
+            title: 'Tags NFC',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="nfc-variant" color={color} size={size} />
             ),

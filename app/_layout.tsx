@@ -50,8 +50,8 @@ function Navigator() {
         <Stack.Screen name="users/[id]" options={{ title: 'Detalle de usuario' }} />
         <Stack.Screen name="events/new" options={{ title: 'Nuevo evento' }} />
         <Stack.Screen name="events/[id]" options={{ title: 'Detalle de evento' }} />
-        <Stack.Screen name="scans/new" options={{ title: 'Nuevo escaneo' }} />
-        <Stack.Screen name="scans/[id]" options={{ title: 'Detalle de escaneo' }} />
+        <Stack.Screen name="tags/new" options={{ title: 'Nuevo tag' }} />
+        <Stack.Screen name="tags/[id]" options={{ title: 'Detalle de tag' }} />
       </Stack.Protected>
 
       {/* Usuario autenticado sin permisos de administración. */}
