@@ -10,6 +10,7 @@
  */
 
 import { Stack } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 import '../global.css';
 import { SessionProvider, useSession } from '../src/session/context';
 
@@ -22,14 +23,40 @@ export default function RootLayout() {
 }
 
 function Navigator() {
-  const { user } = useSession();
+  const { user, isLoading } = useSession();
+
+  // Mientras se busca el token guardado no se sabe todavía si hay sesión. Sin
+  // esta espera, la app mostraría el login un instante y luego saltaría al
+  // inicio: un parpadeo feo cada vez que se abre.
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-base">
+        <ActivityIndicator color="#fff" />
+      </View>
+    );
+  }
 
   return (
-    <Stack screenOptions={{ headerTitleStyle: { fontWeight: '600' } }}>
-      {/* Con sesión iniciada */}
-      <Stack.Protected guard={!!user}>
-        <Stack.Screen name="index" options={{ title: 'HelpDesk UAM' }} />
-        <Stack.Screen name="tickets/new" options={{ title: 'Nueva solicitud' }} />
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: '#1c0a1c' },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: '600' },
+      }}>
+      {/* El panel completo y sus formularios son exclusivos de ADMIN. */}
+      <Stack.Protected guard={user?.role === 'ADMIN'}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="users/new" options={{ title: 'Nuevo usuario' }} />
+        <Stack.Screen name="users/[id]" options={{ title: 'Detalle de usuario' }} />
+        <Stack.Screen name="events/new" options={{ title: 'Nuevo evento' }} />
+        <Stack.Screen name="events/[id]" options={{ title: 'Detalle de evento' }} />
+        <Stack.Screen name="tags/new" options={{ title: 'Nuevo tag' }} />
+        <Stack.Screen name="tags/[id]" options={{ title: 'Detalle de tag' }} />
+      </Stack.Protected>
+
+      {/* Usuario autenticado sin permisos de administración. */}
+      <Stack.Protected guard={!!user && user.role !== 'ADMIN'}>
+        <Stack.Screen name="unauthorized" options={{ title: 'Acceso restringido' }} />
       </Stack.Protected>
 
       {/* Sin sesión */}

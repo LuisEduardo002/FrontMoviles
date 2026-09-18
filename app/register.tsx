@@ -1,45 +1,53 @@
 import { Link } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { ScrollView, Text } from 'react-native';
+import { Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
 import Button from '../src/components/Button';
 import Field from '../src/components/Field';
 import { useSession } from '../src/session/context';
 
-type RegisterForm = { name: string; email: string; password: string; confirmation: string };
+type RegisterForm = { nickname: string; email: string; password: string; confirmation: string };
 
 export default function Register() {
-  const { signUp } = useSession();
+  const { register } = useSession();
   const { control, handleSubmit, setError, getValues, formState } = useForm<RegisterForm>({
-    defaultValues: { name: '', email: '', password: '', confirmation: '' },
+    defaultValues: { nickname: '', email: '', password: '', confirmation: '' },
   });
 
   // `confirmation` no se envía: solo sirve para verificar que no hubo errata.
-  const submit = async ({ name, email, password }: RegisterForm) => {
+  const submit = async ({ nickname, email, password }: RegisterForm) => {
     try {
-      await signUp(name, email, password);
+      await register(nickname, email, password);
     } catch (error) {
       setError('root', { message: (error as Error).message });
     }
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-neutral-50"
-      contentContainerClassName="gap-5 p-6"
-      keyboardShouldPersistTaps="handled">
-      <Text className="text-neutral-500">
-        Se creará una cuenta de solicitante para reportar y seguir tus casos.
-      </Text>
+    // Tocar fuera de los campos cierra el teclado; arrastrar también lo oculta.
+    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-5 p-6"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag">
+      <View className="gap-1">
+        <Text className="text-2xl font-bold text-white">Crear cuenta</Text>
+        <Text className="text-neutral-400">
+          Crea tu cuenta para empezar a rastrear tags y sumar puntos.
+        </Text>
+      </View>
 
       <Field
         control={control}
-        name="name"
-        label="Nombre completo"
-        autoCapitalize="words"
-        placeholder="Ana María Restrepo"
+        name="nickname"
+        label="Apodo"
+        autoCapitalize="none"
+        placeholder="cazador_nocturno"
         rules={{
-          required: 'El nombre es obligatorio',
+          required: 'El apodo es obligatorio',
           minLength: { value: 2, message: 'Mínimo 2 caracteres' },
+          // La columna es VARCHAR(50): más largo lo rechaza la base de datos.
+          maxLength: { value: 50, message: 'Máximo 50 caracteres' },
         }}
       />
       <Field
@@ -47,7 +55,7 @@ export default function Register() {
         name="email"
         label="Correo"
         keyboardType="email-address"
-        placeholder="nombre@autonoma.edu.co"
+        placeholder="tucorreo@ejemplo.com"
         rules={{
           required: 'El correo es obligatorio',
           pattern: { value: /^\S+@\S+\.\S+$/, message: 'Correo inválido' },
@@ -61,8 +69,9 @@ export default function Register() {
         placeholder="••••••••"
         rules={{
           required: 'La contraseña es obligatoria',
-          // 8 caracteres es lo que exige el backend: si aquí se pide menos, el
-          // servidor rechazaría el registro y el usuario no sabría por qué.
+          // El backend todavía no valida el largo (no tiene ValidationPipe), así
+          // que este mínimo es nuestro: es la única barrera contra claves de
+          // tres letras.
           minLength: { value: 8, message: 'Mínimo 8 caracteres' },
         }}
       />
@@ -79,7 +88,7 @@ export default function Register() {
       />
 
       {!!formState.errors.root && (
-        <Text className="rounded-lg bg-red-50 p-3 text-center text-red-700">
+        <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
           {formState.errors.root.message}
         </Text>
       )}
@@ -90,9 +99,10 @@ export default function Register() {
         disabled={formState.isSubmitting}
       />
 
-      <Link href="/login" className="text-center text-blue-600">
+      <Link href="/login" className="text-center font-semibold text-neutral-100">
         ¿Ya tienes cuenta? Inicia sesión
       </Link>
-    </ScrollView>
+      </ScrollView>
+    </Pressable>
   );
 }
