@@ -60,7 +60,8 @@ export default function TagDetail() {
       return;
     }
     try {
-      const updated = await updateTag(original.id, patch);
+      await updateTag(original.id, patch);
+      const updated = await getTag(original.id);
       setOriginal(updated);
       reset(tagToForm(updated), { keepErrors: false });
       showMessage('Tag actualizado', 'Los cambios quedaron guardados.');

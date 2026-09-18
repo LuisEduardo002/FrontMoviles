@@ -13,7 +13,8 @@ export interface TagFormValues {
   name: string;
   description: string;
   pointsReward: string;
-  location: string;
+  latitude: string;
+  longitude: string;
   isHidden: boolean;
   clueText: string;
   cardTitle: string;
@@ -27,7 +28,8 @@ export const TAG_DEFAULTS: TagFormValues = {
   name: '',
   description: '',
   pointsReward: '10',
-  location: '',
+  latitude: '',
+  longitude: '',
   isHidden: false,
   clueText: '',
   cardTitle: '',
@@ -41,7 +43,6 @@ export const TAG_RULES = {
   code: { required: 'El código es obligatorio', maxLength: { value: 100, message: 'Máximo 100 caracteres' } },
   name: { required: 'El nombre es obligatorio', maxLength: { value: 100, message: 'Máximo 100 caracteres' } },
   description: { maxLength: { value: 500, message: 'Máximo 500 caracteres' } },
-  location: { required: 'La ubicación es obligatoria', maxLength: { value: 120, message: 'Máximo 120 caracteres' } },
   clueText: { maxLength: { value: 300, message: 'Máximo 300 caracteres' } },
   cardTitle: { maxLength: { value: 100, message: 'Máximo 100 caracteres' } },
   cardImageUrl: { maxLength: { value: 300, message: 'Máximo 300 caracteres' } },
@@ -56,6 +57,20 @@ export function validatePointsReward(value: unknown): true | string {
   return true;
 }
 
+export function validateLatitude(value: unknown): true | string {
+  const n = Number(value);
+  if (Number.isNaN(n)) return 'Debe ser un número';
+  if (n < -90 || n > 90) return 'Debe estar entre -90 y 90';
+  return true;
+}
+
+export function validateLongitude(value: unknown): true | string {
+  const n = Number(value);
+  if (Number.isNaN(n)) return 'Debe ser un número';
+  if (n < -180 || n > 180) return 'Debe estar entre -180 y 180';
+  return true;
+}
+
 /** Un tag del backend al formulario (los null se vuelven '' para los inputs). */
 export function tagToForm(tag: NfcTag): TagFormValues {
   return {
@@ -63,7 +78,8 @@ export function tagToForm(tag: NfcTag): TagFormValues {
     name: tag.name,
     description: tag.description ?? '',
     pointsReward: String(tag.pointsReward),
-    location: tag.location,
+    latitude: String(tag.latitude),
+    longitude: String(tag.longitude),
     isHidden: tag.isHidden,
     clueText: tag.clueText ?? '',
     cardTitle: tag.cardTitle ?? '',
@@ -78,15 +94,16 @@ export function formToCreateTag(values: TagFormValues): CreateTagDto {
   return {
     code: values.code.trim().toUpperCase(),
     name: values.name.trim(),
+    latitude: Number(values.latitude),
+    longitude: Number(values.longitude),
     description: values.description.trim() || undefined,
     pointsReward: Number(values.pointsReward),
-    location: values.location.trim(),
     isHidden: values.isHidden,
     clueText: values.clueText.trim() || undefined,
     cardTitle: values.cardTitle.trim() || undefined,
     cardImageUrl: values.cardImageUrl.trim() || undefined,
     cardFunFact: values.cardFunFact.trim() || undefined,
-    eventId: values.eventId.trim() || undefined,
+    eventId: values.eventId.trim() ? Number(values.eventId.trim()) : undefined,
   };
 }
 
@@ -102,12 +119,13 @@ export function formToUpdateTag(values: TagFormValues, dirty: Dirty): UpdateTagD
   if (dirty.name) patch.name = values.name.trim();
   if (dirty.description) patch.description = values.description.trim();
   if (dirty.pointsReward) patch.pointsReward = Number(values.pointsReward);
-  if (dirty.location) patch.location = values.location.trim();
+  if (dirty.latitude) patch.latitude = Number(values.latitude);
+  if (dirty.longitude) patch.longitude = Number(values.longitude);
   if (dirty.isHidden) patch.isHidden = values.isHidden;
   if (dirty.clueText) patch.clueText = values.clueText.trim();
   if (dirty.cardTitle) patch.cardTitle = values.cardTitle.trim();
   if (dirty.cardImageUrl) patch.cardImageUrl = values.cardImageUrl.trim();
   if (dirty.cardFunFact) patch.cardFunFact = values.cardFunFact.trim();
-  if (dirty.eventId) patch.eventId = values.eventId.trim();
+  if (dirty.eventId) patch.eventId = values.eventId.trim() ? Number(values.eventId.trim()) : undefined;
   return patch;
 }

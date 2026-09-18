@@ -37,7 +37,9 @@ function TagCard({ tag, onOpen }: { tag: NfcTag; onOpen: () => void }) {
           {tag.description ?? 'Sin descripción'}
         </Text>
         <View className="flex-row items-center gap-2">
-          <Text className="text-xs text-neutral-400">{tag.location}</Text>
+          <Text className="text-xs text-neutral-400">
+            {tag.latitude.toFixed(5)}, {tag.longitude.toFixed(5)}
+          </Text>
           {tag.isHidden && (
             <Text className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-neutral-200">
               Oculto
@@ -86,7 +88,7 @@ export default function Tags() {
       if (filter === 'VISIBLE' && t.isHidden) return false;
       if (filter === 'HIDDEN' && !t.isHidden) return false;
       if (!q) return true;
-      return [t.code, t.name, t.location, t.description ?? ''].some((field) =>
+      return [t.code, t.name, t.description ?? ''].some((field) =>
         field.toLowerCase().includes(q),
       );
     });
@@ -123,7 +125,7 @@ export default function Tags() {
             <SearchBar
               value={query}
               onChange={setQuery}
-              placeholder="Buscar por código, nombre o ubicación…"
+              placeholder="Buscar por código, nombre o descripción…"
             />
             <View className="flex-row gap-2">
               {FILTERS.map((option) => {

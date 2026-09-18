@@ -142,44 +142,56 @@ export type UpdateEventDto = Partial<CreateEventDto>;
 
 // ---------------------------------------------------------------------------
 // Tags NFC (tabla `nfc_tags`).
-// Calca el modelo Prisma del backend. La única diferencia es `location`: en la
-// base es `geography(Point, 4326)` (PostGIS) y aquí viaja como texto
-// "lat,lng" (ej. "4.7110,-74.0721"); la conversión la hace el backend.
-// `eventId` se tipa como string para calcar `AdminEvent.id` del panel.
+// A diferencia del resto del backend, este recurso ROMPE la convención
+// camelCase: el GET devuelve columnas snake_case (herencia de la consulta
+// PostGIS cruda), mientras que POST/PATCH sí esperan camelCase. Por eso la
+// traducción snake_case -> camelCase vive en `src/api/tags.ts` (ver `mapTag`)
+// y estos tipos representan la forma ya traducida (camelCase) que usa el resto
+// de la app.
+// `id` es un UUID (string); a diferencia de los tags, los eventos usan IDs
+// numéricos, así que `eventId` viaja como número hacia el backend aunque en
+// el panel se maneje como string (igual que `AdminEvent.id`).
 // ---------------------------------------------------------------------------
 
-/** Fila de `nfc_tags` tal como la administra el panel. */
+/** Fila de `nfc_tags` tal como la administra el panel (ya en camelCase). */
 export interface NfcTag {
   id: string;
   code: string;
   name: string;
   description: string | null;
   pointsReward: number;
-  /** Texto "lat,lng". El backend lo convierte a Point geográfico. */
-  location: string;
+  latitude: number;
+  longitude: number;
   isHidden: boolean;
   clueText: string | null;
   cardTitle: string | null;
   cardImageUrl: string | null;
   cardFunFact: string | null;
   eventId: string | null;
-  createdAt: string;
 }
 
-/** POST /nfc-tags. Solo `code`, `name` y `location` son obligatorios. */
+/** POST /nfc-tags. Solo `code`, `name`, `latitude` y `longitude` son obligatorios. */
 export interface CreateTagDto {
   code: string;
   name: string;
+  latitude: number;
+  longitude: number;
   description?: string;
   pointsReward?: number;
-  location: string;
   isHidden?: boolean;
   clueText?: string;
   cardTitle?: string;
   cardImageUrl?: string;
   cardFunFact?: string;
-  eventId?: string;
+  eventId?: number;
 }
 
 /** PATCH /nfc-tags/:id. Solo los campos presentes se actualizan. */
 export type UpdateTagDto = Partial<CreateTagDto>;
+
+/** 201 de POST /nfc-tags: el backend solo confirma id, code y name. */
+export interface CreateTagResult {
+  id: string;
+  code: string;
+  name: string;
+}

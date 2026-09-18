@@ -1,6 +1,12 @@
 import type { Control } from 'react-hook-form';
 import Field from './Field';
-import { TAG_RULES, validatePointsReward, type TagFormValues } from '../utils/tagForm';
+import {
+  TAG_RULES,
+  validateLatitude,
+  validateLongitude,
+  validatePointsReward,
+  type TagFormValues,
+} from '../utils/tagForm';
 
 /**
  * Campos del tag NFC compartidos por crear y editar.
@@ -44,10 +50,19 @@ export default function TagFormFields({ control }: { control: Control<TagFormVal
       />
       <Field
         control={control}
-        name="location"
-        label="Ubicación (lat,lng)"
-        placeholder="4.7110,-74.0721"
-        rules={TAG_RULES.location}
+        name="latitude"
+        label="Latitud"
+        keyboardType="numbers-and-punctuation"
+        placeholder="4.7110"
+        rules={{ required: 'La latitud es obligatoria', validate: validateLatitude }}
+      />
+      <Field
+        control={control}
+        name="longitude"
+        label="Longitud"
+        keyboardType="numbers-and-punctuation"
+        placeholder="-74.0721"
+        rules={{ required: 'La longitud es obligatoria', validate: validateLongitude }}
       />
       <Field
         control={control}
