@@ -69,20 +69,21 @@ function Navigator() {
 
   return (
     <Stack screenOptions={stackScreenOptions}>
-      {/* El panel completo y sus formularios son exclusivos de ADMIN. */}
-      <Stack.Protected guard={user?.role === 'ADMIN'}>
+      {/* Con sesión: los tabs (cambian según el rol) y lo que abren. */}
+      <Stack.Protected guard={!!user}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="events/new" options={{ title: 'Nuevo evento' }} />
+        {/* El admin lo edita; el jugador ve horario y tags. */}
         <Stack.Screen name="events/[id]" options={{ title: 'Evento' }} />
+        <Stack.Screen name="chat/[room]" options={{ title: 'Chat' }} />
+      </Stack.Protected>
+
+      {/* Formularios del panel: exclusivos de ADMIN. */}
+      <Stack.Protected guard={user?.role === 'ADMIN'}>
+        <Stack.Screen name="events/new" options={{ title: 'Nuevo evento' }} />
         <Stack.Screen name="tags/new" options={{ title: 'Nuevo tag' }} />
         <Stack.Screen name="tags/[id]" options={{ title: 'Tag' }} />
         <Stack.Screen name="users/new" options={{ title: 'Nuevo usuario' }} />
         <Stack.Screen name="users/[id]" options={{ title: 'Usuario' }} />
-      </Stack.Protected>
-
-      {/* Usuario autenticado sin permisos de administración. */}
-      <Stack.Protected guard={!!user && user.role !== 'ADMIN'}>
-        <Stack.Screen name="unauthorized" options={{ title: 'Acceso restringido' }} />
       </Stack.Protected>
 
       {/* Sin sesión */}

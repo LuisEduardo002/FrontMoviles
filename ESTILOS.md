@@ -95,10 +95,22 @@ otro color, usa `Text` con sus clases completas.
 | `LoadingScreen`, `ErrorScreen`, `EmptyState` | Cargando, error de carga, lista vacía. |
 | `DangerZone` | Eliminar, al final de un detalle y separado de Guardar. |
 | `HeaderAction` | Botón "Nuevo" del header de una lista. |
+| `StatTile` | Cifra grande del HUD con su etiqueta (panel, perfil). |
+| `Avatar` / `AvatarEditor` | Foto de perfil (o la inicial) y cómo cambiarla. |
+| `CollectibleCard` | Carta del álbum; `locked` la muestra como silueta "???". |
+| `HunterCard` | Tarjeta de cazador que se comparte como imagen. |
+| `ProgressBar` | "3 de 5 tags" con su barra. |
+| `ChatBubble` | Mensaje del chat; los propios a la derecha. |
+| `TagQr` | QR imprimible del código de un tag. |
 
 ---
 
 ## Patrones de pantalla
+
+**Una ruta, dos roles**: cuando admin y jugador comparten ruta (`index`,
+`perfil`, `events/[id]`), el archivo de `app/` solo decide cuál pintar según
+`user.role`. La versión del jugador vive en `src/screens/player/`, porque
+expo-router trataría cualquier archivo de `app/` como una ruta.
 
 **Lista** (tab): `ListScreen` + `useFocusLoad`, que recarga al volver de
 crear o editar. El "Nuevo" va en el header (`app/(tabs)/_layout.tsx`), no en

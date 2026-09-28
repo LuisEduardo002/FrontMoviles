@@ -59,7 +59,7 @@ export default function Tags() {
     <ListScreen
       items={filtered}
       total={data.tags.length}
-      noun="tags"
+      noun={['tag', 'tags']}
       error={error}
       isRefreshing={isRefreshing}
       onRefresh={refresh}

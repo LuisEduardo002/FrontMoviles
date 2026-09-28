@@ -10,6 +10,8 @@ import type { AdminEvent, UpdateEventDto } from '../../src/types';
 import { confirmDestructive } from '../../src/utils/dialog';
 import { toApiDate, toDateInputValue } from '../../src/utils/format';
 import { hapticError, hapticSuccess } from '../../src/utils/haptics';
+import PlayerEventDetail from '../../src/screens/player/PlayerEventDetail';
+import { useSession } from '../../src/session/context';
 
 const toForm = (event: AdminEvent): EventFormValues => ({
   name: event.name,
@@ -19,12 +21,18 @@ const toForm = (event: AdminEvent): EventFormValues => ({
   isActive: event.isActive,
 });
 
+/** El admin edita el evento; el jugador ve su horario y sus tags. */
+export default function EventDetail() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { user } = useSession();
+  return user?.role === 'ADMIN' ? <AdminEventDetail id={id} /> : <PlayerEventDetail id={id} />;
+}
+
 /**
  * Detalle + edición + eliminación de un evento.
  * Precarga los datos y al guardar solo envía lo que cambió.
  */
-export default function EventDetail() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+function AdminEventDetail({ id }: { id: string }) {
   const [original, setOriginal] = useState<AdminEvent | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);

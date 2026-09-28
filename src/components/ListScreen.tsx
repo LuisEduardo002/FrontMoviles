@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { colors } from '../theme/tokens';
+import { plural } from '../utils/format';
 import Notice from './Notice';
 import { Caption } from './Typography';
 
@@ -23,8 +24,8 @@ export default function ListScreen<T extends { id: string }>({
   items: T[];
   /** Cuántos hay sin filtrar, para el "3 de 10". */
   total: number;
-  /** Plural de la entidad: "eventos", "tags". */
-  noun: string;
+  /** La entidad en singular y plural: ['evento', 'eventos']. */
+  noun: readonly [string, string];
   renderItem: (item: T) => ReactElement;
   /** Buscador y filtros. */
   controls: ReactElement;
@@ -50,7 +51,9 @@ export default function ListScreen<T extends { id: string }>({
           {controls}
           <Notice message={error} />
           <Caption>
-            {items.length === total ? `${total} ${noun}` : `${items.length} de ${total} ${noun}`}
+            {items.length === total
+              ? plural(total, noun[0], noun[1])
+              : `${items.length} de ${plural(total, noun[0], noun[1])}`}
           </Caption>
         </View>
       }

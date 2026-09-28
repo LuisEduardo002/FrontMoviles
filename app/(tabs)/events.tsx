@@ -43,7 +43,7 @@ export default function Events() {
     <ListScreen
       items={filtered}
       total={events.length}
-      noun="eventos"
+      noun={['evento', 'eventos']}
       error={error}
       isRefreshing={isRefreshing}
       onRefresh={refresh}

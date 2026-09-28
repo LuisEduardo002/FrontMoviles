@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { listUsers } from '../../src/api/users';
+import Avatar from '../../src/components/Avatar';
 import Badge from '../../src/components/Badge';
 import Card from '../../src/components/Card';
 import ListScreen from '../../src/components/ListScreen';
@@ -41,7 +42,7 @@ export default function Users() {
     <ListScreen
       items={filtered}
       total={users.length}
-      noun="usuarios"
+      noun={['usuario', 'usuarios']}
       error={error}
       isRefreshing={isRefreshing}
       onRefresh={refresh}
@@ -72,9 +73,7 @@ function UserCard({ user, onOpen }: { user: AdminUser; onOpen: () => void }) {
   return (
     <Card onPress={onOpen}>
       <View className="flex-row items-center gap-3">
-        <View className="h-[44px] w-[44px] items-center justify-center rounded-full bg-secondary/15">
-          <Text className="font-data text-h3 uppercase text-secondary">{user.nickname.charAt(0)}</Text>
-        </View>
+        <Avatar nickname={user.nickname} url={user.avatarUrl} />
         <View className="flex-1 gap-1">
           <Heading level="h3" numberOfLines={1}>
             {user.nickname}

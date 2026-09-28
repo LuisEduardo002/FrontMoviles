@@ -1,5 +1,5 @@
-import { router, type Href } from 'expo-router';
-import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { listEvents } from '../../src/api/events';
 import { listTags } from '../../src/api/tags';
 import { listUsers } from '../../src/api/users';
@@ -7,12 +7,14 @@ import Button from '../../src/components/Button';
 import Card from '../../src/components/Card';
 import Notice from '../../src/components/Notice';
 import { LoadingScreen } from '../../src/components/Screen';
+import StatTile from '../../src/components/StatTile';
 import { Caption, Heading } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
 import { useSession } from '../../src/session/context';
-import { colors, glow } from '../../src/theme/tokens';
+import { colors } from '../../src/theme/tokens';
 import type { AdminEvent, AdminUser, NfcTag } from '../../src/types';
-import { formatDate } from '../../src/utils/format';
+import { formatDate, plural } from '../../src/utils/format';
+import PlayerEvents from '../../src/screens/player/PlayerEvents';
 
 interface Summary {
   users: AdminUser[];
@@ -33,11 +35,17 @@ async function loadSummary(): Promise<Summary & { failed: boolean }> {
   };
 }
 
+/** Primer tab: el panel para el admin, los eventos para el jugador. */
+export default function Inicio() {
+  const { user } = useSession();
+  return user?.role === 'ADMIN' ? <AdminPanel /> : <PlayerEvents />;
+}
+
 /**
  * Inicio del administrador: cómo va la cacería de un vistazo y atajos a lo
  * que más se hace. Las cifras llevan a su lista.
  */
-export default function Panel() {
+function AdminPanel() {
   const { user } = useSession();
   const { data, isLoading, isRefreshing, refresh } = useFocusLoad(loadSummary, {
     users: [],
@@ -67,24 +75,24 @@ export default function Panel() {
       {data.failed && <Notice message="Parte del resumen no se pudo cargar. Desliza hacia abajo para reintentar." />}
 
       <View className="flex-row gap-2">
-        <Stat
+        <StatTile
           value={activeEvents.length}
           label="Eventos activos"
           detail={`de ${data.events.length} en total`}
-          href="/(tabs)/events"
+          onPress={() => router.navigate('/(tabs)/events')}
           highlight
         />
-        <Stat
+        <StatTile
           value={data.tags.length}
           label="Tags NFC"
           detail={plural(hiddenTags, 'oculto', 'ocultos')}
-          href="/(tabs)/tags"
+          onPress={() => router.navigate('/(tabs)/tags')}
         />
-        <Stat
+        <StatTile
           value={players}
           label="Jugadores"
           detail={plural(data.users.length - players, 'admin', 'admins')}
-          href="/(tabs)/users"
+          onPress={() => router.navigate('/(tabs)/users')}
         />
       </View>
 
@@ -126,38 +134,3 @@ export default function Panel() {
     </ScrollView>
   );
 }
-
-function Stat({
-  value,
-  label,
-  detail,
-  href,
-  highlight,
-}: {
-  value: number;
-  label: string;
-  detail: string;
-  href: Href;
-  highlight?: boolean;
-}) {
-  return (
-    <Pressable
-      onPress={() => router.navigate(href)}
-      accessibilityRole="button"
-      accessibilityLabel={`${value} ${label}, ${detail}`}
-      className={`flex-1 gap-1 rounded-md bg-surface p-3 active:opacity-80 ${
-        highlight ? 'border-[1.5px] border-primary' : ''
-      }`}
-      style={{ boxShadow: highlight ? glow.primary : glow.card }}>
-      <Text className={`font-data-black text-display ${highlight ? 'text-primary' : 'text-ink'}`}>
-        {value}
-      </Text>
-      <Text className={`font-body-semibold text-caption ${highlight ? 'text-primary' : 'text-ink'}`}>
-        {label}
-      </Text>
-      <Caption>{detail}</Caption>
-    </Pressable>
-  );
-}
-
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

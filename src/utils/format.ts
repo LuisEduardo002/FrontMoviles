@@ -40,3 +40,8 @@ export function toApiDate(value: string): string {
 export function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
+
+/** "1 tag", "3 tags": el número con la palabra en singular o plural. */
+export function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}

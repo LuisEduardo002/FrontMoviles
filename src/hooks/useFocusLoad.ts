@@ -1,5 +1,5 @@
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Carga datos cada vez que la pantalla recupera el foco (al volver de crear o
@@ -7,6 +7,10 @@ import { useCallback, useRef, useState } from 'react';
  *
  * Solo la primera carga muestra el indicador de pantalla completa: las
  * siguientes refrescan en silencio para que volver atrás no parpadee.
+ *
+ * Si `loader` cambia (un filtro con `useCallback`), recarga. Por eso tiene que
+ * ser estable: una función de módulo o de `useCallback`, nunca una flecha
+ * escrita en el render, que recargaría en cada render.
  */
 export function useFocusLoad<T>(loader: () => Promise<T>, initial: T) {
   const [data, setData] = useState<T>(initial);
@@ -34,6 +38,15 @@ export function useFocusLoad<T>(loader: () => Promise<T>, initial: T) {
       void load();
     }, [load]),
   );
+
+  const isFirstLoader = useRef(true);
+  useEffect(() => {
+    if (isFirstLoader.current) {
+      isFirstLoader.current = false;
+      return;
+    }
+    void load(true);
+  }, [loader, load]);
 
   return { data, isLoading, isRefreshing, error, refresh: () => void load(true) };
 }
