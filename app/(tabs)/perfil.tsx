@@ -2,7 +2,7 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import { useSession } from '../../src/session/context';
-import { USE_MOCK } from '../../src/config/env';
+import { API_URL } from '../../src/config/env';
 
 /** Perfil del administrador con estado de la fuente de datos y salida. */
 export default function Perfil() {
@@ -21,15 +21,8 @@ export default function Perfil() {
       </View>
 
       <View className="gap-3 rounded-2xl border border-secondary bg-tertiary p-5">
-        <Text className="text-xl font-bold text-white">Fuente de datos</Text>
-        <Text className="text-neutral-200">
-          {USE_MOCK
-            ? 'Modo local: los CRUD usan datos en memoria (listos para conectar el backend).'
-            : 'Modo backend: los CRUD llaman a la API configurada en .env.'}
-        </Text>
-        <Text className="text-xs text-neutral-400">
-          Para conectar el backend: EXPO_PUBLIC_USE_MOCK=false y recarga completa.
-        </Text>
+        <Text className="text-xl font-bold text-white">Servidor</Text>
+        <Text className="text-neutral-200">{API_URL}</Text>
       </View>
 
       <Button text="Cerrar sesión" onPress={() => void logout()} secondary />

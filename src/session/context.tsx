@@ -27,14 +27,6 @@ interface Session {
 
 const SessionContext = createContext<Session | null>(null);
 
-/**
- * Solo puede activarse temporalmente durante pruebas locales para entrar directo
- * a los tabs sin pedir login. En producción debe permanecer desactivado.
- * TEMPORAL (vistaNFC): en true para ver las vistas sin backend.
- */
-const BYPASS_AUTH_FOR_TESTS = true;
-const DEV_USER: AuthUser = { id: 'dev-id', email: 'dev@prueba.com', role: 'ADMIN' };
-
 /** Atajo para leer la sesión desde cualquier pantalla: `const { user } = useSession()`. */
 export function useSession(): Session {
   const value = use(SessionContext);
@@ -72,13 +64,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
     const restore = async () => {
       try {
-        // Atajo opcional de pruebas: finge una sesión sin llamar al backend.
-        if (__DEV__ && BYPASS_AUTH_FOR_TESTS) {
-          setToken('dev-token');
-          setUser(DEV_USER);
-          return;
-        }
-
         const stored = await loadToken();
         if (!stored) return;
 

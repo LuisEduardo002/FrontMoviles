@@ -32,16 +32,3 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.114.24
 /** Cuánto se espera una respuesta antes de darla por perdida (10 segundos). */
 export const REQUEST_TIMEOUT_MS = 10_000;
 
-/**
- * Fuente de datos de los CRUD del panel admin.
- *
- * - `true`: usa el almacén en memoria de `src/api/mockStore.ts` para desarrollar
- *   el front sin backend.
- * - `false` (valor por defecto): llama al backend real con las rutas de `src/api/users.ts`
- *   y `src/api/events.ts`. `src/api/tags.ts` siempre va al backend (`/nfc-tags`).
- *
- * Para usar mocks temporalmente: `EXPO_PUBLIC_USE_MOCK=true` en `.env` y
- * recarga completa de la app. Si una ruta del backend se llama distinto, se
- * cambia SOLO en esos archivos, nada más.
- */
-export const USE_MOCK = (process.env.EXPO_PUBLIC_USE_MOCK ?? 'false') !== 'false';
