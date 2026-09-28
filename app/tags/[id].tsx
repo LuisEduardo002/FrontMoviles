@@ -7,6 +7,7 @@ import Button from '../../src/components/Button';
 import Notice from '../../src/components/Notice';
 import { DangerZone, ErrorScreen, FormScreen, LoadingScreen } from '../../src/components/Screen';
 import TagForm from '../../src/components/TagForm';
+import TagQr from '../../src/components/TagQr';
 import type { AdminEvent, NfcTag } from '../../src/types';
 import { confirmDestructive } from '../../src/utils/dialog';
 import { hapticError, hapticSuccess } from '../../src/utils/haptics';
@@ -85,6 +86,7 @@ export default function TagDetail() {
   return (
     <FormScreen>
       <Stack.Screen options={{ title: original.code }} />
+      <TagQr code={original.code} />
       <TagForm control={control} events={events} />
 
       <Notice message={formState.errors.root?.message} />
