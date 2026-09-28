@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSession } from '../../src/session/context';
@@ -47,13 +47,13 @@ export default function Panel() {
             onPress={() => router.push(section.href)}
             className="flex-row items-center gap-4 rounded-2xl border border-secondary bg-tertiary p-5 active:opacity-80">
             <View className="h-12 w-12 items-center justify-center rounded-full bg-primary">
-              <MaterialCommunityIcons name={section.icon} size={24} color="#fff" />
+              <MaterialDesignIcons name={section.icon} size={24} color="#fff" />
             </View>
             <View className="flex-1 gap-0.5">
               <Text className="text-lg font-bold text-white">{section.title}</Text>
               <Text className="text-sm text-neutral-400">{section.description}</Text>
             </View>
-            <MaterialCommunityIcons name="chevron-right" size={24} color="#a1a1aa" />
+            <MaterialDesignIcons name="chevron-right" size={24} color="#a1a1aa" />
           </Pressable>
         ))}
       </View>

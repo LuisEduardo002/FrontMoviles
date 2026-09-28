@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Text, View } from 'react-native';
 import Button from '../../src/components/Button';
 import { useSession } from '../../src/session/context';
@@ -12,7 +12,7 @@ export default function Perfil() {
     <View className="flex-1 gap-6 bg-base p-6">
       <View className="items-center gap-3 rounded-2xl border border-secondary bg-tertiary p-6">
         <View className="h-20 w-20 items-center justify-center rounded-full bg-secondary">
-          <MaterialCommunityIcons name="account" size={44} color="#fff" />
+          <MaterialDesignIcons name="account" size={44} color="#fff" />
         </View>
         <Text className="text-xl font-bold text-white">{user?.email ?? 'Admin'}</Text>
         <Text className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">

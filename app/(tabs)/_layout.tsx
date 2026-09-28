@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Tabs } from 'expo-router';
 import { useSession } from '../../src/session/context';
 
@@ -33,7 +33,7 @@ export default function TabsLayout() {
         options={{
           title: 'Panel',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="view-dashboard" color={color} size={size} />
+            <MaterialDesignIcons name="view-dashboard" color={color} size={size} />
           ),
         }}
       />
@@ -43,7 +43,7 @@ export default function TabsLayout() {
           options={{
             title: 'Usuarios',
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="account-multiple" color={color} size={size} />
+              <MaterialDesignIcons name="account-multiple" color={color} size={size} />
             ),
           }}
         />
@@ -53,7 +53,7 @@ export default function TabsLayout() {
         options={{
           title: 'Eventos',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-month" color={color} size={size} />
+            <MaterialDesignIcons name="calendar-month" color={color} size={size} />
           ),
         }}
       />
@@ -63,7 +63,7 @@ export default function TabsLayout() {
           options={{
             title: 'Tags NFC',
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="nfc-variant" color={color} size={size} />
+              <MaterialDesignIcons name="nfc-variant" color={color} size={size} />
             ),
           }}
         />
@@ -73,7 +73,7 @@ export default function TabsLayout() {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-circle" color={color} size={size} />
+            <MaterialDesignIcons name="account-circle" color={color} size={size} />
           ),
         }}
       />
