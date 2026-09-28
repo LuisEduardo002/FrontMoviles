@@ -1,10 +1,9 @@
 /**
  * Endpoints de autenticación (/auth). Es lo único que el backend expone hoy.
  *
- * No hay /auth/me ni ningún endpoint protegido: el `JwtAuthGuard` existe en el
- * backend pero no está puesto en ningún controlador. Por eso aquí no hay una
- * función para recargar el perfil — la sesión guardada se valida leyendo el
- * propio token (ver `src/session/jwt.ts`).
+ * La sesión guardada se valida leyendo el propio token (ver
+ * `src/session/jwt.ts`) y se renueva con `refresh` cada vez que abre la app.
+ * El perfil completo vive en `src/api/profile.ts`.
  */
 
 import type { AuthResponse, LoginRequest, RegisterRequest } from '../types';
@@ -24,4 +23,14 @@ export function login(body: LoginRequest): Promise<AuthResponse> {
  */
 export function register(body: RegisterRequest): Promise<AuthResponse> {
   return request<AuthResponse>('/auth/register', body);
+}
+
+/**
+ * POST /auth/refresh -> token nuevo de 30 días para la sesión actual.
+ *
+ * La app lo llama al abrirse: mientras se use al menos una vez al mes, la
+ * sesión nunca vence y no vuelve a pedir el ingreso.
+ */
+export function refresh(): Promise<AuthResponse> {
+  return request<AuthResponse>('/auth/refresh', {}, 'POST');
 }

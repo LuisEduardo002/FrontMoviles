@@ -50,9 +50,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
   /**
    * Al arrancar: ¿hay una sesión de la última vez?
    *
-   * Como el backend no tiene endpoint de perfil, el usuario se reconstruye con
-   * lo que el propio token trae firmado (`sub` es el id). Si está vencido, se
-   * borra y se arranca sin sesión.
+   * El usuario se reconstruye con lo que el propio token trae firmado (`sub`
+   * es el id), sin esperar a la red. Si está vencido, se borra y se arranca
+   * sin sesión.
    */
   useEffect(() => {
     setUnauthorizedHandler(() => {
@@ -76,6 +76,14 @@ export function SessionProvider({ children }: PropsWithChildren) {
         setRequestToken(stored);
         setToken(stored);
         setUser({ id: payload.sub, email: payload.email, role: payload.role });
+
+        // Renueva el token en segundo plano: así la sesión no vence mientras
+        // se use la app. Sin conexión se sigue con el guardado; si el servidor
+        // lo rechaza (401), `request` ya cierra la sesión.
+        void api
+          .refresh()
+          .then(openSession)
+          .catch(() => undefined);
       } finally {
         // Pase lo que pase se apaga el cargando, o la app se queda en la
         // pantalla de espera para siempre.
