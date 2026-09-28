@@ -18,7 +18,7 @@
  * calcar `AdminEvent.id` y se vuelve a convertir a número al enviarlo.
  */
 
-import type { CreateTagDto, CreateTagResult, NfcTag, UpdateTagDto } from '../types';
+import type { CreateTagDto, CreateTagResult, NfcTag, PlayerTag, UpdateTagDto } from '../types';
 import { request } from './client';
 
 const PATH = '/nfc-tags';
@@ -78,4 +78,52 @@ export async function updateTag(id: string, patch: UpdateTagDto): Promise<void> 
 
 export async function deleteTag(id: string): Promise<void> {
   await request<void>(`${PATH}/${id}`, undefined, 'DELETE');
+}
+
+// ---------------------------------------------------------------------------
+// Vista del jugador. Mismo endpoint, pero el backend responde según el rol:
+// sin `code`, sin coordenadas en los ocultos y con la carta solo si ya lo
+// encontró. También en snake_case, así que se traduce igual que arriba.
+// ---------------------------------------------------------------------------
+
+interface RawPlayerTag {
+  id: string;
+  name: string;
+  description: string | null;
+  points_reward: number;
+  latitude: number | null;
+  longitude: number | null;
+  is_hidden: boolean;
+  clue_text: string | null;
+  event_id: number | null;
+  found_by_me: boolean;
+  found_at: string | null;
+  card_title: string | null;
+  card_image_url: string | null;
+  card_fun_fact: string | null;
+}
+
+function mapPlayerTag(raw: RawPlayerTag): PlayerTag {
+  return {
+    id: raw.id,
+    name: raw.name,
+    description: raw.description,
+    pointsReward: raw.points_reward,
+    latitude: raw.latitude,
+    longitude: raw.longitude,
+    isHidden: raw.is_hidden,
+    clueText: raw.clue_text,
+    eventId: raw.event_id == null ? null : String(raw.event_id),
+    foundByMe: raw.found_by_me,
+    foundAt: raw.found_at,
+    cardTitle: raw.card_title,
+    cardImageUrl: raw.card_image_url,
+    cardFunFact: raw.card_fun_fact,
+  };
+}
+
+/** Tags de un evento (o todos) tal como los ve el jugador. */
+export async function listPlayerTags(eventId?: string): Promise<PlayerTag[]> {
+  const rows = await request<RawPlayerTag[]>(eventId ? `${PATH}?eventId=${eventId}` : PATH);
+  return rows.map(mapPlayerTag);
 }

@@ -18,10 +18,8 @@ export type Role = (typeof ROLES)[number];
 /**
  * El usuario tal como lo devuelve /auth. Son EXACTAMENTE estos tres campos.
  *
- * La tabla `users` tiene además `nickname`, `avatarUrl`, `levelTitle` y
- * `totalPoints`, pero NINGÚN endpoint los expone hoy. Si una pantalla los
- * necesita, hay que agregarlos en el backend: no se inventan aquí ni se
- * guardan localmente como si vinieran del servidor.
+ * El resto del perfil (apodo, puntos, foto...) viene de GET /users/me
+ * (`MyProfile`): no se guarda en la sesión para que nunca quede desactualizado.
  */
 export interface AuthUser {
   /** `uuid` de Postgres: es un string, no un número. */
@@ -96,6 +94,8 @@ export interface AdminUser {
   role: Role;
   totalPoints: number;
   levelTitle: string | null;
+  /** Ruta relativa de la foto de perfil; se arma con `assetUrl`. */
+  avatarUrl: string | null;
   createdAt: string;
 }
 
@@ -196,4 +196,115 @@ export interface CreateTagResult {
   id: string;
   code: string;
   name: string;
+}
+
+// ---------------------------------------------------------------------------
+// Experiencia del jugador.
+// ---------------------------------------------------------------------------
+
+/**
+ * Un tag visto por un jugador (GET /nfc-tags con rol USER), ya en camelCase.
+ *
+ * El backend recorta lo que el jugador no debe saber: nunca llega el `code`
+ * (es lo que se lee de la etiqueta física), los ocultos llegan sin
+ * coordenadas y la carta solo viene si ya lo encontró.
+ */
+export interface PlayerTag {
+  id: string;
+  name: string;
+  description: string | null;
+  pointsReward: number;
+  /** null si el tag es oculto: el jugador solo tiene la pista. */
+  latitude: number | null;
+  longitude: number | null;
+  isHidden: boolean;
+  clueText: string | null;
+  eventId: string | null;
+  foundByMe: boolean;
+  foundAt: string | null;
+  cardTitle: string | null;
+  cardImageUrl: string | null;
+  cardFunFact: string | null;
+}
+
+/** POST /scans. La ubicación se toma del GPS al enviar. */
+export interface ScanRequest {
+  code: string;
+  latitude: number;
+  longitude: number;
+}
+
+/** La carta de recompensa de un tag. */
+export interface TagCard {
+  id: string;
+  code: string;
+  name: string;
+  cardTitle: string | null;
+  cardImageUrl: string | null;
+  cardFunFact: string | null;
+}
+
+/** 201 de POST /scans: puntos ganados, nuevo total y la carta. */
+export interface ScanResult {
+  id: string;
+  pointsEarned: number;
+  scannedAt: string;
+  distanciaMetros: number;
+  totalPoints: number;
+  tag: TagCard;
+}
+
+/** Fila de GET /scans/me: el álbum del jugador. */
+export interface MyScan {
+  id: string;
+  pointsEarned: number;
+  scannedAt: string;
+  tag: TagCard;
+}
+
+/** GET /users/me: el perfil propio con sus números de juego. */
+export interface MyProfile {
+  id: string;
+  nickname: string;
+  email: string;
+  role: Role;
+  /** Ruta relativa ("/uploads/avatars/..."): se arma con `assetUrl`. */
+  avatarUrl: string | null;
+  levelTitle: string | null;
+  totalPoints: number;
+  createdAt: string;
+  tagsFound: number;
+  /** null para los ADMIN, que no compiten. */
+  position: number | null;
+}
+
+export interface RankingEntry {
+  id: string;
+  nickname: string;
+  avatarUrl: string | null;
+  levelTitle: string | null;
+  points: number;
+  tagsFound: number;
+  position: number;
+}
+
+/** GET /users/ranking: el top y, aparte, el puesto de quien pregunta. */
+export interface Ranking {
+  top: RankingEntry[];
+  me: RankingEntry | null;
+}
+
+/** GET /chat/rooms. `room` es "general" o "event:<id>". */
+export interface ChatRoom {
+  room: string;
+  name: string;
+  eventId: number | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  room: string;
+  content: string;
+  createdAt: string;
+  user: { id: string; nickname: string; avatarUrl: string | null; role: Role };
 }

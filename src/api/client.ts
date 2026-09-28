@@ -90,6 +90,7 @@ export async function request<T>(path: string, body?: unknown, method?: HttpMeth
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   let response: Response;
+  const isFormData = body instanceof FormData;
 
   try {
     const requestUrl = `${API_URL}${path}`;
@@ -98,12 +99,14 @@ export async function request<T>(path: string, body?: unknown, method?: HttpMeth
     response = await fetch(`${API_URL}${path}`, {
       method: requestMethod,
       headers: {
-        'Content-Type': 'application/json',
+        // Con FormData (subir archivos) el Content-Type lo pone fetch, con su
+        // `boundary`: escribirlo a mano rompería la petición.
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         // Sintaxis de "propagación condicional": si no hay token, no se añade
         // la cabecera en lugar de mandarla vacía.
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
       signal: controller.signal,
     });
   } catch (failure) {

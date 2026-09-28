@@ -35,7 +35,28 @@
         }
       ],
       "expo-status-bar",
-      "@react-native-vector-icons/material-design-icons"
+      "@react-native-vector-icons/material-design-icons",
+      "expo-sharing",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "NFHunter usa la cámara para escanear el QR de los tags.",
+          "barcodeScannerEnabled": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "NFHunter usa tu ubicación para validar que estás junto al tag al escanearlo."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "NFHunter usa tus fotos para tu foto de perfil.",
+          "cameraPermission": "NFHunter usa la cámara para tu foto de perfil."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -32,3 +32,12 @@ export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.114.24
 /** Cuánto se espera una respuesta antes de darla por perdida (10 segundos). */
 export const REQUEST_TIMEOUT_MS = 10_000;
 
+/**
+ * URL completa de un archivo que el backend guarda con ruta relativa (fotos de
+ * perfil: "/uploads/avatars/..."). Se arma aquí para que siga funcionando
+ * cuando cambie la IP del servidor.
+ */
+export function assetUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  return /^https?:\/\//.test(path) ? path : `${API_URL}${path}`;
+}
