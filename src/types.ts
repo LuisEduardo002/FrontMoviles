@@ -136,6 +136,8 @@ export interface CreateEventDto {
   description?: string;
   startDate: string;
   endDate: string;
+  /** Si se omite al crear, el backend lo deja en true. */
+  isActive?: boolean;
 }
 
 export type UpdateEventDto = Partial<CreateEventDto>;
@@ -186,8 +188,8 @@ export interface CreateTagDto {
   eventId?: number;
 }
 
-/** PATCH /nfc-tags/:id. Solo los campos presentes se actualizan. */
-export type UpdateTagDto = Partial<CreateTagDto>;
+/** PATCH /nfc-tags/:id. Solo los campos presentes se actualizan; `eventId: null` suelta el evento. */
+export type UpdateTagDto = Partial<Omit<CreateTagDto, 'eventId'>> & { eventId?: number | null };
 
 /** 201 de POST /nfc-tags: el backend solo confirma id, code y name. */
 export interface CreateTagResult {
