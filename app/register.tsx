@@ -1,9 +1,13 @@
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import Button from '../src/components/Button';
 import Field from '../src/components/Field';
+import Notice from '../src/components/Notice';
+import { FormScreen } from '../src/components/Screen';
+import { Body } from '../src/components/Typography';
 import { useSession } from '../src/session/context';
+import { hapticError, hapticSuccess } from '../src/utils/haptics';
 
 type RegisterForm = { nickname: string; email: string; password: string; confirmation: string };
 
@@ -17,31 +21,25 @@ export default function Register() {
   const submit = async ({ nickname, email, password }: RegisterForm) => {
     try {
       await register(nickname, email, password);
+      hapticSuccess();
     } catch (error) {
+      hapticError();
       setError('root', { message: (error as Error).message });
     }
   };
 
+  // Si se llegó desde el login, volver es regresar; si se abrió directo, reemplazar.
+  const goToLogin = () => (router.canGoBack() ? router.back() : router.replace('/login'));
+
   return (
-    // Tocar fuera de los campos cierra el teclado; arrastrar también lo oculta.
-    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 p-6"
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag">
-      <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Crear cuenta</Text>
-        <Text className="text-neutral-400">
-          Crea tu cuenta para empezar a rastrear tags y sumar puntos.
-        </Text>
-      </View>
+    <FormScreen>
+      <Body muted>Crea tu cuenta para empezar a rastrear tags y sumar puntos.</Body>
 
       <Field
         control={control}
         name="nickname"
         label="Apodo"
-        autoCapitalize="none"
+        hint="Así te verán los demás jugadores."
         placeholder="cazador_nocturno"
         rules={{
           required: 'El apodo es obligatorio',
@@ -55,6 +53,7 @@ export default function Register() {
         name="email"
         label="Correo"
         keyboardType="email-address"
+        autoComplete="email"
         placeholder="tucorreo@ejemplo.com"
         rules={{
           required: 'El correo es obligatorio',
@@ -66,6 +65,7 @@ export default function Register() {
         name="password"
         label="Contraseña"
         secureTextEntry
+        autoComplete="new-password"
         placeholder="••••••••"
         rules={{
           required: 'La contraseña es obligatoria',
@@ -87,22 +87,19 @@ export default function Register() {
         }}
       />
 
-      {!!formState.errors.root && (
-        <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
-          {formState.errors.root.message}
-        </Text>
-      )}
+      <Notice message={formState.errors.root?.message} />
 
       <Button
         text={formState.isSubmitting ? 'Creando…' : 'Crear cuenta'}
-        onPress={handleSubmit(submit)}
+        onPress={handleSubmit(submit, hapticError)}
         disabled={formState.isSubmitting}
       />
 
-      <Link href="/login" className="text-center font-semibold text-neutral-100">
-        ¿Ya tienes cuenta? Inicia sesión
-      </Link>
-      </ScrollView>
-    </Pressable>
+      <Pressable onPress={goToLogin} accessibilityRole="link" className="items-center py-2">
+        <Text className="font-body text-body text-ink/70">
+          ¿Ya tienes cuenta? <Text className="font-body-semibold text-secondary">Inicia sesión</Text>
+        </Text>
+      </Pressable>
+    </FormScreen>
   );
 }

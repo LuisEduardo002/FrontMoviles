@@ -1,82 +1,62 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
-import { Tabs } from 'expo-router';
-import { useSession } from '../../src/session/context';
+import { router, Tabs } from 'expo-router';
+import type { ComponentProps } from 'react';
+import type { ColorValue } from 'react-native';
+import { HeaderAction } from '../../src/components/Screen';
+import { tabScreenOptions } from '../../src/theme/navigation';
 
 /**
- * Tabs del panel de administración NFHunter.
- * El Stack raíz (app/_layout.tsx) protege todo el grupo `(tabs)` con
- * `Stack.Protected guard={!!user}`: sin sesión ni siquiera están registradas.
+ * Tabs del panel de administración. El Stack raíz (app/_layout.tsx) solo los
+ * registra para ADMIN.
  *
- * Cada tab es la LISTA de una entidad (con búsqueda); el crear y el
- * detalle/editar viven fuera de los tabs (`app/users/...`) para que ocupen
- * toda la pantalla con botón de retroceso.
- *
- * Estilo sleek dark mode NFHunter:
- * fondo #1c0a1c, bordes #391338, acento #722770.
+ * El orden sigue el flujo del juego: primero se crea el evento, luego sus
+ * tags, y los usuarios van después porque se gestionan menos. Cada lista
+ * tiene su "Nuevo" en el header; crear y editar abren pantalla completa con
+ * botón de retroceso (`app/<entidad>/...`).
  */
-export default function TabsLayout() {
-  const { user } = useSession();
-  const isAdmin = user?.role === 'ADMIN';
+type IconName = ComponentProps<typeof MaterialDesignIcons>['name'];
 
+const icon =
+  (name: IconName) =>
+  ({ color, size }: { color: ColorValue; size: number }) => (
+    <MaterialDesignIcons name={name} color={color} size={size} />
+  );
+
+export default function TabsLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerStyle: { backgroundColor: '#1c0a1c' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '600' },
-        tabBarStyle: { backgroundColor: '#1c0a1c', borderTopColor: '#391338' },
-        tabBarActiveTintColor: '#fff',
-        tabBarInactiveTintColor: '#a1a1aa',
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Panel',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialDesignIcons name="view-dashboard" color={color} size={size} />
-          ),
-        }}
-      />
-      {isAdmin && (
-        <Tabs.Screen
-          name="users"
-          options={{
-            title: 'Usuarios',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialDesignIcons name="account-multiple" color={color} size={size} />
-            ),
-          }}
-        />
-      )}
+    <Tabs screenOptions={tabScreenOptions}>
+      <Tabs.Screen name="index" options={{ title: 'Panel', tabBarIcon: icon('view-dashboard') }} />
       <Tabs.Screen
         name="events"
         options={{
           title: 'Eventos',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialDesignIcons name="calendar-month" color={color} size={size} />
+          tabBarIcon: icon('calendar-star'),
+          headerRight: () => (
+            <HeaderAction label="Nuevo evento" onPress={() => router.push('/events/new')} />
           ),
         }}
       />
-      {isAdmin && (
-        <Tabs.Screen
-          name="tags"
-          options={{
-            title: 'Tags NFC',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialDesignIcons name="nfc-variant" color={color} size={size} />
-            ),
-          }}
-        />
-      )}
       <Tabs.Screen
-        name="perfil"
+        name="tags"
         options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialDesignIcons name="account-circle" color={color} size={size} />
+          title: 'Tags NFC',
+          tabBarIcon: icon('nfc-variant'),
+          headerRight: () => (
+            <HeaderAction label="Nuevo tag" onPress={() => router.push('/tags/new')} />
           ),
         }}
       />
+      <Tabs.Screen
+        name="users"
+        options={{
+          title: 'Usuarios',
+          tabBarIcon: icon('account-group'),
+          headerRight: () => (
+            <HeaderAction label="Nuevo usuario" onPress={() => router.push('/users/new')} />
+          ),
+        }}
+      />
+      <Tabs.Screen name="perfil" options={{ title: 'Perfil', tabBarIcon: icon('account-circle') }} />
     </Tabs>
   );
 }

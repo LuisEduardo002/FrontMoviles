@@ -1,10 +1,11 @@
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
 import type { AdminEvent } from '../types';
+import { Chip } from './Segmented';
 
 /**
  * Selector de evento opcional para el formulario de tags.
- * "Sin evento" limpia el vínculo; tocar un evento activo también lo suelta.
- * Si la lista llega vacía (backend sin eventos), solo muestra "Sin evento".
+ * "Sin evento" limpia el vínculo. Si no hay eventos, solo aparece esa opción.
+ * Va dentro de la sección "Evento" de `TagForm`, que ya le pone título.
  */
 export default function EventSelect({
   events,
@@ -16,34 +17,16 @@ export default function EventSelect({
   onChange: (eventId: string) => void;
 }) {
   return (
-    <View className="gap-1.5">
-      <Text className="font-semibold text-neutral-200">Evento (opcional)</Text>
-      <View className="gap-2">
-        <Pressable
-          onPress={() => onChange('')}
-          className={`rounded-xl p-3 active:opacity-80 ${
-            !value ? 'bg-primary' : 'border border-secondary'
-          }`}>
-          <Text className={`font-semibold ${!value ? 'text-white' : 'text-neutral-100'}`}>
-            Sin evento
-          </Text>
-        </Pressable>
-        {events.map((event) => {
-          const active = value === event.id;
-          return (
-            <Pressable
-              key={event.id}
-              onPress={() => onChange(active ? '' : event.id)}
-              className={`rounded-xl p-3 active:opacity-80 ${
-                active ? 'bg-primary' : 'border border-secondary'
-              }`}>
-              <Text className={`font-semibold ${active ? 'text-white' : 'text-neutral-100'}`}>
-                {event.name}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View className="flex-row flex-wrap gap-2">
+      <Chip label="Sin evento" selected={!value} onPress={() => onChange('')} />
+      {events.map((event) => (
+        <Chip
+          key={event.id}
+          label={event.isActive ? event.name : `${event.name} (inactivo)`}
+          selected={value === event.id}
+          onPress={() => onChange(event.id)}
+        />
+      ))}
     </View>
   );
 }

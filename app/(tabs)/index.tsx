@@ -1,62 +1,163 @@
-import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
-import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { router, type Href } from 'expo-router';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { listEvents } from '../../src/api/events';
+import { listTags } from '../../src/api/tags';
+import { listUsers } from '../../src/api/users';
+import Button from '../../src/components/Button';
+import Card from '../../src/components/Card';
+import Notice from '../../src/components/Notice';
+import { LoadingScreen } from '../../src/components/Screen';
+import { Caption, Heading } from '../../src/components/Typography';
+import { useFocusLoad } from '../../src/hooks/useFocusLoad';
 import { useSession } from '../../src/session/context';
+import { colors, glow } from '../../src/theme/tokens';
+import type { AdminEvent, AdminUser, NfcTag } from '../../src/types';
+import { formatDate } from '../../src/utils/format';
+
+interface Summary {
+  users: AdminUser[];
+  events: AdminEvent[];
+  tags: NfcTag[];
+}
+
+/** Si una de las tres listas falla, el resto del panel se sigue mostrando. */
+async function loadSummary(): Promise<Summary & { failed: boolean }> {
+  const [users, events, tags] = await Promise.allSettled([listUsers(), listEvents(), listTags()]);
+  const value = <T,>(result: PromiseSettledResult<T[]>) =>
+    result.status === 'fulfilled' ? result.value : [];
+  return {
+    users: value(users),
+    events: value(events),
+    tags: value(tags),
+    failed: [users, events, tags].some((result) => result.status === 'rejected'),
+  };
+}
 
 /**
- * Panel principal del administrador: accesos a los tres CRUD
- * (usuarios, eventos, tags NFC) + estado de la sesión.
+ * Inicio del administrador: cómo va la cacería de un vistazo y atajos a lo
+ * que más se hace. Las cifras llevan a su lista.
  */
-const SECTIONS = [
-  {
-    href: '/(tabs)/users',
-    icon: 'account-multiple',
-    title: 'Usuarios',
-    description: 'Perfiles, roles, puntos y niveles.',
-  },
-  {
-    href: '/(tabs)/events',
-    icon: 'calendar-month',
-    title: 'Eventos',
-    description: 'Festivales, temporadas y rallies.',
-  },
-  {
-    href: '/(tabs)/tags',
-    icon: 'nfc-variant',
-    title: 'Tags NFC',
-    description: 'Crea, edita y elimina puntos NFC.',
-  },
-] as const;
-
 export default function Panel() {
   const { user } = useSession();
+  const { data, isLoading, isRefreshing, refresh } = useFocusLoad(loadSummary, {
+    users: [],
+    events: [],
+    tags: [],
+    failed: false,
+  });
+
+  if (isLoading) return <LoadingScreen />;
+
+  const activeEvents = data.events.filter((event) => event.isActive);
+  const hiddenTags = data.tags.filter((tag) => tag.isHidden).length;
+  const players = data.users.filter((u) => u.role === 'USER').length;
 
   return (
-    <View className="flex-1 gap-6 bg-base p-6">
+    <ScrollView
+      className="flex-1 bg-canvas"
+      contentContainerClassName="gap-4 p-3 pb-6"
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />
+      }>
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Panel de administración</Text>
-        <Text className="text-neutral-400">
-          {user?.email ?? 'Admin'} · {user?.role ?? 'ADMIN'}
-        </Text>
+        <Heading level="h2">Hola, cazador</Heading>
+        <Caption>{user?.email}</Caption>
       </View>
 
-      <View className="gap-4">
-        {SECTIONS.map((section) => (
-          <Pressable
-            key={section.href}
-            onPress={() => router.push(section.href)}
-            className="flex-row items-center gap-4 rounded-2xl border border-secondary bg-tertiary p-5 active:opacity-80">
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-primary">
-              <MaterialDesignIcons name={section.icon} size={24} color="#fff" />
-            </View>
-            <View className="flex-1 gap-0.5">
-              <Text className="text-lg font-bold text-white">{section.title}</Text>
-              <Text className="text-sm text-neutral-400">{section.description}</Text>
-            </View>
-            <MaterialDesignIcons name="chevron-right" size={24} color="#a1a1aa" />
-          </Pressable>
-        ))}
+      {data.failed && <Notice message="Parte del resumen no se pudo cargar. Desliza hacia abajo para reintentar." />}
+
+      <View className="flex-row gap-2">
+        <Stat
+          value={activeEvents.length}
+          label="Eventos activos"
+          detail={`de ${data.events.length} en total`}
+          href="/(tabs)/events"
+          highlight
+        />
+        <Stat
+          value={data.tags.length}
+          label="Tags NFC"
+          detail={plural(hiddenTags, 'oculto', 'ocultos')}
+          href="/(tabs)/tags"
+        />
+        <Stat
+          value={players}
+          label="Jugadores"
+          detail={plural(data.users.length - players, 'admin', 'admins')}
+          href="/(tabs)/users"
+        />
       </View>
-    </View>
+
+      <View className="gap-3">
+        <Heading level="h3">Acciones rápidas</Heading>
+        <Button text="Crear evento" icon="calendar-plus" onPress={() => router.push('/events/new')} />
+        <Button
+          text="Crear tag"
+          icon="nfc-variant"
+          variant="secondary"
+          onPress={() => router.push('/tags/new')}
+        />
+        <Button
+          text="Crear usuario"
+          icon="account-plus"
+          variant="secondary"
+          onPress={() => router.push('/users/new')}
+        />
+      </View>
+
+      <View className="gap-3">
+        <Heading level="h3">Eventos activos</Heading>
+        {activeEvents.length === 0 ? (
+          <Caption>No hay eventos activos. Crea uno para empezar la cacería.</Caption>
+        ) : (
+          activeEvents.map((event) => (
+            <Card
+              key={event.id}
+              onPress={() => router.push({ pathname: '/events/[id]', params: { id: event.id } })}>
+              <Text className="font-body-semibold text-h3 text-ink">{event.name}</Text>
+              <Caption>
+                {formatDate(event.startDate)} → {formatDate(event.endDate)} ·{' '}
+                {plural(data.tags.filter((tag) => tag.eventId === event.id).length, 'tag', 'tags')}
+              </Caption>
+            </Card>
+          ))
+        )}
+      </View>
+    </ScrollView>
   );
 }
+
+function Stat({
+  value,
+  label,
+  detail,
+  href,
+  highlight,
+}: {
+  value: number;
+  label: string;
+  detail: string;
+  href: Href;
+  highlight?: boolean;
+}) {
+  return (
+    <Pressable
+      onPress={() => router.navigate(href)}
+      accessibilityRole="button"
+      accessibilityLabel={`${value} ${label}, ${detail}`}
+      className={`flex-1 gap-1 rounded-md bg-surface p-3 active:opacity-80 ${
+        highlight ? 'border-[1.5px] border-primary' : ''
+      }`}
+      style={{ boxShadow: highlight ? glow.primary : glow.card }}>
+      <Text className={`font-data-black text-display ${highlight ? 'text-primary' : 'text-ink'}`}>
+        {value}
+      </Text>
+      <Text className={`font-body-semibold text-caption ${highlight ? 'text-primary' : 'text-ink'}`}>
+        {label}
+      </Text>
+      <Caption>{detail}</Caption>
+    </Pressable>
+  );
+}
+
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

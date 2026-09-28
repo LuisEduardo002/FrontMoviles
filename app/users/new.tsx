@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Keyboard, Pressable, ScrollView, Text, View } from 'react-native';
+import { createUser } from '../../src/api/users';
 import Button from '../../src/components/Button';
 import Field from '../../src/components/Field';
-import FormError from '../../src/components/FormError';
-import RoleSegment from '../../src/components/RoleSegment';
-import { createUser } from '../../src/api/users';
+import Notice from '../../src/components/Notice';
+import { FormScreen, FormSection } from '../../src/components/Screen';
+import Segmented from '../../src/components/Segmented';
 import type { Role } from '../../src/types';
+import { hapticError, hapticSuccess } from '../../src/utils/haptics';
 
 type UserForm = {
   nickname: string;
@@ -16,9 +17,14 @@ type UserForm = {
   levelTitle: string;
 };
 
+const ROLE_OPTIONS = [
+  { label: 'Jugador', value: 'USER' },
+  { label: 'Administrador', value: 'ADMIN' },
+] as const;
+
 /**
- * Crear usuario (admin). Formulario con validación y confirmación al guardar.
- * La contraseña solo viaja al crear: nunca vuelve del servidor.
+ * Crear usuario (admin). La contraseña solo viaja al crear: nunca vuelve del
+ * servidor. Al guardar vuelve a la lista, que ya lo muestra.
  */
 export default function NewUser() {
   const { control, handleSubmit, setError, formState } = useForm<UserForm>({
@@ -40,27 +46,18 @@ export default function NewUser() {
         role: values.role,
         levelTitle: values.levelTitle.trim(),
       });
-      Alert.alert('Usuario creado', `${values.nickname} quedó registrado.`, [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      hapticSuccess();
+      router.back();
     } catch (failure) {
+      hapticError();
       // El mensaje del servidor (ej. correo duplicado) se muestra en pantalla.
       setError('root', { message: (failure as Error).message });
     }
   };
 
   return (
-    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 p-6"
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag">
-        <View className="gap-1">
-          <Text className="text-2xl font-bold text-white">Nuevo usuario</Text>
-          <Text className="text-neutral-400">Crea perfiles de jugador o administrador.</Text>
-        </View>
-
+    <FormScreen>
+      <FormSection title="Cuenta">
         <Field
           control={control}
           name="nickname"
@@ -88,6 +85,7 @@ export default function NewUser() {
           control={control}
           name="password"
           label="Contraseña"
+          hint="Mínimo 8 caracteres. Compártela con el usuario por un canal seguro."
           secureTextEntry
           placeholder="••••••••"
           rules={{
@@ -96,15 +94,16 @@ export default function NewUser() {
             maxLength: { value: 72, message: 'Máximo 72 caracteres' },
           }}
         />
+      </FormSection>
 
+      <FormSection title="Rol y nivel">
         <Controller
           control={control}
           name="role"
           render={({ field: { value, onChange } }) => (
-            <RoleSegment value={value} onChange={onChange} />
+            <Segmented label="Rol" options={ROLE_OPTIONS} value={value} onChange={onChange} />
           )}
         />
-
         <Field
           control={control}
           name="levelTitle"
@@ -115,15 +114,14 @@ export default function NewUser() {
             maxLength: { value: 60, message: 'Máximo 60 caracteres' },
           }}
         />
+      </FormSection>
 
-        <FormError message={formState.errors.root?.message} />
-
-        <Button
-          text={formState.isSubmitting ? 'Guardando…' : 'Guardar usuario'}
-          onPress={handleSubmit(submit)}
-          disabled={formState.isSubmitting}
-        />
-      </ScrollView>
-    </Pressable>
+      <Notice message={formState.errors.root?.message} />
+      <Button
+        text={formState.isSubmitting ? 'Creando…' : 'Crear usuario'}
+        onPress={handleSubmit(submit, hapticError)}
+        disabled={formState.isSubmitting}
+      />
+    </FormScreen>
   );
 }

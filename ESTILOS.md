@@ -1,170 +1,129 @@
-# Estilos estándar · NFHunter móvil
+# Estilos en código · NFHunter móvil
 
-Cadenas de NativeWind que usa la app. **Copia de aquí, no inventes una
-variante nueva.** Si una combinación de clases se repite tres veces, se
-vuelve componente en `src/components/`.
+`dict_style.md` dice **qué** (colores, tipografía, estados, háptica). Este
+archivo dice **cómo** se aplica en el código. Si chocan, manda
+`dict_style.md`: corrige este archivo.
 
-Traducción dark de la guía de referencia: misma estructura (qué clase cumple
-qué papel en cada tipo de pantalla), colores de la paleta NFHunter definidos
-en `tailwind.config.js` (`primary #722770`, `secondary #551d54`,
-`tertiary #391338`, `base #1c0a1c`).
-
-Regla base: primero busca el componente (`Button`, `Field`). Solo si no
-existe, usa las clases sueltas de este documento.
+Regla base: primero busca el componente. Solo si no existe, usa clases
+sueltas. Una combinación de clases que se repite tres veces se vuelve
+componente en `src/components/`.
 
 ---
 
-## Paleta
+## Dónde viven los tokens
 
-| Papel | Clase | Nota |
-|---|---|---|
-| Fondo de pantalla | `bg-base` | Todas las pantallas |
-| Superficie (tarjeta) | `bg-tertiary` + `border border-secondary` | |
-| Primario / acción | `bg-primary`, texto `text-white` | Botones, iconos destacados |
-| Texto fuerte | `text-white` | Títulos y contenido |
-| Texto secundario | `text-neutral-200` | Instrucciones |
-| Texto tenue / metadatos | `text-neutral-400` | Descripciones, fechas, lugar |
-| Error | `text-red-400` (campo), `border-red-500/40 bg-red-500/10 text-red-200` (formulario) | |
+`src/theme/tokens.js` es la única fuente de colores, fuentes y resplandores.
+`tailwind.config.js` la lee para generar las clases, y el código la importa
+para las props que no aceptan clases (`tintColor`, colores de íconos,
+`placeholderTextColor`, estilos de la navegación en `src/theme/navigation.ts`).
 
-`placeholderTextColor="#a3a3a3"` va como **prop**, no como clase: NativeWind
-no traduce `placeholder:` en React Native.
+**Nunca escribas un hex en un componente.** Usa la clase (`bg-canvas`) o el
+token (`colors.primary`).
+
+| Clase | Uso |
+|---|---|
+| `bg-canvas` | Fondo de toda pantalla |
+| `bg-surface` | Tarjetas, inputs, secciones |
+| `bg-primary` / `text-primary` | Acción principal, éxito, activo |
+| `text-secondary` / `border-secondary` | Foco, selección, información |
+| `text-danger` / `border-danger` | Error, acción destructiva |
+| `text-ink` | Texto principal |
+| `text-ink/70` | Texto de lectura atenuado |
+| `text-ink/60` | Metadatos (fechas, contadores) |
+| `text-ink-inverted` | Texto sobre `bg-primary` |
+| `bg-disabled`, `text-disabled-text` | Deshabilitado |
 
 ---
 
-## Contenedores
+## Espaciado: OJO con los números
 
-```tsx
-// Pantalla simple
-<View className="flex-1 gap-6 bg-base p-6">
+El grid es de 8px y **reemplaza** los números 1-6 de Tailwind:
 
-// Pantalla centrada (login, acuse de recibo, error)
-<View className="flex-1 justify-center gap-5 bg-base p-6">
+| Clase | Valor |
+|---|---|
+| `*-1` | 4px |
+| `*-2` | 8px |
+| `*-3` | 16px |
+| `*-4` | 24px |
+| `*-5` | 32px |
+| `*-6` | 48px |
 
-// Pantalla con scroll (formularios largos)
-<ScrollView
-  className="flex-1 bg-base"
-  contentContainerClassName="gap-5 p-6"
-  keyboardShouldPersistTaps="handled">
+`p-6` es 48px, no 24px. No uses fracciones (`gap-1.5`, `p-3.5`) ni números
+mayores a 6 para espaciar: no están en el grid y en nativo NativeWind los
+calcula con otra base. Para tamaños fijos usa valores explícitos:
+`h-[44px]`, `min-h-[48px]`.
 
-// Tarjeta
-<View className="gap-3 rounded-2xl border border-secondary bg-tertiary p-5">
-
-// Cargando
-<View className="flex-1 items-center justify-center bg-base">
-  <ActivityIndicator color="#fff" />
-</View>
-```
-
-El espaciado entre hijos es `gap-*`, nunca `mt-*` en cada hijo.
-`gap-6` entre bloques, `gap-5` entre campos de formulario, `gap-3`
-dentro de una tarjeta, `gap-1.5` entre etiqueta y control.
+Radios: `rounded-sm` (8px, inputs y badges), `rounded-md` (16px, tarjetas),
+`rounded-full` (botones, avatares).
 
 ---
 
 ## Tipografía
 
-```tsx
-<Text className="text-2xl font-bold text-white">   // Título de pantalla
-<Text className="text-xl font-bold text-white">    // Título de sección/tarjeta
-<Text className="text-lg font-bold text-white">    // Título de tarjeta en lista
-<Text className="text-neutral-200">                // Texto secundario
-<Text className="text-sm text-neutral-400">        // Descripción, lugar
-<Text className="text-xs text-neutral-400">        // Fecha, id, metadato
-<Text className="font-semibold text-neutral-200">  // Etiqueta de un campo
-```
+Las fuentes se cargan en `app/_layout.tsx`. Con fuentes personalizadas el
+peso va en la familia, no en `font-bold`: `font-body-semibold`, no
+`font-semibold`.
 
----
-
-## Botón → usa `Button`
-
-`src/components/Button.tsx` es **el** botón del proyecto. No escribas otro
-`Pressable` con fondo primario.
-
-```tsx
-import Button from '../src/components/Button';
-
-// Primario
-<Button text="Participar" onPress={join} />
-
-// Secundario (borde, sin relleno)
-<Button text="Ver detalles" onPress={openDetails} secondary />
-
-// Deshabilitado mientras se envía: el texto también cambia
-<Button
-  text={formState.isSubmitting ? 'Entrando…' : 'Entrar'}
-  onPress={handleSubmit(submit)}
-  disabled={formState.isSubmitting}
-/>
-
-// Ajuste puntual (se suma a las clases base, ej. botón en fila)
-<Button text="Participar" onPress={join} className="flex-1" />
-```
-
-Props: `text`, `onPress`, `disabled?`, `secondary?`, `className?`.
-
-| Parte | Clases |
+| Componente | Para |
 |---|---|
-| Base | `items-center rounded-xl p-4 active:opacity-80 disabled:opacity-50` |
-| Primario | `bg-primary` + texto `font-semibold text-white` |
-| Secundario | `border border-secondary` + texto `font-semibold text-neutral-100` |
+| `<Heading level="display">` | Cifras grandes del HUD |
+| `<Heading level="h1" / "h2">` | Títulos (Orbitron) |
+| `<Heading level="h3">` | Título de tarjeta o sección (Inter) |
+| `<Body>` / `<Body muted>` | Texto de lectura |
+| `<Caption>` | Fechas, contadores, ayudas |
+
+No le pases a `Heading`, `Body` o `Caption` una clase de color o de fuente:
+chocaría con la suya y el resultado depende del orden del CSS. Si necesitas
+otro color, usa `Text` con sus clases completas.
 
 ---
 
-## Campo de texto → usa `Field`
+## Componentes
 
-Igual que la guía: etiqueta, borde rojo al fallar y mensaje de error.
-Solo dentro de un formulario de react-hook-form. En dark, el input es
-`bg-tertiary` con borde `border-secondary` y texto blanco.
-
----
-
-## Teclado
-
-Toda pantalla con campos envuelve su contenido para que tocar fuera cierre
-el teclado (si no, el teclado tapa el botón y no deja salir):
-
-```tsx
-import { Keyboard, Pressable } from 'react-native';
-
-<Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
-  {/* contenido */}
-</Pressable>
-```
-
-En `ScrollView`, además: `keyboardShouldPersistTaps="handled"` y
-`keyboardDismissMode="on-drag"`, para que arrastrar también lo oculte.
+| Componente | Para |
+|---|---|
+| `Button` | Toda acción. `variant`: `primary` (una por pantalla), `secondary`, `danger`. Háptica incluida. |
+| `Field` | Campo de react-hook-form: foco cian, válido verde, error rojo con *shake*. |
+| `SearchBar` | Buscador de las listas. |
+| `Segmented` / `Chip` | Filtros y selectores de pocas opciones. |
+| `Card` | Tarjeta. Con `onPress` toda la tarjeta navega (con chevron). |
+| `Badge` | Estado en mayúsculas: `primary`, `secondary`, `muted`. |
+| `Notice` | Error del servidor o "Cambios guardados". |
+| `FormScreen` | Pantalla de formulario (scroll, teclado resuelto). |
+| `FormSection` | Agrupa campos relacionados bajo un título. |
+| `ListScreen` | Lista con contador, buscador, filtros y estado vacío. |
+| `LoadingScreen`, `ErrorScreen`, `EmptyState` | Cargando, error de carga, lista vacía. |
+| `DangerZone` | Eliminar, al final de un detalle y separado de Guardar. |
+| `HeaderAction` | Botón "Nuevo" del header de una lista. |
 
 ---
 
-## Errores del formulario completo
+## Patrones de pantalla
 
-Un solo formato para el error que devuelve el servidor (en pantalla, no en
-consola):
+**Lista** (tab): `ListScreen` + `useFocusLoad`, que recarga al volver de
+crear o editar. El "Nuevo" va en el header (`app/(tabs)/_layout.tsx`), no en
+la lista.
 
-```tsx
-{!!formState.errors.root && (
-  <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
-    {formState.errors.root.message}
-  </Text>
-)}
-```
+**Crear**: `FormScreen` → secciones → `Notice` → un `Button` primario. Al
+guardar: `hapticSuccess()` y `router.back()`; la lista ya muestra lo nuevo.
 
----
+**Detalle**: igual que crear, más:
+- el título del header es el nombre del registro (`<Stack.Screen options>`);
+- "Guardar cambios" deshabilitado hasta que algo cambie (`formState.isDirty`);
+- al guardar, `Notice tone="success"` en vez de una alerta;
+- `DangerZone` al final.
 
-## Lista
-
-```tsx
-<FlatList
-  contentContainerClassName="gap-4 p-6"
-  ListHeaderComponent={...}
-  ...
-/>
-```
+**Envío de formularios**: `handleSubmit(submit, hapticError)`. El segundo
+argumento hace vibrar cuando la validación falla, y `Field` enfoca el primer
+campo con error.
 
 ---
 
-## Enlace
+## Lo que no se usa
 
-```tsx
-<Link href="/login" className="text-center font-semibold text-neutral-100">
-```
+- `Alert.alert`: no funciona en web. Para confirmar una eliminación usa
+  `confirmDestructive` (`src/utils/dialog.ts`); para avisar, `Notice`.
+- `Pressable` con `Keyboard.dismiss` envolviendo la pantalla: `FormScreen` ya
+  cierra el teclado al tocar fuera de un campo.
+- Colores de Tailwind por defecto (`text-white`, `text-neutral-400`,
+  `red-500`): usa los tokens.

@@ -1,9 +1,14 @@
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Keyboard, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import Button from '../src/components/Button';
 import Field from '../src/components/Field';
+import Notice from '../src/components/Notice';
+import { FormScreen } from '../src/components/Screen';
+import { Body } from '../src/components/Typography';
 import { useSession } from '../src/session/context';
+import { colors } from '../src/theme/tokens';
+import { hapticError, hapticSuccess } from '../src/utils/haptics';
 
 /** Los datos que captura este formulario. */
 type LoginForm = { email: string; password: string };
@@ -20,9 +25,11 @@ export default function Login() {
   const submit = async ({ email, password }: LoginForm) => {
     try {
       await login(email, password);
+      hapticSuccess();
       // No hay que navegar: al cambiar la sesión, el layout raíz muestra las
       // pantallas privadas automáticamente.
     } catch (error) {
+      hapticError();
       // `root` es el error del formulario completo (credenciales malas, servidor
       // caído...), a diferencia del error de un campo concreto.
       setError('root', { message: (error as Error).message });
@@ -30,12 +37,16 @@ export default function Login() {
   };
 
   return (
-    // Tocar fuera de los campos cierra el teclado (si no, tapa el botón Entrar).
-    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
-      <View className="flex-1 justify-center gap-5 p-6">
-      <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">NFHunter</Text>
-        <Text className="text-neutral-400">Entra para seguir la cacería</Text>
+    <FormScreen centered>
+      <View className="items-center gap-2 py-5">
+        <Text
+          className="font-data-black text-display text-primary"
+          style={{ textShadowColor: colors.primary, textShadowRadius: 16 }}>
+          NFHunter
+        </Text>
+        <Body muted className="text-center">
+          Cada esquina guarda una historia. Cada tag, un trofeo.
+        </Body>
       </View>
 
       <Field
@@ -43,6 +54,7 @@ export default function Login() {
         name="email"
         label="Correo"
         keyboardType="email-address"
+        autoComplete="email"
         placeholder="tucorreo@ejemplo.com"
         rules={{
           required: 'El correo es obligatorio',
@@ -55,29 +67,32 @@ export default function Login() {
         name="password"
         label="Contraseña"
         secureTextEntry
+        autoComplete="current-password"
         placeholder="••••••••"
+        returnKeyType="go"
+        onSubmitEditing={handleSubmit(submit, hapticError)}
         rules={{
           required: 'La contraseña es obligatoria',
           maxLength: { value: 72, message: 'Máximo 72 caracteres' },
         }}
       />
 
-      {!!formState.errors.root && (
-        <Text className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-center text-red-200">
-          {formState.errors.root.message}
-        </Text>
-      )}
+      <Notice message={formState.errors.root?.message} />
 
       <Button
         text={formState.isSubmitting ? 'Entrando…' : 'Entrar'}
-        onPress={handleSubmit(submit)}
+        onPress={handleSubmit(submit, hapticError)}
         disabled={formState.isSubmitting}
       />
 
-      <Link href="/register" className="text-center font-semibold text-neutral-100">
-        ¿No tienes cuenta? Regístrate
-      </Link>
-      </View>
-    </Pressable>
+      <Pressable
+        onPress={() => router.push('/register')}
+        accessibilityRole="link"
+        className="items-center py-2">
+        <Text className="font-body text-body text-ink/70">
+          ¿No tienes cuenta? <Text className="font-body-semibold text-secondary">Crear cuenta</Text>
+        </Text>
+      </Pressable>
+    </FormScreen>
   );
 }

@@ -1,14 +1,17 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, Keyboard, Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import Button from '../../src/components/Button';
-import Field from '../../src/components/Field';
-import FormError from '../../src/components/FormError';
-import RoleSegment from '../../src/components/RoleSegment';
 import { ApiRequestError } from '../../src/api/client';
 import { deleteUser, getUser, updateUser } from '../../src/api/users';
+import Button from '../../src/components/Button';
+import Field from '../../src/components/Field';
+import Notice from '../../src/components/Notice';
+import { DangerZone, ErrorScreen, FormScreen, FormSection, LoadingScreen } from '../../src/components/Screen';
+import Segmented from '../../src/components/Segmented';
+import { useSession } from '../../src/session/context';
 import type { AdminUser, Role, UpdateUserDto } from '../../src/types';
+import { confirmDestructive } from '../../src/utils/dialog';
+import { hapticError, hapticSuccess } from '../../src/utils/haptics';
 
 type UserForm = {
   nickname: string;
@@ -19,6 +22,20 @@ type UserForm = {
   levelTitle: string;
 };
 
+const ROLE_OPTIONS = [
+  { label: 'Jugador', value: 'USER' },
+  { label: 'Administrador', value: 'ADMIN' },
+] as const;
+
+const toForm = (user: AdminUser): UserForm => ({
+  nickname: user.nickname,
+  email: user.email,
+  password: '',
+  role: user.role,
+  totalPoints: String(user.totalPoints),
+  levelTitle: user.levelTitle ?? '',
+});
+
 /**
  * Detalle + edición + eliminación de un usuario.
  * - Los datos llegan precargados (`reset` al cargar).
@@ -27,10 +44,12 @@ type UserForm = {
  */
 export default function UserDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { user: me } = useSession();
   const [original, setOriginal] = useState<AdminUser | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isDeleting, setDeleting] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const { control, handleSubmit, setError, reset, formState } = useForm<UserForm>({
     defaultValues: {
@@ -43,30 +62,12 @@ export default function UserDetail() {
     },
   });
 
-  const showMessage = (title: string, message: string, onClose?: () => void) => {
-    if (Platform.OS === 'web') {
-      globalThis.alert(`${title}\n\n${message}`);
-      onClose?.();
-      return;
-    }
-    Alert.alert(title, message, [{ text: 'OK', onPress: onClose }]);
-  };
   useEffect(() => {
     const load = async () => {
       try {
-        setLoading(true);
-        setLoadError(null);
         const user = await getUser(id);
         setOriginal(user);
-        // Precarga: el formulario arranca con los datos actuales del servidor.
-        reset({
-          nickname: user.nickname,
-          email: user.email,
-          password: '',
-          role: user.role,
-          totalPoints: String(user.totalPoints),
-          levelTitle: user.levelTitle ?? '',
-        });
+        reset(toForm(user));
       } catch (failure) {
         setLoadError((failure as Error).message);
       } finally {
@@ -79,106 +80,62 @@ export default function UserDetail() {
   const submit = async (values: UserForm) => {
     if (!original) return;
     // Solo lo que cambió viaja al backend (PATCH parcial, no PUT completo).
+    const { dirtyFields } = formState;
     const patch: UpdateUserDto = {};
-    if (formState.dirtyFields.nickname) patch.nickname = values.nickname.trim();
-    if (formState.dirtyFields.email) patch.email = values.email.trim().toLowerCase();
-    if (formState.dirtyFields.password && values.password) patch.password = values.password;
-    if (formState.dirtyFields.role) patch.role = values.role;
-    if (formState.dirtyFields.totalPoints) patch.totalPoints = Number(values.totalPoints);
-    if (formState.dirtyFields.levelTitle) patch.levelTitle = values.levelTitle.trim();
-
-    if (Object.keys(patch).length === 0) {
-      Alert.alert('Sin cambios', 'No modificaste ningún campo.');
-      return;
-    }
+    if (dirtyFields.nickname) patch.nickname = values.nickname.trim();
+    if (dirtyFields.email) patch.email = values.email.trim().toLowerCase();
+    if (dirtyFields.password && values.password) patch.password = values.password;
+    if (dirtyFields.role) patch.role = values.role;
+    if (dirtyFields.totalPoints) patch.totalPoints = Number(values.totalPoints);
+    if (dirtyFields.levelTitle) patch.levelTitle = values.levelTitle.trim();
 
     try {
       const updated = await updateUser(original.id, patch);
       setOriginal(updated);
-      reset(
-        {
-          nickname: updated.nickname,
-          email: updated.email,
-          password: '',
-          role: updated.role,
-          totalPoints: String(updated.totalPoints),
-          levelTitle: updated.levelTitle ?? '',
-        },
-        { keepErrors: false },
-      );
-      showMessage('Usuario actualizado', 'Los cambios quedaron guardados.');
+      reset(toForm(updated));
+      setSaved(true);
+      hapticSuccess();
     } catch (failure) {
+      hapticError();
       setError('root', { message: (failure as Error).message });
     }
-  };
-
-  const confirmDelete = () => {
-    if (!original) return;
-    const message = `¿Eliminar a ${original.nickname}? Esta acción no se puede deshacer.`;
-
-    if (Platform.OS === 'web') {
-      if (globalThis.confirm(message)) void remove();
-      return;
-    }
-
-    Alert.alert('Eliminar usuario', message, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => void remove() },
-    ]);
   };
 
   const remove = async () => {
     if (!original) return;
+    const confirmed = await confirmDestructive(
+      'Eliminar usuario',
+      `¿Eliminar a ${original.nickname}? Se borra también su historial. Esta acción no se puede deshacer.`,
+    );
+    if (!confirmed) return;
     try {
       setDeleting(true);
       await deleteUser(original.id);
-      showMessage('Usuario eliminado', 'El usuario se eliminó correctamente.', () => router.back());
+      hapticSuccess();
+      router.back();
     } catch (failure) {
       setDeleting(false);
-      if (failure instanceof ApiRequestError && failure.status === 403) {
-        setError('root', { message: 'No tienes permisos de administrador' });
-        return;
-      }
-
+      hapticError();
       if (failure instanceof ApiRequestError && failure.status === 404) {
-        showMessage('Usuario no encontrado', 'La lista se actualizará porque ya no existe.', () => router.back());
+        // Otro admin lo borró primero: la lista se refresca al volver.
+        router.back();
         return;
       }
-
       setError('root', { message: (failure as Error).message });
     }
   };
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-base">
-        <ActivityIndicator color="#fff" />
-      </View>
-    );
-  }
+  if (isLoading) return <LoadingScreen />;
+  if (loadError || !original) return <ErrorScreen message={loadError ?? 'Usuario no encontrado.'} />;
 
-  if (loadError || !original) {
-    return (
-      <View className="flex-1 justify-center gap-5 bg-base p-6">
-        <Text className="text-center text-xl font-bold text-white">No se pudo cargar</Text>
-        <FormError message={loadError ?? 'Usuario no encontrado.'} />
-        <Button text="Volver" onPress={() => router.back()} secondary />
-      </View>
-    );
-  }
+  const busy = formState.isSubmitting || isDeleting;
+  const isMe = original.id === me?.id;
 
   return (
-    <Pressable className="flex-1 bg-base" onPress={Keyboard.dismiss}>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 p-6"
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag">
-        <View className="gap-1">
-          <Text className="text-2xl font-bold text-white">{original.nickname}</Text>
-          <Text className="text-xs text-neutral-400">id {original.id}</Text>
-        </View>
+    <FormScreen>
+      <Stack.Screen options={{ title: original.nickname }} />
 
+      <FormSection title="Cuenta">
         <Field
           control={control}
           name="nickname"
@@ -205,24 +162,25 @@ export default function UserDetail() {
         <Field
           control={control}
           name="password"
-          label="Nueva contraseña (vacío = no cambiar)"
+          label="Nueva contraseña"
+          hint="Déjala vacía para no cambiarla."
           secureTextEntry
           placeholder="••••••••"
           rules={{
-            validate: (value) =>
-              !value || value.length >= 8 || 'Mínimo 8 caracteres',
+            validate: (value) => !value || value.length >= 8 || 'Mínimo 8 caracteres',
             maxLength: { value: 72, message: 'Máximo 72 caracteres' },
           }}
         />
+      </FormSection>
 
+      <FormSection title="Rol y progreso">
         <Controller
           control={control}
           name="role"
           render={({ field: { value, onChange } }) => (
-            <RoleSegment value={value} onChange={onChange} />
+            <Segmented label="Rol" options={ROLE_OPTIONS} value={value} onChange={onChange} />
           )}
         />
-
         <Field
           control={control}
           name="totalPoints"
@@ -249,21 +207,24 @@ export default function UserDetail() {
             maxLength: { value: 60, message: 'Máximo 60 caracteres' },
           }}
         />
+      </FormSection>
 
-        <FormError message={formState.errors.root?.message} />
+      <Notice message={formState.errors.root?.message} />
+      {saved && !formState.isDirty && <Notice tone="success" message="Cambios guardados." />}
+      <Button
+        text={formState.isSubmitting ? 'Guardando…' : 'Guardar cambios'}
+        onPress={handleSubmit(submit, hapticError)}
+        disabled={!formState.isDirty || busy}
+      />
 
-        <Button
-          text={formState.isSubmitting ? 'Guardando…' : 'Guardar cambios'}
-          onPress={handleSubmit(submit)}
-          disabled={formState.isSubmitting || isDeleting}
+      {!isMe && (
+        <DangerZone
+          description="Se borran la cuenta y todo su historial de escaneos."
+          buttonText={isDeleting ? 'Eliminando…' : 'Eliminar usuario'}
+          onPress={() => void remove()}
+          disabled={busy}
         />
-        <Button
-          text={isDeleting ? 'Eliminando…' : 'Eliminar usuario'}
-          onPress={confirmDelete}
-          disabled={formState.isSubmitting || isDeleting}
-          secondary
-        />
-      </ScrollView>
-    </Pressable>
+      )}
+    </FormScreen>
   );
 }
