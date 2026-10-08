@@ -6,7 +6,7 @@
  * no necesita un `useState` por cada campo.
  */
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import {
   Controller,
   type Control,
@@ -14,7 +14,9 @@ import {
   type Path,
   type RegisterOptions,
 } from 'react-hook-form';
-import { Animated, Platform, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { Animated, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { useInputFocus } from '@/hooks/useInputFocus';
+import { useShake } from '@/hooks/useShake';
 import { colors } from '@/theme/tokens';
 import { inputClassName, inputStyle, type InputState } from '@/components/ui/inputStyle';
 
@@ -42,7 +44,7 @@ export default function Field<T extends FieldValues>({
   multiline,
   ...input
 }: Props<T>) {
-  const [isFocused, setFocused] = useState(false);
+  const focus = useInputFocus();
 
   return (
     <Controller
@@ -52,7 +54,7 @@ export default function Field<T extends FieldValues>({
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error, isDirty } }) => {
         const state: InputState = error
           ? 'error'
-          : isFocused
+          : focus.isFocused
             ? 'focused'
             : isDirty && value
               ? 'valid'
@@ -70,9 +72,9 @@ export default function Field<T extends FieldValues>({
                 style={inputStyle(state)}
                 value={value}
                 onChangeText={(text) => onChange(format === 'date' ? formatDateInput(text) : text)}
-                onFocus={() => setFocused(true)}
+                onFocus={focus.onFocus}
                 onBlur={() => {
-                  setFocused(false);
+                  focus.onBlur();
                   onBlur();
                 }}
                 autoCapitalize="none"
@@ -97,19 +99,7 @@ export default function Field<T extends FieldValues>({
 
 /** Sacude a su hijo cuando `trigger` pasa a tener un valor (aparece un error). */
 function Shake({ trigger, children }: { trigger?: string; children: ReactNode }) {
-  const offset = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (!trigger) return;
-    const step = (toValue: number) =>
-      Animated.timing(offset, {
-        toValue,
-        duration: 50,
-        useNativeDriver: Platform.OS !== 'web',
-      });
-    Animated.sequence([step(-6), step(6), step(-4), step(4), step(0)]).start();
-  }, [trigger, offset]);
-
+  const offset = useShake(trigger);
   return <Animated.View style={{ transform: [{ translateX: offset }] }}>{children}</Animated.View>;
 }
 
