@@ -65,14 +65,26 @@ salen vacíos: el plugin de `@nestjs/swagger` no está activado).
 
 ## Cómo está organizado
 
+Cada capa hace una sola cosa:
+
+```
+ruta (app/)  ->  componente (src/components/)  ->  hook (src/hooks/)  ->  API (src/api/)  ->  fetch
+ solo monta        solo pinta                       estado y lógica      endpoints          client.ts
+```
+
 | Carpeta | Qué hay |
 |---|---|
-| `app/` | Pantallas. El enrutado es por archivos (expo-router). |
-| `src/config/` | La dirección del backend y el tiempo máximo de espera. |
-| `src/api/` | La única capa que habla con el servidor: `client.ts` (fetch) y `auth.ts` (endpoints). |
+| `app/` | Las rutas (expo-router). Cada archivo solo monta un componente; si la ruta tiene parámetros, los lee y se los pasa. |
+| `src/components/` | La vista, por dominio: `ui` (piezas genéricas), `auth`, `events`, `tags`, `users`, `panel`, `player`, `chat`, `profile`, `navigation`. |
+| `src/hooks/` | Toda la lógica con estado: cargar datos, filtros, formularios, guardar, eliminar, permisos. Un hook por tarea (`useEvents`, `useCreateEvent`, `useEventEditor`...). |
+| `src/api/` | La única capa que habla con el servidor. `client.ts` es el único archivo que usa `fetch`: centraliza el token, el tiempo máximo de espera y los mensajes de error. |
+| `src/utils/` | Funciones puras, sin estado: formatos, conversión formulario <-> DTO, háptica, diálogos. |
 | `src/session/` | Sesión: contexto de React, guardado del token y lectura del JWT. |
+| `src/config/` | La dirección del backend y el tiempo máximo de espera. |
+| `src/theme/` | Tokens de diseño (`dict_style.md`) y estilo de la navegación. |
 | `src/types.ts` | El contrato con la API, en tipos. |
-| `src/components/` | Piezas de interfaz reutilizables. |
+
+Los imports usan el alias `@/` (`@/components/...`, `@/hooks/...`), que apunta a `src/`.
 
 ## Sobre la sesión
 
