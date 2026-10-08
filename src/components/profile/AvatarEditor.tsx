@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Platform, View } from 'react-native';
-import { uploadAvatar } from '../api/profile';
-import type { MyProfile } from '../types';
-import { pickAvatar } from '../utils/avatar';
-import { hapticError, hapticSuccess } from '../utils/haptics';
-import Avatar from './Avatar';
-import Notice from './Notice';
-import { Chip } from './Segmented';
+import { uploadAvatar } from '@/api/profile';
+import type { MyProfile } from '@/types';
+import { pickAvatar } from '@/utils/avatar';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
+import Avatar from '@/components/ui/Avatar';
+import Notice from '@/components/ui/Notice';
+import { Chip } from '@/components/ui/Segmented';
 
 /**
  * La foto de perfil con sus dos formas de cambiarla. En web no hay cámara de

@@ -5,16 +5,16 @@ import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
-import { registerScan } from '../../src/api/scans';
-import Button from '../../src/components/Button';
-import CollectibleCard from '../../src/components/CollectibleCard';
-import Field from '../../src/components/Field';
-import Notice from '../../src/components/Notice';
-import { FormScreen } from '../../src/components/Screen';
-import { Body, Caption, Heading } from '../../src/components/Typography';
-import { colors, glow } from '../../src/theme/tokens';
-import type { ScanResult } from '../../src/types';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
+import { registerScan } from '@/api/scans';
+import Button from '@/components/ui/Button';
+import CollectibleCard from '@/components/player/CollectibleCard';
+import Field from '@/components/ui/Field';
+import Notice from '@/components/ui/Notice';
+import { FormScreen } from '@/components/ui/Screen';
+import { Body, Caption, Heading } from '@/components/ui/Typography';
+import { colors, glow } from '@/theme/tokens';
+import type { ScanResult } from '@/types';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
 
 type Mode = 'idle' | 'camera' | 'manual';
 

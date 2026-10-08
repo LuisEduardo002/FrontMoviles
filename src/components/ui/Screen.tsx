@@ -2,11 +2,11 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { router } from 'expo-router';
 import type { ComponentProps, PropsWithChildren } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import { colors, glow } from '../theme/tokens';
-import { hapticTap } from '../utils/haptics';
-import Button from './Button';
-import Notice from './Notice';
-import { Body, Caption, Heading } from './Typography';
+import { colors, glow } from '@/theme/tokens';
+import { hapticTap } from '@/utils/haptics';
+import Button from '@/components/ui/Button';
+import Notice from '@/components/ui/Notice';
+import { Body, Caption, Heading } from '@/components/ui/Typography';
 
 type IconName = ComponentProps<typeof MaterialDesignIcons>['name'];
 

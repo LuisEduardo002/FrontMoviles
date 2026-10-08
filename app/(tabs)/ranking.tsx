@@ -1,18 +1,18 @@
 import { useCallback, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { listEvents } from '../../src/api/events';
-import { getRanking } from '../../src/api/profile';
-import Avatar from '../../src/components/Avatar';
-import ListScreen from '../../src/components/ListScreen';
-import { EmptyState, LoadingScreen } from '../../src/components/Screen';
-import { Chip } from '../../src/components/Segmented';
-import { Caption } from '../../src/components/Typography';
-import { useFocusLoad } from '../../src/hooks/useFocusLoad';
-import { useSession } from '../../src/session/context';
-import { glow } from '../../src/theme/tokens';
-import type { AdminEvent, Ranking, RankingEntry } from '../../src/types';
-import { eventPhase } from '../../src/utils/events';
-import { plural } from '../../src/utils/format';
+import { listEvents } from '@/api/events';
+import { getRanking } from '@/api/profile';
+import Avatar from '@/components/ui/Avatar';
+import ListScreen from '@/components/ui/ListScreen';
+import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
+import { Chip } from '@/components/ui/Segmented';
+import { Caption } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import { useSession } from '@/session/context';
+import { glow } from '@/theme/tokens';
+import type { AdminEvent, Ranking, RankingEntry } from '@/types';
+import { eventPhase } from '@/utils/events';
+import { plural } from '@/utils/format';
 
 /**
  * Ranking de cazadores: general (puntos totales) o de un evento en curso

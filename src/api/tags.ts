@@ -18,8 +18,8 @@
  * calcar `AdminEvent.id` y se vuelve a convertir a número al enviarlo.
  */
 
-import type { CreateTagDto, CreateTagResult, NfcTag, PlayerTag, UpdateTagDto } from '../types';
-import { request } from './client';
+import type { CreateTagDto, CreateTagResult, NfcTag, PlayerTag, UpdateTagDto } from '@/types';
+import { request } from '@/api/client';
 
 const PATH = '/nfc-tags';
 

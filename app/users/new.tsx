@@ -1,13 +1,13 @@
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { createUser } from '../../src/api/users';
-import Button from '../../src/components/Button';
-import Field from '../../src/components/Field';
-import Notice from '../../src/components/Notice';
-import { FormScreen, FormSection } from '../../src/components/Screen';
-import Segmented from '../../src/components/Segmented';
-import type { Role } from '../../src/types';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
+import { createUser } from '@/api/users';
+import Button from '@/components/ui/Button';
+import Field from '@/components/ui/Field';
+import Notice from '@/components/ui/Notice';
+import { FormScreen, FormSection } from '@/components/ui/Screen';
+import Segmented from '@/components/ui/Segmented';
+import type { Role } from '@/types';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
 
 type UserForm = {
   nickname: string;

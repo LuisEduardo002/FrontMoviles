@@ -1,20 +1,20 @@
 import { router } from 'expo-router';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
-import { listEvents } from '../../src/api/events';
-import { listTags } from '../../src/api/tags';
-import { listUsers } from '../../src/api/users';
-import Button from '../../src/components/Button';
-import Card from '../../src/components/Card';
-import Notice from '../../src/components/Notice';
-import { LoadingScreen } from '../../src/components/Screen';
-import StatTile from '../../src/components/StatTile';
-import { Caption, Heading } from '../../src/components/Typography';
-import { useFocusLoad } from '../../src/hooks/useFocusLoad';
-import { useSession } from '../../src/session/context';
-import { colors } from '../../src/theme/tokens';
-import type { AdminEvent, AdminUser, NfcTag } from '../../src/types';
-import { formatDate, plural } from '../../src/utils/format';
-import PlayerEvents from '../../src/screens/player/PlayerEvents';
+import { listEvents } from '@/api/events';
+import { listTags } from '@/api/tags';
+import { listUsers } from '@/api/users';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Notice from '@/components/ui/Notice';
+import { LoadingScreen } from '@/components/ui/Screen';
+import StatTile from '@/components/ui/StatTile';
+import { Caption, Heading } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import { useSession } from '@/session/context';
+import { colors } from '@/theme/tokens';
+import type { AdminEvent, AdminUser, NfcTag } from '@/types';
+import { formatDate, plural } from '@/utils/format';
+import PlayerEvents from '@/components/events/PlayerEventList';
 
 interface Summary {
   users: AdminUser[];

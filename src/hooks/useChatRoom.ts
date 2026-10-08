@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { connectChat, deleteMessage, emitWithAck, listMessages } from '../api/chat';
-import { useSession } from '../session/context';
-import type { ChatMessage } from '../types';
+import { connectChat, deleteMessage, emitWithAck, listMessages } from '@/api/chat';
+import { useSession } from '@/session/context';
+import type { ChatMessage } from '@/types';
 
 const PAGE_SIZE = 50;
 

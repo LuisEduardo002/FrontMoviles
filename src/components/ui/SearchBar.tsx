@@ -1,8 +1,8 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
-import { colors } from '../theme/tokens';
-import { inputClassName, inputStyle } from './inputStyle';
+import { colors } from '@/theme/tokens';
+import { inputClassName, inputStyle } from '@/components/ui/inputStyle';
 
 /**
  * Buscador de las listas del panel. Mismo estilo que `Field`, pero sin

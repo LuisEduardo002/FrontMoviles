@@ -1,14 +1,14 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { router } from 'expo-router';
 import { View } from 'react-native';
-import { GENERAL_ROOM, listRooms } from '../../src/api/chat';
-import Card from '../../src/components/Card';
-import ListScreen from '../../src/components/ListScreen';
-import { EmptyState, LoadingScreen } from '../../src/components/Screen';
-import { Caption, Heading } from '../../src/components/Typography';
-import { useFocusLoad } from '../../src/hooks/useFocusLoad';
-import { colors } from '../../src/theme/tokens';
-import type { ChatRoom } from '../../src/types';
+import { GENERAL_ROOM, listRooms } from '@/api/chat';
+import Card from '@/components/ui/Card';
+import ListScreen from '@/components/ui/ListScreen';
+import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
+import { Caption, Heading } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import { colors } from '@/theme/tokens';
+import type { ChatRoom } from '@/types';
 
 /**
  * Salas del chat: la general, donde hablan todos, y una por cada evento

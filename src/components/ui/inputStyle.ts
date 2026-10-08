@@ -1,5 +1,5 @@
 import type { TextStyle } from 'react-native';
-import { glow } from '../theme/tokens';
+import { glow } from '@/theme/tokens';
 
 /**
  * Estados visuales de un input (dict_style.md §3.2), compartidos por `Field`

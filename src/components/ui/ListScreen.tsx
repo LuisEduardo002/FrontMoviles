@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
-import { colors } from '../theme/tokens';
-import { plural } from '../utils/format';
-import Notice from './Notice';
-import { Caption } from './Typography';
+import { colors } from '@/theme/tokens';
+import { plural } from '@/utils/format';
+import Notice from '@/components/ui/Notice';
+import { Caption } from '@/components/ui/Typography';
 
 /**
  * Esqueleto de las listas del panel: contador, buscador y filtros arriba,

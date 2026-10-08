@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Caption } from './Typography';
+import { Caption } from '@/components/ui/Typography';
 
 /** "3 de 5 tags" con su barra: cuánto le falta al jugador en el evento. */
 export default function ProgressBar({ found, total }: { found: number; total: number }) {

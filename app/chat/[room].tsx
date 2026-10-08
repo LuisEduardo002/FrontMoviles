@@ -3,17 +3,17 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ChatBubble from '../../src/components/ChatBubble';
-import { inputClassName, inputStyle } from '../../src/components/inputStyle';
-import Notice from '../../src/components/Notice';
-import { EmptyState, LoadingScreen } from '../../src/components/Screen';
-import { Caption } from '../../src/components/Typography';
-import { useChatRoom } from '../../src/hooks/useChatRoom';
-import { useSession } from '../../src/session/context';
-import { colors, glow } from '../../src/theme/tokens';
-import type { ChatMessage } from '../../src/types';
-import { confirmDestructive } from '../../src/utils/dialog';
-import { hapticError, hapticTap } from '../../src/utils/haptics';
+import ChatBubble from '@/components/chat/ChatBubble';
+import { inputClassName, inputStyle } from '@/components/ui/inputStyle';
+import Notice from '@/components/ui/Notice';
+import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
+import { Caption } from '@/components/ui/Typography';
+import { useChatRoom } from '@/hooks/useChatRoom';
+import { useSession } from '@/session/context';
+import { colors, glow } from '@/theme/tokens';
+import type { ChatMessage } from '@/types';
+import { confirmDestructive } from '@/utils/dialog';
+import { hapticError, hapticTap } from '@/utils/haptics';
 
 /**
  * Una sala del chat en vivo. La lista va invertida: el último mensaje queda

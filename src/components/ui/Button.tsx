@@ -1,8 +1,8 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import type { ComponentProps } from 'react';
 import { Pressable, Text } from 'react-native';
-import { colors } from '../theme/tokens';
-import { hapticTap } from '../utils/haptics';
+import { colors } from '@/theme/tokens';
+import { hapticTap } from '@/utils/haptics';
 
 /**
  * El botón del proyecto (dict_style.md §3.1). No escribas otro Pressable con

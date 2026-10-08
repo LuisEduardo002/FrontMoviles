@@ -1,15 +1,15 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { listEvents } from '../../src/api/events';
-import { createTag } from '../../src/api/tags';
-import Button from '../../src/components/Button';
-import Notice from '../../src/components/Notice';
-import { FormScreen } from '../../src/components/Screen';
-import TagForm from '../../src/components/TagForm';
-import type { AdminEvent } from '../../src/types';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
-import { TAG_DEFAULTS, formToCreateTag, type TagFormValues } from '../../src/utils/tagForm';
+import { listEvents } from '@/api/events';
+import { createTag } from '@/api/tags';
+import Button from '@/components/ui/Button';
+import Notice from '@/components/ui/Notice';
+import { FormScreen } from '@/components/ui/Screen';
+import TagForm from '@/components/tags/TagForm';
+import type { AdminEvent } from '@/types';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
+import { TAG_DEFAULTS, formToCreateTag, type TagFormValues } from '@/utils/tagForm';
 
 /** Crear tag NFC. Solo código, nombre y ubicación son obligatorios. */
 export default function NewTag() {

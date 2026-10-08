@@ -1,14 +1,14 @@
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { Pressable, Text, View } from 'react-native';
-import Button from '../src/components/Button';
-import Field from '../src/components/Field';
-import Notice from '../src/components/Notice';
-import { FormScreen } from '../src/components/Screen';
-import { Body } from '../src/components/Typography';
-import { useSession } from '../src/session/context';
-import { colors } from '../src/theme/tokens';
-import { hapticError, hapticSuccess } from '../src/utils/haptics';
+import Button from '@/components/ui/Button';
+import Field from '@/components/ui/Field';
+import Notice from '@/components/ui/Notice';
+import { FormScreen } from '@/components/ui/Screen';
+import { Body } from '@/components/ui/Typography';
+import { useSession } from '@/session/context';
+import { colors } from '@/theme/tokens';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
 
 /** Los datos que captura este formulario. */
 type LoginForm = { email: string; password: string };

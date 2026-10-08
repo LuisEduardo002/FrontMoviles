@@ -2,9 +2,9 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { router, Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
 import type { ColorValue } from 'react-native';
-import { HeaderAction } from '../../src/components/Screen';
-import { useSession } from '../../src/session/context';
-import { tabScreenOptions } from '../../src/theme/navigation';
+import { HeaderAction } from '@/components/ui/Screen';
+import { useSession } from '@/session/context';
+import { tabScreenOptions } from '@/theme/navigation';
 
 /**
  * Tabs de la app. Cambian con el rol, con `Tabs.Protected` (igual que el

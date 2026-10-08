@@ -1,6 +1,6 @@
 import { View } from 'react-native';
-import type { AdminEvent } from '../types';
-import { Chip } from './Segmented';
+import type { AdminEvent } from '@/types';
+import { Chip } from '@/components/ui/Segmented';
 
 /**
  * Selector de evento opcional para el formulario de tags.

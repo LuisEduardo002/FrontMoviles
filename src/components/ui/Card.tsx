@@ -1,7 +1,7 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import type { PropsWithChildren } from 'react';
 import { Pressable, View } from 'react-native';
-import { colors, glow } from '../theme/tokens';
+import { colors, glow } from '@/theme/tokens';
 
 /**
  * Tarjeta (dict_style.md §3.3). Con `onPress` toda la tarjeta se puede tocar

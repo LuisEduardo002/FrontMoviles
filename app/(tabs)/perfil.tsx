@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { getMyProfile } from '../../src/api/profile';
-import AvatarEditor from '../../src/components/AvatarEditor';
-import Badge from '../../src/components/Badge';
-import Button from '../../src/components/Button';
-import Card from '../../src/components/Card';
-import { Body, Caption, Heading } from '../../src/components/Typography';
-import { API_URL } from '../../src/config/env';
-import { useFocusLoad } from '../../src/hooks/useFocusLoad';
-import PlayerProfile from '../../src/screens/player/PlayerProfile';
-import { decodeJwt } from '../../src/session/jwt';
-import { useSession } from '../../src/session/context';
-import type { MyProfile } from '../../src/types';
-import { formatDateTime } from '../../src/utils/format';
+import { getMyProfile } from '@/api/profile';
+import AvatarEditor from '@/components/profile/AvatarEditor';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import { Body, Caption, Heading } from '@/components/ui/Typography';
+import { API_URL } from '@/config/env';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import PlayerProfile from '@/components/profile/PlayerProfile';
+import { decodeJwt } from '@/session/jwt';
+import { useSession } from '@/session/context';
+import type { MyProfile } from '@/types';
+import { formatDateTime } from '@/utils/format';
 
 /** El jugador ve su álbum; el admin, los datos de su sesión. */
 export default function Perfil() {

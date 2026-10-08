@@ -1,10 +1,10 @@
 import type { Ref } from 'react';
 import { Text, View } from 'react-native';
-import { assetUrl } from '../config/env';
-import { colors, glow } from '../theme/tokens';
-import type { MyProfile, MyScan } from '../types';
-import Avatar from './Avatar';
-import CollectibleCard from './CollectibleCard';
+import { assetUrl } from '@/config/env';
+import { colors, glow } from '@/theme/tokens';
+import type { MyProfile, MyScan } from '@/types';
+import Avatar from '@/components/ui/Avatar';
+import CollectibleCard from '@/components/player/CollectibleCard';
 
 /**
  * La tarjeta de cazador: lo que se comparte en redes. Es una vista normal que

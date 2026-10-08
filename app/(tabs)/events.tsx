@@ -1,17 +1,17 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { listEvents } from '../../src/api/events';
-import Badge from '../../src/components/Badge';
-import Card from '../../src/components/Card';
-import ListScreen from '../../src/components/ListScreen';
-import { EmptyState, LoadingScreen } from '../../src/components/Screen';
-import SearchBar from '../../src/components/SearchBar';
-import Segmented from '../../src/components/Segmented';
-import { Body, Caption, Heading } from '../../src/components/Typography';
-import { useFocusLoad } from '../../src/hooks/useFocusLoad';
-import type { AdminEvent } from '../../src/types';
-import { formatDate } from '../../src/utils/format';
+import { listEvents } from '@/api/events';
+import Badge from '@/components/ui/Badge';
+import Card from '@/components/ui/Card';
+import ListScreen from '@/components/ui/ListScreen';
+import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
+import SearchBar from '@/components/ui/SearchBar';
+import Segmented from '@/components/ui/Segmented';
+import { Body, Caption, Heading } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import type { AdminEvent } from '@/types';
+import { formatDate } from '@/utils/format';
 
 type Filter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 

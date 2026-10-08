@@ -3,10 +3,10 @@ import { useRef, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
-import { colors } from '../theme/tokens';
-import Button from './Button';
-import Notice from './Notice';
-import { FormSection } from './Screen';
+import { colors } from '@/theme/tokens';
+import Button from '@/components/ui/Button';
+import Notice from '@/components/ui/Notice';
+import { FormSection } from '@/components/ui/Screen';
 
 /**
  * El QR que se imprime y se pega junto a la etiqueta NFC: es lo que escanea

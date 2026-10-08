@@ -1,8 +1,8 @@
 import { Controller, type Control } from 'react-hook-form';
-import { DATE_RE } from '../utils/format';
-import Field from './Field';
-import { FormSection } from './Screen';
-import Segmented from './Segmented';
+import { DATE_RE } from '@/utils/format';
+import Field from '@/components/ui/Field';
+import { FormSection } from '@/components/ui/Screen';
+import Segmented from '@/components/ui/Segmented';
 
 /** Valores del formulario de eventos: fechas como texto AAAA-MM-DD. */
 export interface EventFormValues {

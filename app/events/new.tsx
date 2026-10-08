@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { createEvent } from '../../src/api/events';
-import Button from '../../src/components/Button';
-import EventForm, { EVENT_DEFAULTS, type EventFormValues } from '../../src/components/EventForm';
-import Notice from '../../src/components/Notice';
-import { FormScreen } from '../../src/components/Screen';
-import { toApiDate } from '../../src/utils/format';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
+import { createEvent } from '@/api/events';
+import Button from '@/components/ui/Button';
+import EventForm, { EVENT_DEFAULTS, type EventFormValues } from '@/components/events/EventForm';
+import Notice from '@/components/ui/Notice';
+import { FormScreen } from '@/components/ui/Screen';
+import { toApiDate } from '@/utils/format';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
 
 /** Crear evento. Al guardar vuelve a la lista, que ya lo muestra. */
 export default function NewEvent() {

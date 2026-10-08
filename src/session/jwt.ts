@@ -12,8 +12,8 @@
  * que proteja una ruta.
  */
 
-import type { JwtPayload, Role } from '../types';
-import { ROLES } from '../types';
+import type { JwtPayload, Role } from '@/types';
+import { ROLES } from '@/types';
 
 /**
  * Un JWT son tres partes separadas por puntos: cabecera, contenido y firma.

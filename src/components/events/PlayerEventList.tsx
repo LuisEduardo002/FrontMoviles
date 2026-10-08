@@ -1,20 +1,20 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { listEvents } from '../../api/events';
-import { listPlayerTags } from '../../api/tags';
-import Badge from '../../components/Badge';
-import Card from '../../components/Card';
-import ListScreen from '../../components/ListScreen';
-import ProgressBar from '../../components/ProgressBar';
-import { EmptyState, LoadingScreen } from '../../components/Screen';
-import SearchBar from '../../components/SearchBar';
-import Segmented from '../../components/Segmented';
-import { Body, Caption, Heading } from '../../components/Typography';
-import { useFocusLoad } from '../../hooks/useFocusLoad';
-import type { AdminEvent, PlayerTag } from '../../types';
-import { eventPhase, PHASE_LABEL, PHASE_TONE, type EventPhase } from '../../utils/events';
-import { formatDateTime } from '../../utils/format';
+import { listEvents } from '@/api/events';
+import { listPlayerTags } from '@/api/tags';
+import Badge from '@/components/ui/Badge';
+import Card from '@/components/ui/Card';
+import ListScreen from '@/components/ui/ListScreen';
+import ProgressBar from '@/components/ui/ProgressBar';
+import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
+import SearchBar from '@/components/ui/SearchBar';
+import Segmented from '@/components/ui/Segmented';
+import { Body, Caption, Heading } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import type { AdminEvent, PlayerTag } from '@/types';
+import { eventPhase, PHASE_LABEL, PHASE_TONE, type EventPhase } from '@/utils/events';
+import { formatDateTime } from '@/utils/format';
 
 const FILTERS = [
   { label: 'En curso', value: 'live' },

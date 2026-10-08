@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { hapticSelect } from '../utils/haptics';
+import { hapticSelect } from '@/utils/haptics';
 
 /**
  * Selector de una opción entre pocas: filtros de las listas, rol, visibilidad,

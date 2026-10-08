@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
-import { glow } from '../theme/tokens';
-import { Caption } from './Typography';
+import { glow } from '@/theme/tokens';
+import { Caption } from '@/components/ui/Typography';
 
 /**
  * Cifra grande del HUD (token `display`) con su etiqueta. Con `onPress` lleva

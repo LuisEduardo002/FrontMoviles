@@ -1,16 +1,16 @@
 import { Controller, type Control } from 'react-hook-form';
-import type { AdminEvent } from '../types';
+import type { AdminEvent } from '@/types';
 import {
   TAG_RULES,
   validateLatitude,
   validateLongitude,
   validatePointsReward,
   type TagFormValues,
-} from '../utils/tagForm';
-import EventSelect from './EventSelect';
-import Field from './Field';
-import { FormSection } from './Screen';
-import Segmented from './Segmented';
+} from '@/utils/tagForm';
+import EventSelect from '@/components/events/EventSelect';
+import Field from '@/components/ui/Field';
+import { FormSection } from '@/components/ui/Screen';
+import Segmented from '@/components/ui/Segmented';
 
 const VISIBILITY = [
   { label: 'Visible', value: false },

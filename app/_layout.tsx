@@ -28,8 +28,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import '../global.css';
-import { SessionProvider, useSession } from '../src/session/context';
-import { stackScreenOptions } from '../src/theme/navigation';
+import { SessionProvider, useSession } from '@/session/context';
+import { stackScreenOptions } from '@/theme/navigation';
 
 SplashScreen.preventAutoHideAsync();
 

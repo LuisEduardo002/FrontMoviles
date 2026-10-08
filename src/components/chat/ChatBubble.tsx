@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
-import type { ChatMessage } from '../types';
-import Avatar from './Avatar';
-import Badge from './Badge';
+import type { ChatMessage } from '@/types';
+import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
 
 const time = (iso: string) =>
   new Date(iso).toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });

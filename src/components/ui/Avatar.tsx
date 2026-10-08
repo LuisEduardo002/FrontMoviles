@@ -1,6 +1,6 @@
 import { Image, Text, View } from 'react-native';
-import { assetUrl } from '../config/env';
-import { glow } from '../theme/tokens';
+import { assetUrl } from '@/config/env';
+import { glow } from '@/theme/tokens';
 
 /**
  * Foto de perfil. Sin foto, la inicial del apodo sobre fondo cian.

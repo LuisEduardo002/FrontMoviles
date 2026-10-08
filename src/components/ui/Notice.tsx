@@ -1,6 +1,6 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Text, View } from 'react-native';
-import { colors } from '../theme/tokens';
+import { colors } from '@/theme/tokens';
 
 /**
  * Aviso en línea: el mensaje del servidor cuando algo falla, o la

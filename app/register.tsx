@@ -1,13 +1,13 @@
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { Pressable, Text } from 'react-native';
-import Button from '../src/components/Button';
-import Field from '../src/components/Field';
-import Notice from '../src/components/Notice';
-import { FormScreen } from '../src/components/Screen';
-import { Body } from '../src/components/Typography';
-import { useSession } from '../src/session/context';
-import { hapticError, hapticSuccess } from '../src/utils/haptics';
+import Button from '@/components/ui/Button';
+import Field from '@/components/ui/Field';
+import Notice from '@/components/ui/Notice';
+import { FormScreen } from '@/components/ui/Screen';
+import { Body } from '@/components/ui/Typography';
+import { useSession } from '@/session/context';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
 
 type RegisterForm = { nickname: string; email: string; password: string; confirmation: string };
 

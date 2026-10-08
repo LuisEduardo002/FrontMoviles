@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { glow } from '../theme/tokens';
+import { glow } from '@/theme/tokens';
 
 /**
  * Etiqueta de estado en mayúsculas (token `overline`).

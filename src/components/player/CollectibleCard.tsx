@@ -1,6 +1,6 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Image, Text, View } from 'react-native';
-import { colors, glow } from '../theme/tokens';
+import { colors, glow } from '@/theme/tokens';
 
 /**
  * Una carta del álbum. Encontrada: su imagen (o el ícono NFC), título y

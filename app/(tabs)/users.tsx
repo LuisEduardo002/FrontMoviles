@@ -1,17 +1,17 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { listUsers } from '../../src/api/users';
-import Avatar from '../../src/components/Avatar';
-import Badge from '../../src/components/Badge';
-import Card from '../../src/components/Card';
-import ListScreen from '../../src/components/ListScreen';
-import { EmptyState, LoadingScreen } from '../../src/components/Screen';
-import SearchBar from '../../src/components/SearchBar';
-import Segmented from '../../src/components/Segmented';
-import { Caption, Heading } from '../../src/components/Typography';
-import { useFocusLoad } from '../../src/hooks/useFocusLoad';
-import type { AdminUser, Role } from '../../src/types';
+import { listUsers } from '@/api/users';
+import Avatar from '@/components/ui/Avatar';
+import Badge from '@/components/ui/Badge';
+import Card from '@/components/ui/Card';
+import ListScreen from '@/components/ui/ListScreen';
+import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
+import SearchBar from '@/components/ui/SearchBar';
+import Segmented from '@/components/ui/Segmented';
+import { Caption, Heading } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import type { AdminUser, Role } from '@/types';
 
 type Filter = 'ALL' | Role;
 

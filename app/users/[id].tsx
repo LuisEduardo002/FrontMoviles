@@ -1,17 +1,17 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ApiRequestError } from '../../src/api/client';
-import { deleteUser, getUser, updateUser } from '../../src/api/users';
-import Button from '../../src/components/Button';
-import Field from '../../src/components/Field';
-import Notice from '../../src/components/Notice';
-import { DangerZone, ErrorScreen, FormScreen, FormSection, LoadingScreen } from '../../src/components/Screen';
-import Segmented from '../../src/components/Segmented';
-import { useSession } from '../../src/session/context';
-import type { AdminUser, Role, UpdateUserDto } from '../../src/types';
-import { confirmDestructive } from '../../src/utils/dialog';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
+import { ApiRequestError } from '@/api/client';
+import { deleteUser, getUser, updateUser } from '@/api/users';
+import Button from '@/components/ui/Button';
+import Field from '@/components/ui/Field';
+import Notice from '@/components/ui/Notice';
+import { DangerZone, ErrorScreen, FormScreen, FormSection, LoadingScreen } from '@/components/ui/Screen';
+import Segmented from '@/components/ui/Segmented';
+import { useSession } from '@/session/context';
+import type { AdminUser, Role, UpdateUserDto } from '@/types';
+import { confirmDestructive } from '@/utils/dialog';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
 
 type UserForm = {
   nickname: string;

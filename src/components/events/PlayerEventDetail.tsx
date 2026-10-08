@@ -2,20 +2,20 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { router, Stack } from 'expo-router';
 import { useCallback } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
-import { getEvent } from '../../api/events';
-import { listPlayerTags } from '../../api/tags';
-import Badge from '../../components/Badge';
-import Button from '../../components/Button';
-import Card from '../../components/Card';
-import ProgressBar from '../../components/ProgressBar';
-import { EmptyState, ErrorScreen, LoadingScreen } from '../../components/Screen';
-import { Body, Caption, Heading } from '../../components/Typography';
-import { useFocusLoad } from '../../hooks/useFocusLoad';
-import { colors } from '../../theme/tokens';
-import type { AdminEvent, PlayerTag } from '../../types';
-import { eventPhase, PHASE_LABEL, PHASE_TONE } from '../../utils/events';
-import { formatDateTime } from '../../utils/format';
-import { openInMaps } from '../../utils/maps';
+import { getEvent } from '@/api/events';
+import { listPlayerTags } from '@/api/tags';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import ProgressBar from '@/components/ui/ProgressBar';
+import { EmptyState, ErrorScreen, LoadingScreen } from '@/components/ui/Screen';
+import { Body, Caption, Heading } from '@/components/ui/Typography';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import { colors } from '@/theme/tokens';
+import type { AdminEvent, PlayerTag } from '@/types';
+import { eventPhase, PHASE_LABEL, PHASE_TONE } from '@/utils/events';
+import { formatDateTime } from '@/utils/format';
+import { openInMaps } from '@/utils/maps';
 
 /**
  * Un evento visto por el jugador: cuándo es, cuánto lleva y qué tags le

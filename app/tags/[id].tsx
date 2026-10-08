@@ -1,17 +1,17 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { listEvents } from '../../src/api/events';
-import { deleteTag, getTag, updateTag } from '../../src/api/tags';
-import Button from '../../src/components/Button';
-import Notice from '../../src/components/Notice';
-import { DangerZone, ErrorScreen, FormScreen, LoadingScreen } from '../../src/components/Screen';
-import TagForm from '../../src/components/TagForm';
-import TagQr from '../../src/components/TagQr';
-import type { AdminEvent, NfcTag } from '../../src/types';
-import { confirmDestructive } from '../../src/utils/dialog';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
-import { TAG_DEFAULTS, formToUpdateTag, tagToForm, type TagFormValues } from '../../src/utils/tagForm';
+import { listEvents } from '@/api/events';
+import { deleteTag, getTag, updateTag } from '@/api/tags';
+import Button from '@/components/ui/Button';
+import Notice from '@/components/ui/Notice';
+import { DangerZone, ErrorScreen, FormScreen, LoadingScreen } from '@/components/ui/Screen';
+import TagForm from '@/components/tags/TagForm';
+import TagQr from '@/components/tags/TagQr';
+import type { AdminEvent, NfcTag } from '@/types';
+import { confirmDestructive } from '@/utils/dialog';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
+import { TAG_DEFAULTS, formToUpdateTag, tagToForm, type TagFormValues } from '@/utils/tagForm';
 
 /** Detalle + edición + eliminación. Al guardar solo envía lo que cambió. */
 export default function TagDetail() {

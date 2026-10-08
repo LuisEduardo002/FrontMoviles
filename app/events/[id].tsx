@@ -1,17 +1,17 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { deleteEvent, getEvent, updateEvent } from '../../src/api/events';
-import Button from '../../src/components/Button';
-import EventForm, { EVENT_DEFAULTS, type EventFormValues } from '../../src/components/EventForm';
-import Notice from '../../src/components/Notice';
-import { DangerZone, ErrorScreen, FormScreen, LoadingScreen } from '../../src/components/Screen';
-import type { AdminEvent, UpdateEventDto } from '../../src/types';
-import { confirmDestructive } from '../../src/utils/dialog';
-import { toApiDate, toDateInputValue } from '../../src/utils/format';
-import { hapticError, hapticSuccess } from '../../src/utils/haptics';
-import PlayerEventDetail from '../../src/screens/player/PlayerEventDetail';
-import { useSession } from '../../src/session/context';
+import { deleteEvent, getEvent, updateEvent } from '@/api/events';
+import Button from '@/components/ui/Button';
+import EventForm, { EVENT_DEFAULTS, type EventFormValues } from '@/components/events/EventForm';
+import Notice from '@/components/ui/Notice';
+import { DangerZone, ErrorScreen, FormScreen, LoadingScreen } from '@/components/ui/Screen';
+import type { AdminEvent, UpdateEventDto } from '@/types';
+import { confirmDestructive } from '@/utils/dialog';
+import { toApiDate, toDateInputValue } from '@/utils/format';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
+import PlayerEventDetail from '@/components/events/PlayerEventDetail';
+import { useSession } from '@/session/context';
 
 const toForm = (event: AdminEvent): EventFormValues => ({
   name: event.name,
