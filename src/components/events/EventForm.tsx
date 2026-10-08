@@ -1,25 +1,9 @@
 import { Controller, type Control } from 'react-hook-form';
 import { DATE_RE } from '@/utils/format';
+import type { EventFormValues } from '@/utils/eventForm';
 import Field from '@/components/ui/Field';
 import { FormSection } from '@/components/ui/Screen';
 import Segmented from '@/components/ui/Segmented';
-
-/** Valores del formulario de eventos: fechas como texto AAAA-MM-DD. */
-export interface EventFormValues {
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-}
-
-export const EVENT_DEFAULTS: EventFormValues = {
-  name: '',
-  description: '',
-  startDate: '',
-  endDate: '',
-  isActive: true,
-};
 
 const STATUS = [
   { label: 'Activo', value: true },
