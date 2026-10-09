@@ -1,7 +1,11 @@
 import { Stack } from 'expo-router';
-import { useHideSplash } from '@/hooks/useHideSplash';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { useSession } from '@/session/context';
 import { stackScreenOptions } from '@/theme/navigation';
+
+// Tiene que correr antes del primer render: por eso va al cargar el módulo.
+SplashScreen.preventAutoHideAsync();
 
 /**
  * La navegación de la app. Con `Stack.Protected` decide qué pantallas
@@ -10,7 +14,11 @@ import { stackScreenOptions } from '@/theme/navigation';
  */
 export default function RootNavigator() {
   const { user, isLoading } = useSession();
-  useHideSplash(!isLoading);
+
+  // El splash se mantiene mientras se busca la sesión guardada: así no parpadea el login.
+  useEffect(() => {
+    if (!isLoading) SplashScreen.hide();
+  }, [isLoading]);
 
   if (isLoading) return null;
 

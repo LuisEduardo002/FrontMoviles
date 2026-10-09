@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { FlatList, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ChatBubble from '@/components/chat/ChatBubble';
 import ChatComposer from '@/components/chat/ChatComposer';
 import Notice from '@/components/ui/Notice';
@@ -8,8 +9,10 @@ import { Caption } from '@/components/ui/Typography';
 import { useChatComposer } from '@/hooks/useChatComposer';
 import { useChatModeration } from '@/hooks/useChatModeration';
 import { useChatRoom } from '@/hooks/useChatRoom';
-import { useKeyboardOffset } from '@/hooks/useKeyboardOffset';
 import { useRole } from '@/hooks/useRole';
+
+/** Alto del header estándar de iOS: el teclado sube desde el borde de la pantalla, no desde el header. */
+const HEADER_HEIGHT = 44;
 
 /**
  * Una sala del chat en vivo. La lista va invertida: el último mensaje queda
@@ -20,7 +23,7 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
   const chat = useChatRoom(room);
   const composer = useChatComposer(chat.send);
   const moderation = useChatModeration(chat.remove);
-  const offset = useKeyboardOffset();
+  const insets = useSafeAreaInsets();
 
   if (chat.isLoading) return <LoadingScreen />;
 
@@ -28,7 +31,7 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
     <KeyboardAvoidingView
       className="flex-1 bg-canvas"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={offset.top}>
+      keyboardVerticalOffset={insets.top + HEADER_HEIGHT}>
       <Stack.Screen options={{ title: name ?? 'Chat' }} />
 
       <FlatList
@@ -55,7 +58,7 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
         }
       />
 
-      <View className="gap-2 border-t border-disabled bg-surface p-3" style={{ paddingBottom: offset.bottom }}>
+      <View className="gap-2 border-t border-disabled bg-surface p-3" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
         <Notice message={composer.error ?? moderation.error ?? chat.error} />
         {!chat.isConnected && !chat.error && <Caption>Conectando con el chat…</Caption>}
         <ChatComposer

@@ -76,7 +76,7 @@ ruta (app/)  ->  componente (src/components/)  ->  hook (src/hooks/)  ->  API (s
 |---|---|
 | `app/` | Las rutas (expo-router). Cada archivo solo monta un componente; si la ruta tiene parámetros, los lee y se los pasa. |
 | `src/components/` | La vista, por dominio: `ui` (piezas genéricas), `auth`, `events`, `tags`, `users`, `panel`, `player`, `chat`, `profile`, `navigation`. |
-| `src/hooks/` | Toda la lógica con estado: cargar datos, filtros, formularios, guardar, eliminar, permisos. Un hook por tarea (`useEvents`, `useCreateEvent`, `useEventEditor`...). |
+| `src/hooks/` | Toda la lógica con estado: cargar datos, filtros, formularios, guardar, eliminar, permisos. Un hook por tarea (`useTags`, `useCreateForm`, `useEventEditor`...). |
 | `src/api/` | La única capa que habla con el servidor. `client.ts` es el único archivo que usa `fetch`: centraliza el token, el tiempo máximo de espera y los mensajes de error. |
 | `src/utils/` | Funciones puras, sin estado: formatos, conversión formulario <-> DTO, háptica, diálogos. |
 | `src/session/` | Sesión: contexto de React, guardado del token y lectura del JWT. |

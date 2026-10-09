@@ -5,42 +5,47 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { Body, Caption, Heading } from '@/components/ui/Typography';
 import { useMyProfile } from '@/hooks/useMyProfile';
-import { useSessionInfo } from '@/hooks/useSessionInfo';
+import { API_URL } from '@/config/env';
+import { useSession } from '@/session/context';
+import { decodeJwt } from '@/session/jwt';
+import { formatDateTime } from '@/utils/format';
 
 /** Perfil del admin: su cuenta, la sesión, a qué servidor apunta la app y la salida. */
 export default function AdminProfile() {
   const { profile, setAvatar } = useMyProfile();
-  const session = useSessionInfo();
+  const { user, token, logout } = useSession();
+  const payload = token ? decodeJwt(token) : null;
+  const expiresAt = payload ? formatDateTime(new Date(payload.exp * 1000).toISOString()) : null;
 
   return (
     <ScrollView className="flex-1 bg-canvas" contentContainerClassName="gap-4 p-3 pb-6">
       <View className="items-center gap-2 py-3">
         {profile && <AvatarEditor profile={profile} onChanged={setAvatar} />}
         <Heading level="h3" className="text-center">
-          {profile?.nickname ?? session.email}
+          {profile?.nickname ?? user?.email}
         </Heading>
-        <Caption>{session.email}</Caption>
+        <Caption>{user?.email}</Caption>
         <Badge text="Administrador" tone="secondary" />
       </View>
 
       <Card>
         <Heading level="h3">Sesión</Heading>
         <Body muted>
-          {session.expiresAt
-            ? `Se renueva sola cada vez que abres la app. Vence el ${session.expiresAt} si no la usas antes`
+          {expiresAt
+            ? `Se renueva sola cada vez que abres la app. Vence el ${expiresAt} si no la usas antes`
             : 'Sesión activa.'}
         </Body>
       </Card>
 
       <Card>
         <Heading level="h3">Servidor</Heading>
-        <Body muted>{session.apiUrl}</Body>
+        <Body muted>{API_URL}</Body>
         <Caption>
           Si la app no conecta, revisa esta dirección en el archivo .env y recarga la app por completo.
         </Caption>
       </Card>
 
-      <Button text="Cerrar sesión" icon="logout" variant="secondary" onPress={session.logout} />
+      <Button text="Cerrar sesión" icon="logout" variant="secondary" onPress={() => void logout()} />
     </ScrollView>
   );
 }

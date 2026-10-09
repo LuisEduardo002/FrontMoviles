@@ -129,12 +129,12 @@ const editor = useEventEditor(id); // carga, formulario, save, remove
 perfil, detalle de evento), un componente elige con `useRole()` cuál pintar
 (`Home`, `Profile`, `EventDetail`).
 
-**Lista** (tab): `ListScreen` + un hook de datos (`useEvents`, `useTags`...)
+**Lista** (tab): `ListScreen` + un hook de datos (`useTags`, `usePlayerEvents`...) o `useFocusLoad` directo
 construido sobre `useFocusLoad`, que recarga al volver de crear o editar. El "Nuevo" va en el header (`app/(tabs)/_layout.tsx`), no en
 la lista.
 
 **Crear**: `FormScreen` → secciones → `Notice` → un `Button` primario. El
-hook (`useCreateEvent`...) hace `hapticSuccess()` y `router.back()` al
+hook `useCreateForm` hace `hapticSuccess()` y `router.back()` al
 guardar; la lista ya muestra lo nuevo.
 
 **Detalle**: igual que crear, más:

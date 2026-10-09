@@ -4,9 +4,10 @@ import ListScreen from '@/components/ui/ListScreen';
 import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
 import SearchBar from '@/components/ui/SearchBar';
 import Segmented from '@/components/ui/Segmented';
-import { EVENT_PHASE_FILTERS, useEventPhaseFilter } from '@/hooks/useEventPhaseFilter';
+import { useListFilter } from '@/hooks/useListFilter';
 import { usePlayerEvents } from '@/hooks/usePlayerEvents';
 import type { EventPhase } from '@/utils/events';
+import { EVENT_PHASE_FILTER } from '@/utils/listFilters';
 
 const EMPTY: Record<EventPhase, { title: string; message: string }> = {
   live: { title: 'Nada en curso', message: 'Revisa los próximos eventos para saber cuándo empieza la cacería.' },
@@ -20,7 +21,14 @@ const EMPTY: Record<EventPhase, { title: string; message: string }> = {
  */
 export default function PlayerEventList() {
   const { events, progress, isLoading, isRefreshing, error, refresh } = usePlayerEvents();
-  const { phase, setPhase, query, setQuery, filtered, totalInPhase } = useEventPhaseFilter(events);
+  const {
+    query,
+    setQuery,
+    filter: phase,
+    setFilter: setPhase,
+    filtered,
+    totalInFilter: totalInPhase,
+  } = useListFilter(events, EVENT_PHASE_FILTER);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -34,7 +42,7 @@ export default function PlayerEventList() {
       onRefresh={refresh}
       controls={
         <>
-          <Segmented options={EVENT_PHASE_FILTERS} value={phase} onChange={setPhase} />
+          <Segmented options={EVENT_PHASE_FILTER.options} value={phase} onChange={setPhase} />
           <SearchBar value={query} onChange={setQuery} placeholder="Buscar evento" />
         </>
       }

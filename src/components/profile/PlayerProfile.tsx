@@ -10,7 +10,7 @@ import StatTile from '@/components/ui/StatTile';
 import { Caption, Heading } from '@/components/ui/Typography';
 import { assetUrl } from '@/config/env';
 import { usePlayerProfile } from '@/hooks/usePlayerProfile';
-import { useSessionInfo } from '@/hooks/useSessionInfo';
+import { useSession } from '@/session/context';
 import { useShareImage } from '@/hooks/useShareImage';
 import { colors } from '@/theme/tokens';
 
@@ -21,7 +21,7 @@ import { colors } from '@/theme/tokens';
 export default function PlayerProfile() {
   const { profile, scans, pending, albumSize, setAvatar, isLoading, isRefreshing, error, refresh } =
     usePlayerProfile();
-  const { logout } = useSessionInfo();
+  const { logout } = useSession();
   const shareCard = useShareImage('Presume tu álbum');
 
   if (isLoading) return <LoadingScreen />;
@@ -94,7 +94,7 @@ export default function PlayerProfile() {
         )}
       </View>
 
-      <Button text="Cerrar sesión" icon="logout" variant="secondary" onPress={logout} />
+      <Button text="Cerrar sesión" icon="logout" variant="secondary" onPress={() => void logout()} />
     </ScrollView>
   );
 }

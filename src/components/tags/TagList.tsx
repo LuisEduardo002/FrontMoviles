@@ -4,13 +4,14 @@ import ListScreen from '@/components/ui/ListScreen';
 import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
 import SearchBar from '@/components/ui/SearchBar';
 import Segmented from '@/components/ui/Segmented';
-import { TAG_VISIBILITY_FILTERS, useTagFilters } from '@/hooks/useTagFilters';
+import { useListFilter } from '@/hooks/useListFilter';
 import { useTags } from '@/hooks/useTags';
+import { TAG_VISIBILITY_FILTER } from '@/utils/listFilters';
 
 /** Lista de tags NFC del admin con búsqueda por texto + filtro por visibilidad. */
 export default function TagList() {
   const { tags, eventName, isLoading, isRefreshing, error, refresh } = useTags();
-  const { query, setQuery, visibility, setVisibility, filtered } = useTagFilters(tags);
+  const { query, setQuery, filter, setFilter, filtered } = useListFilter(tags, TAG_VISIBILITY_FILTER);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -25,7 +26,7 @@ export default function TagList() {
       controls={
         <>
           <SearchBar value={query} onChange={setQuery} placeholder="Buscar por código, nombre o pista" />
-          <Segmented options={TAG_VISIBILITY_FILTERS} value={visibility} onChange={setVisibility} />
+          <Segmented options={TAG_VISIBILITY_FILTER.options} value={filter} onChange={setFilter} />
         </>
       }
       renderItem={(tag) => (

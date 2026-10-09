@@ -1,15 +1,16 @@
+import { listRooms } from '@/api/chat';
 import RoomCard from '@/components/chat/RoomCard';
 import ListScreen from '@/components/ui/ListScreen';
 import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
 import { Caption } from '@/components/ui/Typography';
-import { useChatRooms } from '@/hooks/useChatRooms';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
 
 /**
  * Salas del chat: la general, donde hablan todos, y una por cada evento
  * activo para coordinar la cacería de ese evento.
  */
 export default function ChatRooms() {
-  const { rooms, isLoading, isRefreshing, error, refresh } = useChatRooms();
+  const { data: rooms, isLoading, isRefreshing, error, refresh } = useFocusLoad(listRooms, []);
 
   if (isLoading) return <LoadingScreen />;
 

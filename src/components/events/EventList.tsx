@@ -1,16 +1,18 @@
 import { router } from 'expo-router';
+import { listEvents } from '@/api/events';
 import EventCard from '@/components/events/EventCard';
 import ListScreen from '@/components/ui/ListScreen';
 import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
 import SearchBar from '@/components/ui/SearchBar';
 import Segmented from '@/components/ui/Segmented';
-import { EVENT_STATUS_FILTERS, useEventFilters } from '@/hooks/useEventFilters';
-import { useEvents } from '@/hooks/useEvents';
+import { useFocusLoad } from '@/hooks/useFocusLoad';
+import { useListFilter } from '@/hooks/useListFilter';
+import { EVENT_STATUS_FILTER } from '@/utils/listFilters';
 
 /** Lista de eventos del admin con búsqueda por texto + filtro por estado. */
 export default function EventList() {
-  const { events, isLoading, isRefreshing, error, refresh } = useEvents();
-  const { query, setQuery, status, setStatus, filtered } = useEventFilters(events);
+  const { data: events, isLoading, isRefreshing, error, refresh } = useFocusLoad(listEvents, []);
+  const { query, setQuery, filter, setFilter, filtered } = useListFilter(events, EVENT_STATUS_FILTER);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -25,7 +27,7 @@ export default function EventList() {
       controls={
         <>
           <SearchBar value={query} onChange={setQuery} placeholder="Buscar por nombre o descripción" />
-          <Segmented options={EVENT_STATUS_FILTERS} value={status} onChange={setStatus} />
+          <Segmented options={EVENT_STATUS_FILTER.options} value={filter} onChange={setFilter} />
         </>
       }
       renderItem={(event) => (
