@@ -1,69 +1,7 @@
-/**
- * Layout raíz: envuelve TODA la app.
- *
- * Hace dos cosas:
- *  1. Pone el proveedor de sesión, para que cualquier pantalla pueda saber
- *     quién entró.
- *  2. Declara la navegación y decide, con `Stack.Protected`, qué pantallas
- *     existen según haya sesión o no. Sin sesión, las rutas privadas ni
- *     siquiera están registradas: no hay forma de llegar a ellas.
- */
-
-import { Stack } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+// Los estilos de Tailwind se cargan una vez, en la entrada de la app.
 import '../global.css';
-import { SessionProvider, useSession } from '../src/session/context';
+import AppRoot from '@/components/navigation/AppRoot';
 
 export default function RootLayout() {
-  return (
-    <SessionProvider>
-      <Navigator />
-    </SessionProvider>
-  );
-}
-
-function Navigator() {
-  const { user, isLoading } = useSession();
-
-  // Mientras se busca el token guardado no se sabe todavía si hay sesión. Sin
-  // esta espera, la app mostraría el login un instante y luego saltaría al
-  // inicio: un parpadeo feo cada vez que se abre.
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-base">
-        <ActivityIndicator color="#fff" />
-      </View>
-    );
-  }
-
-  return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: '#1c0a1c' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '600' },
-      }}>
-      {/* El panel completo y sus formularios son exclusivos de ADMIN. */}
-      <Stack.Protected guard={user?.role === 'ADMIN'}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="users/new" options={{ title: 'Nuevo usuario' }} />
-        <Stack.Screen name="users/[id]" options={{ title: 'Detalle de usuario' }} />
-        <Stack.Screen name="events/new" options={{ title: 'Nuevo evento' }} />
-        <Stack.Screen name="events/[id]" options={{ title: 'Detalle de evento' }} />
-        <Stack.Screen name="tags/new" options={{ title: 'Nuevo tag' }} />
-        <Stack.Screen name="tags/[id]" options={{ title: 'Detalle de tag' }} />
-      </Stack.Protected>
-
-      {/* Usuario autenticado sin permisos de administración. */}
-      <Stack.Protected guard={!!user && user.role !== 'ADMIN'}>
-        <Stack.Screen name="unauthorized" options={{ title: 'Acceso restringido' }} />
-      </Stack.Protected>
-
-      {/* Sin sesión */}
-      <Stack.Protected guard={!user}>
-        <Stack.Screen name="login" options={{ title: 'Iniciar sesión' }} />
-        <Stack.Screen name="register" options={{ title: 'Crear cuenta' }} />
-      </Stack.Protected>
-    </Stack>
-  );
+  return <AppRoot />;
 }

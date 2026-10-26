@@ -7,11 +7,11 @@
  */
 
 import { createContext, use, useEffect, useState, type PropsWithChildren } from 'react';
-import * as api from '../api/auth';
-import { setToken as setRequestToken, setUnauthorizedHandler } from '../api/client';
-import type { AuthResponse, AuthUser } from '../types';
-import { decodeJwt, isExpired } from './jwt';
-import { loadToken, removeToken, saveToken } from './storage';
+import * as api from '@/api/auth';
+import { setToken as setRequestToken, setUnauthorizedHandler } from '@/api/client';
+import type { AuthResponse, AuthUser } from '@/types';
+import { decodeJwt, isExpired } from '@/session/jwt';
+import { loadToken, removeToken, saveToken } from '@/session/storage';
 
 interface Session {
   /** null = nadie ha entrado. El layout raíz usa esto para decidir qué mostrar. */
@@ -26,14 +26,6 @@ interface Session {
 }
 
 const SessionContext = createContext<Session | null>(null);
-
-/**
- * Solo puede activarse temporalmente durante pruebas locales para entrar directo
- * a los tabs sin pedir login. En producción debe permanecer desactivado.
- * TEMPORAL (vistaNFC): en true para ver las vistas sin backend.
- */
-const BYPASS_AUTH_FOR_TESTS = true;
-const DEV_USER: AuthUser = { id: 'dev-id', email: 'dev@prueba.com', role: 'ADMIN' };
 
 /** Atajo para leer la sesión desde cualquier pantalla: `const { user } = useSession()`. */
 export function useSession(): Session {
@@ -58,9 +50,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
   /**
    * Al arrancar: ¿hay una sesión de la última vez?
    *
-   * Como el backend no tiene endpoint de perfil, el usuario se reconstruye con
-   * lo que el propio token trae firmado (`sub` es el id). Si está vencido, se
-   * borra y se arranca sin sesión.
+   * El usuario se reconstruye con lo que el propio token trae firmado (`sub`
+   * es el id), sin esperar a la red. Si está vencido, se borra y se arranca
+   * sin sesión.
    */
   useEffect(() => {
     setUnauthorizedHandler(() => {
@@ -72,13 +64,6 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
     const restore = async () => {
       try {
-        // Atajo opcional de pruebas: finge una sesión sin llamar al backend.
-        if (__DEV__ && BYPASS_AUTH_FOR_TESTS) {
-          setToken('dev-token');
-          setUser(DEV_USER);
-          return;
-        }
-
         const stored = await loadToken();
         if (!stored) return;
 
@@ -91,6 +76,14 @@ export function SessionProvider({ children }: PropsWithChildren) {
         setRequestToken(stored);
         setToken(stored);
         setUser({ id: payload.sub, email: payload.email, role: payload.role });
+
+        // Renueva el token en segundo plano: así la sesión no vence mientras
+        // se use la app. Sin conexión se sigue con el guardado; si el servidor
+        // lo rechaza (401), `request` ya cierra la sesión.
+        void api
+          .refresh()
+          .then(openSession)
+          .catch(() => undefined);
       } finally {
         // Pase lo que pase se apaga el cargando, o la app se queda en la
         // pantalla de espera para siempre.

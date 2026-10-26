@@ -5,7 +5,7 @@
  * valores iniciales, validaciones y conversión formulario <-> DTO.
  */
 
-import type { CreateTagDto, NfcTag, UpdateTagDto } from '../types';
+import type { CreateTagDto, NfcTag, UpdateTagDto } from '@/types';
 
 /** Valores del formulario. Todo texto salvo `isHidden` (los números viajan como string por el TextInput). */
 export interface TagFormValues {
@@ -126,6 +126,7 @@ export function formToUpdateTag(values: TagFormValues, dirty: Dirty): UpdateTagD
   if (dirty.cardTitle) patch.cardTitle = values.cardTitle.trim();
   if (dirty.cardImageUrl) patch.cardImageUrl = values.cardImageUrl.trim();
   if (dirty.cardFunFact) patch.cardFunFact = values.cardFunFact.trim();
-  if (dirty.eventId) patch.eventId = values.eventId.trim() ? Number(values.eventId.trim()) : undefined;
+  // null (no undefined) para soltar el evento: undefined no viaja en el JSON.
+  if (dirty.eventId) patch.eventId = values.eventId.trim() ? Number(values.eventId.trim()) : null;
   return patch;
 }
