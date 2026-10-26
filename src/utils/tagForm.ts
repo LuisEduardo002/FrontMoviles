@@ -5,7 +5,7 @@
  * valores iniciales, validaciones y conversión formulario <-> DTO.
  */
 
-import type { CreateTagDto, NfcTag, UpdateTagDto } from '../types';
+import type { CreateTagDto, NfcTag, UpdateTagDto } from '@/types';
 
 /** Valores del formulario. Todo texto salvo `isHidden` (los números viajan como string por el TextInput). */
 export interface TagFormValues {

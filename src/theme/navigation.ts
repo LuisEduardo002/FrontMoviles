@@ -3,7 +3,7 @@
  * clases, así que toman los colores y fuentes directo de los tokens.
  */
 
-import { colors, fonts } from './tokens';
+import { colors, fonts } from '@/theme/tokens';
 
 const header = {
   headerStyle: { backgroundColor: colors.canvas },
