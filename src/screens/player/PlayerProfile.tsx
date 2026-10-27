@@ -18,6 +18,7 @@ import { Caption, Heading } from '../../components/Typography';
 import { assetUrl } from '../../config/env';
 import { useFocusLoad } from '../../hooks/useFocusLoad';
 import { useSession } from '../../session/context';
+import { PlayerProfileToken, ScrollScreenToken } from '../../theme/Token';
 import { colors } from '../../theme/tokens';
 import type { AdminEvent, MyProfile, MyScan, PlayerTag } from '../../types';
 import { eventPhase } from '../../utils/events';
@@ -80,26 +81,26 @@ export default function PlayerProfile() {
 
   return (
     <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName="gap-4 p-3 pb-6"
+      className={ScrollScreenToken.container}
+      contentContainerClassName={ScrollScreenToken.content}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />
       }>
-      <View className="items-center gap-2">
+      <View className={PlayerProfileToken.header}>
         <AvatarEditor profile={profile} onChanged={setNewAvatar} />
-        <Heading level="h2" className="text-center">
+        <Heading level="h2" className={PlayerProfileToken.name}>
           {profile.nickname}
         </Heading>
         <Badge text={profile.levelTitle ?? 'Cazador'} tone="secondary" />
       </View>
 
-      <View className="flex-row gap-2">
+      <View className={PlayerProfileToken.stats}>
         <StatTile value={profile.totalPoints} label="Puntos" highlight />
         <StatTile value={profile.tagsFound} label="Tags" />
         <StatTile value={profile.position != null ? `#${profile.position}` : '—'} label="Ranking" />
       </View>
 
-      <View className="gap-3">
+      <View className={PlayerProfileToken.section}>
         <Heading level="h3">Tu tarjeta de cazador</Heading>
         <HunterCard ref={cardRef} profile={profile} scans={data.scans} />
         <Notice message={shareError} />
@@ -111,8 +112,8 @@ export default function PlayerProfile() {
         />
       </View>
 
-      <View className="gap-3">
-        <View className="flex-row items-baseline justify-between">
+      <View className={PlayerProfileToken.section}>
+        <View className={PlayerProfileToken.sectionHeader}>
           <Heading level="h3">Mi álbum</Heading>
           <Caption>
             {data.scans.length} de {data.scans.length + data.pending.length}
@@ -125,9 +126,9 @@ export default function PlayerProfile() {
             message="Cuando haya un evento en curso, sal a buscar sus tags."
           />
         ) : (
-          <View className="flex-row flex-wrap gap-3">
+          <View className={PlayerProfileToken.album}>
             {data.scans.map((scan) => (
-              <View key={scan.id} className="w-[47%]">
+              <View key={scan.id} className={PlayerProfileToken.albumItem}>
                 <CollectibleCard
                   title={scan.tag.cardTitle ?? scan.tag.name}
                   subtitle={scan.tag.name}
@@ -137,7 +138,7 @@ export default function PlayerProfile() {
               </View>
             ))}
             {data.pending.map((tag) => (
-              <View key={tag.id} className="w-[47%]">
+              <View key={tag.id} className={PlayerProfileToken.albumItem}>
                 <CollectibleCard title={tag.name} points={tag.pointsReward} locked />
               </View>
             ))}

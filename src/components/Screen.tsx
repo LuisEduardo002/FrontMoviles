@@ -2,6 +2,7 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { router } from 'expo-router';
 import type { ComponentProps, PropsWithChildren } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { DangerZoneToken, EmptyStateToken, ErrorScreenToken, FormScreenToken, FormSectionToken, HeaderActionToken, LoadingScreenToken } from '../theme/Token';
 import { colors, glow } from '../theme/tokens';
 import { hapticTap } from '../utils/haptics';
 import Button from './Button';
@@ -18,19 +19,19 @@ type IconName = ComponentProps<typeof MaterialDesignIcons>['name'];
 export function FormScreen({ children, centered }: PropsWithChildren<{ centered?: boolean }>) {
   return (
     <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName={`gap-4 p-3 pb-6 ${centered ? 'flex-grow justify-center' : ''}`}
+      className={FormScreenToken.container}
+      contentContainerClassName={`${FormScreenToken.content} ${centered ? FormScreenToken.centered : ''}`}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       automaticallyAdjustKeyboardInsets>
-      <View className="w-full max-w-[640px] gap-4 self-center">{children}</View>
+      <View className={FormScreenToken.inner}>{children}</View>
     </ScrollView>
   );
 }
 
 export function LoadingScreen() {
   return (
-    <View className="flex-1 items-center justify-center bg-canvas">
+    <View className={LoadingScreenToken.container}>
       <ActivityIndicator color={colors.primary} size="large" />
     </View>
   );
@@ -39,8 +40,8 @@ export function LoadingScreen() {
 /** Cuando el detalle de algo no se pudo cargar: el porqué y la salida. */
 export function ErrorScreen({ message }: { message: string }) {
   return (
-    <View className="flex-1 justify-center gap-4 bg-canvas p-3">
-      <Heading level="h2" className="text-center">
+    <View className={ErrorScreenToken.container}>
+      <Heading level="h2" className={ErrorScreenToken.title}>
         No se pudo cargar
       </Heading>
       <Notice message={message} />
@@ -56,8 +57,8 @@ export function FormSection({
   children,
 }: PropsWithChildren<{ title: string; description?: string }>) {
   return (
-    <View className="gap-3 rounded-md bg-surface/60 p-3">
-      <View className="gap-1">
+    <View className={FormSectionToken.container}>
+      <View className={FormSectionToken.header}>
         <Heading level="h3">{title}</Heading>
         {!!description && <Caption>{description}</Caption>}
       </View>
@@ -77,12 +78,12 @@ export function EmptyState({
   message: string;
 }) {
   return (
-    <View className="items-center gap-2 px-4 py-6">
-      <MaterialDesignIcons name={icon} size={48} color={colors.disabledText} />
-      <Heading level="h3" className="text-center">
+    <View className={EmptyStateToken.container}>
+      <MaterialDesignIcons name={icon} size={EmptyStateToken.iconSize} color={colors.disabledText} />
+      <Heading level="h3" className={EmptyStateToken.text}>
         {title}
       </Heading>
-      <Body muted className="text-center">
+      <Body muted className={EmptyStateToken.text}>
         {message}
       </Body>
     </View>
@@ -108,10 +109,10 @@ export function HeaderAction({
       accessibilityRole="button"
       accessibilityLabel={label}
       hitSlop={8}
-      className="mr-3 h-[40px] flex-row items-center gap-1 rounded-full bg-primary px-3 active:opacity-80"
+      className={HeaderActionToken.container}
       style={{ boxShadow: glow.primary }}>
-      <MaterialDesignIcons name={icon} size={20} color={colors.inkInverted} />
-      <Text className="font-body-bold text-caption text-ink-inverted">Nuevo</Text>
+      <MaterialDesignIcons name={icon} size={HeaderActionToken.iconSize} color={colors.inkInverted} />
+      <Text className={HeaderActionToken.label}>Nuevo</Text>
     </Pressable>
   );
 }
@@ -132,8 +133,8 @@ export function DangerZone({
   disabled?: boolean;
 }) {
   return (
-    <View className="mt-4 gap-3 rounded-md border border-danger/40 p-3">
-      <Text className="font-body-semibold text-h3 text-danger">Zona de peligro</Text>
+    <View className={DangerZoneToken.container}>
+      <Text className={DangerZoneToken.title}>Zona de peligro</Text>
       <Caption>{description}</Caption>
       <Button text={buttonText} icon="delete-outline" variant="danger" onPress={onPress} disabled={disabled} />
     </View>

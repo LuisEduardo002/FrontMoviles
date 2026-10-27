@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { EventSelectToken } from '../theme/Token';
 import type { AdminEvent } from '../types';
 import { Chip } from './Segmented';
 
@@ -17,7 +18,7 @@ export default function EventSelect({
   onChange: (eventId: string) => void;
 }) {
   return (
-    <View className="flex-row flex-wrap gap-2">
+    <View className={EventSelectToken.container}>
       <Chip label="Sin evento" selected={!value} onPress={() => onChange('')} />
       {events.map((event) => (
         <Chip

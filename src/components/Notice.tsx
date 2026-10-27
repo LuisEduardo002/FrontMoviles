@@ -1,5 +1,6 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Text, View } from 'react-native';
+import { NoticeToken } from '../theme/Token';
 import { colors } from '../theme/tokens';
 
 /**
@@ -19,15 +20,13 @@ export default function Notice({
   return (
     <View
       accessibilityRole="alert"
-      className={`flex-row items-center gap-2 rounded-sm border-2 p-3 ${
-        isError ? 'border-danger/60 bg-danger/10' : 'border-primary/60 bg-primary/10'
-      }`}>
+      className={`${NoticeToken.container} ${NoticeToken.tone[tone].box}`}>
       <MaterialDesignIcons
         name={isError ? 'alert-circle' : 'check-circle'}
-        size={20}
+        size={NoticeToken.iconSize}
         color={isError ? colors.danger : colors.primary}
       />
-      <Text className={`flex-1 font-body-medium text-body ${isError ? 'text-danger' : 'text-primary'}`}>
+      <Text className={`${NoticeToken.text} ${NoticeToken.tone[tone].text}`}>
         {message}
       </Text>
     </View>

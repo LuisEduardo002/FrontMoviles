@@ -11,6 +11,7 @@ import { useFocusLoad } from '../../src/hooks/useFocusLoad';
 import PlayerProfile from '../../src/screens/player/PlayerProfile';
 import { decodeJwt } from '../../src/session/jwt';
 import { useSession } from '../../src/session/context';
+import { AdminProfileToken, ScrollScreenToken } from '../../src/theme/Token';
 import type { MyProfile } from '../../src/types';
 import { formatDateTime } from '../../src/utils/format';
 
@@ -29,10 +30,10 @@ function AdminProfile() {
   const payload = token ? decodeJwt(token) : null;
 
   return (
-    <ScrollView className="flex-1 bg-canvas" contentContainerClassName="gap-4 p-3 pb-6">
-      <View className="items-center gap-2 py-3">
+    <ScrollView className={ScrollScreenToken.container} contentContainerClassName={ScrollScreenToken.content}>
+      <View className={AdminProfileToken.header}>
         {profile && <AvatarEditor profile={profile} onChanged={setNewAvatar} />}
-        <Heading level="h3" className="text-center">
+        <Heading level="h3" className={AdminProfileToken.name}>
           {profile?.nickname ?? user?.email}
         </Heading>
         <Caption>{user?.email}</Caption>

@@ -7,6 +7,7 @@ import Notice from '../src/components/Notice';
 import { FormScreen } from '../src/components/Screen';
 import { Body } from '../src/components/Typography';
 import { useSession } from '../src/session/context';
+import { AuthToken } from '../src/theme/Token';
 import { hapticError, hapticSuccess } from '../src/utils/haptics';
 
 type RegisterForm = { nickname: string; email: string; password: string; confirmation: string };
@@ -95,9 +96,9 @@ export default function Register() {
         disabled={formState.isSubmitting}
       />
 
-      <Pressable onPress={goToLogin} accessibilityRole="link" className="items-center py-2">
-        <Text className="font-body text-body text-ink/70">
-          ¿Ya tienes cuenta? <Text className="font-body-semibold text-secondary">Inicia sesión</Text>
+      <Pressable onPress={goToLogin} accessibilityRole="link" className={AuthToken.switchLink}>
+        <Text className={AuthToken.switchText}>
+          ¿Ya tienes cuenta? <Text className={AuthToken.switchAction}>Inicia sesión</Text>
         </Text>
       </Pressable>
     </FormScreen>

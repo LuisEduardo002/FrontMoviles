@@ -11,6 +11,7 @@ import ProgressBar from '../../components/ProgressBar';
 import { EmptyState, ErrorScreen, LoadingScreen } from '../../components/Screen';
 import { Body, Caption, Heading } from '../../components/Typography';
 import { useFocusLoad } from '../../hooks/useFocusLoad';
+import { CardTitleRowToken, PlayerEventDetailToken, ScrollScreenToken } from '../../theme/Token';
 import { colors } from '../../theme/tokens';
 import type { AdminEvent, PlayerTag } from '../../types';
 import { eventPhase, PHASE_LABEL, PHASE_TONE } from '../../utils/events';
@@ -42,8 +43,8 @@ export default function PlayerEventDetail({ id }: { id: string }) {
 
   return (
     <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName="gap-4 p-3 pb-6"
+      className={ScrollScreenToken.container}
+      contentContainerClassName={ScrollScreenToken.content}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />
       }>
@@ -58,7 +59,7 @@ export default function PlayerEventDetail({ id }: { id: string }) {
       </Card>
 
       {phase !== 'ended' && (
-        <View className="gap-3">
+        <View className={PlayerEventDetailToken.actions}>
           {phase === 'live' && (
             <Button text="Escanear un tag" icon="qrcode-scan" onPress={() => router.navigate('/(tabs)/scan')} />
           )}
@@ -85,9 +86,9 @@ export default function PlayerEventDetail({ id }: { id: string }) {
 
 function Schedule({ label, date }: { label: string; date: string }) {
   return (
-    <View className="flex-row items-center gap-2">
-      <MaterialDesignIcons name="clock-outline" size={18} color={colors.secondary} />
-      <Text className="font-body-semibold text-body text-ink">{label}</Text>
+    <View className={PlayerEventDetailToken.dateRow}>
+      <MaterialDesignIcons name="clock-outline" size={PlayerEventDetailToken.iconSize} color={colors.secondary} />
+      <Text className={PlayerEventDetailToken.dateLabel}>{label}</Text>
       <Caption>{formatDateTime(date)}</Caption>
     </View>
   );
@@ -98,21 +99,21 @@ function PlayerTagCard({ tag, canHunt }: { tag: PlayerTag; canHunt: boolean }) {
 
   return (
     <Card>
-      <View className="flex-row items-start gap-2">
-        <Heading level="h3" className="flex-1" numberOfLines={2}>
+      <View className={CardTitleRowToken.container}>
+        <Heading level="h3" className={CardTitleRowToken.title} numberOfLines={2}>
           {tag.name}
         </Heading>
         <Badge text={`+${tag.pointsReward} pts`} tone={tag.foundByMe ? 'muted' : 'primary'} />
       </View>
-      <View className="flex-row flex-wrap gap-2">
+      <View className={PlayerEventDetailToken.badges}>
         {tag.foundByMe && <Badge text="Encontrado" tone="primary" />}
         {tag.isHidden && <Badge text="Oculto" tone="secondary" />}
       </View>
       {!!tag.description && <Body muted>{tag.description}</Body>}
       {!!tag.clueText && (
-        <View className="flex-row gap-2 rounded-sm bg-secondary/10 p-2">
-          <MaterialDesignIcons name="lightbulb-on-outline" size={18} color={colors.secondary} />
-          <Text className="flex-1 font-body text-body text-secondary">{tag.clueText}</Text>
+        <View className={PlayerEventDetailToken.clue}>
+          <MaterialDesignIcons name="lightbulb-on-outline" size={PlayerEventDetailToken.iconSize} color={colors.secondary} />
+          <Text className={PlayerEventDetailToken.clueText}>{tag.clueText}</Text>
         </View>
       )}
       {tag.foundByMe && !!tag.foundAt && <Caption>Lo encontraste el {formatDateTime(tag.foundAt)}</Caption>}

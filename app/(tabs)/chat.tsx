@@ -7,6 +7,7 @@ import ListScreen from '../../src/components/ListScreen';
 import { EmptyState, LoadingScreen } from '../../src/components/Screen';
 import { Caption, Heading } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
+import { ChatRoomsToken } from '../../src/theme/Token';
 import { colors } from '../../src/theme/tokens';
 import type { ChatRoom } from '../../src/types';
 
@@ -40,11 +41,11 @@ function RoomCard({ room }: { room: ChatRoom }) {
   return (
     <Card
       onPress={() => router.push({ pathname: '/chat/[room]', params: { room: room.room, name: room.name } })}>
-      <View className="flex-row items-center gap-3">
-        <View className="h-[44px] w-[44px] items-center justify-center rounded-full bg-secondary/15">
-          <MaterialDesignIcons name={isGeneral ? 'forum' : 'calendar-star'} size={24} color={colors.secondary} />
+      <View className={ChatRoomsToken.identity}>
+        <View className={ChatRoomsToken.icon}>
+          <MaterialDesignIcons name={isGeneral ? 'forum' : 'calendar-star'} size={ChatRoomsToken.iconSize} color={colors.secondary} />
         </View>
-        <View className="flex-1 gap-1">
+        <View className={ChatRoomsToken.identityText}>
           <Heading level="h3" numberOfLines={1}>
             {room.name}
           </Heading>

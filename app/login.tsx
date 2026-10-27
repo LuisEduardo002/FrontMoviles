@@ -7,6 +7,7 @@ import Notice from '../src/components/Notice';
 import { FormScreen } from '../src/components/Screen';
 import { Body } from '../src/components/Typography';
 import { useSession } from '../src/session/context';
+import { AuthToken } from '../src/theme/Token';
 import { colors } from '../src/theme/tokens';
 import { hapticError, hapticSuccess } from '../src/utils/haptics';
 
@@ -38,13 +39,13 @@ export default function Login() {
 
   return (
     <FormScreen centered>
-      <View className="items-center gap-2 py-5">
+      <View className={AuthToken.header}>
         <Text
-          className="font-data-black text-display text-primary"
-          style={{ textShadowColor: colors.primary, textShadowRadius: 16 }}>
+          className={AuthToken.brand}
+          style={{ textShadowColor: colors.primary, textShadowRadius: AuthToken.brandGlowRadius }}>
           NFHunter
         </Text>
-        <Body muted className="text-center">
+        <Body muted className={AuthToken.slogan}>
           Cada esquina guarda una historia. Cada tag, un trofeo.
         </Body>
       </View>
@@ -88,9 +89,9 @@ export default function Login() {
       <Pressable
         onPress={() => router.push('/register')}
         accessibilityRole="link"
-        className="items-center py-2">
-        <Text className="font-body text-body text-ink/70">
-          ¿No tienes cuenta? <Text className="font-body-semibold text-secondary">Crear cuenta</Text>
+        className={AuthToken.switchLink}>
+        <Text className={AuthToken.switchText}>
+          ¿No tienes cuenta? <Text className={AuthToken.switchAction}>Crear cuenta</Text>
         </Text>
       </Pressable>
     </FormScreen>

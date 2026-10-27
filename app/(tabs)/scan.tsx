@@ -12,6 +12,7 @@ import Field from '../../src/components/Field';
 import Notice from '../../src/components/Notice';
 import { FormScreen } from '../../src/components/Screen';
 import { Body, Caption, Heading } from '../../src/components/Typography';
+import { ScanToken } from '../../src/theme/Token';
 import { colors, glow } from '../../src/theme/tokens';
 import type { ScanResult } from '../../src/types';
 import { hapticError, hapticSuccess } from '../../src/utils/haptics';
@@ -88,7 +89,7 @@ export default function Scan() {
 
   if (mode === 'camera') {
     return (
-      <View className="flex-1 bg-canvas">
+      <View className={ScanToken.camera}>
         <CameraView
           style={{ flex: 1 }}
           facing="back"
@@ -99,16 +100,16 @@ export default function Scan() {
             void submit(codeFromQr(data));
           }}
         />
-        <View pointerEvents="box-none" className="absolute inset-0 items-center justify-center gap-4 p-4">
+        <View pointerEvents="box-none" className={ScanToken.cameraOverlay}>
           <View
-            className="h-[240px] w-[240px] rounded-md border-2 border-primary"
+            className={ScanToken.frame}
             style={{ boxShadow: glow.primary }}
           />
-          <Text className="rounded-full bg-canvas/80 px-3 py-2 font-body-semibold text-body text-ink">
+          <Text className={ScanToken.cameraHint}>
             {isSubmitting ? 'Validando tu ubicación…' : 'Apunta al QR de la etiqueta'}
           </Text>
         </View>
-        <View className="absolute bottom-4 left-3 right-3">
+        <View className={ScanToken.cancel}>
           <Button text="Cancelar" variant="secondary" onPress={() => setMode('idle')} disabled={isSubmitting} />
         </View>
       </View>
@@ -117,16 +118,16 @@ export default function Scan() {
 
   return (
     <FormScreen centered>
-      <View className="items-center gap-3 py-4">
+      <View className={ScanToken.intro}>
         <View
-          className="h-[120px] w-[120px] items-center justify-center rounded-full border-2 border-primary bg-surface"
+          className={ScanToken.introIcon}
           style={{ boxShadow: glow.primary }}>
-          <MaterialDesignIcons name="nfc-search-variant" size={64} color={colors.primary} />
+          <MaterialDesignIcons name="nfc-search-variant" size={ScanToken.introIconSize} color={colors.primary} />
         </View>
-        <Heading level="h2" className="text-center">
+        <Heading level="h2" className={ScanToken.centered}>
           ¿Encontraste un tag?
         </Heading>
-        <Body muted className="text-center">
+        <Body muted className={ScanToken.centered}>
           Escanea su QR estando junto a la etiqueta. Tu ubicación se valida al registrarlo.
         </Body>
       </View>
@@ -173,17 +174,17 @@ function Reward({ result, onContinue }: { result: ScanResult; onContinue: () => 
 
   return (
     <FormScreen centered>
-      <View className="items-center gap-1">
+      <View className={ScanToken.result}>
         <Caption>¡Tag encontrado!</Caption>
         <Text
-          className="font-data-black text-display text-primary"
-          style={{ textShadowColor: colors.primary, textShadowRadius: 16 }}>
+          className={ScanToken.points}
+          style={{ textShadowColor: colors.primary, textShadowRadius: ScanToken.pointsGlowRadius }}>
           +{result.pointsEarned}
         </Text>
         <Body muted>Ahora tienes {result.totalPoints} puntos</Body>
       </View>
 
-      <View className="w-[220px] self-center">
+      <View className={ScanToken.card}>
         <CollectibleCard
           title={tag.cardTitle ?? tag.name}
           subtitle={tag.name}
@@ -193,8 +194,8 @@ function Reward({ result, onContinue }: { result: ScanResult; onContinue: () => 
       </View>
 
       {!!tag.cardFunFact && (
-        <View className="gap-1 rounded-md bg-surface p-3">
-          <Text className="font-body-semibold text-body text-secondary">Dato curioso</Text>
+        <View className={ScanToken.funFact}>
+          <Text className={ScanToken.funFactTitle}>Dato curioso</Text>
           <Body>{tag.cardFunFact}</Body>
         </View>
       )}

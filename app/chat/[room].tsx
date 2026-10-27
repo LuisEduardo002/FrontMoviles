@@ -10,6 +10,7 @@ import { EmptyState, LoadingScreen } from '../../src/components/Screen';
 import { Caption } from '../../src/components/Typography';
 import { useChatRoom } from '../../src/hooks/useChatRoom';
 import { useSession } from '../../src/session/context';
+import { ChatRoomToken } from '../../src/theme/Token';
 import { colors, glow } from '../../src/theme/tokens';
 import type { ChatMessage } from '../../src/types';
 import { confirmDestructive } from '../../src/utils/dialog';
@@ -59,14 +60,14 @@ export default function ChatRoomScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-canvas"
+      className={ChatRoomToken.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={headerHeight}>
       <Stack.Screen options={{ title: name ?? 'Chat' }} />
 
       <FlatList
         inverted
-        className="flex-1"
+        className={ChatRoomToken.list}
         data={messages}
         keyExtractor={(message) => message.id}
         renderItem={({ item }) => (
@@ -76,7 +77,7 @@ export default function ChatRoomScreen() {
             onLongPress={isAdmin ? () => void moderate(item) : undefined}
           />
         )}
-        contentContainerClassName="gap-2 p-3"
+        contentContainerClassName={ChatRoomToken.listContent}
         onEndReached={() => void loadOlder()}
         onEndReachedThreshold={0.3}
         keyboardShouldPersistTaps="handled"
@@ -89,14 +90,14 @@ export default function ChatRoomScreen() {
       />
 
       <View
-        className="gap-2 border-t border-disabled bg-surface p-3"
+        className={ChatRoomToken.composer}
         // Sin tapar el indicador de inicio del iPhone
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
         <Notice message={sendError ?? error} />
         {!isConnected && !error && <Caption>Conectando con el chat…</Caption>}
-        <View className="flex-row items-end gap-2">
+        <View className={ChatRoomToken.composerRow}>
           <TextInput
-            className={`flex-1 ${inputClassName(isFocused ? 'focused' : 'default')} max-h-[120px]`}
+            className={`${ChatRoomToken.input} ${inputClassName(isFocused ? 'focused' : 'default')} ${ChatRoomToken.inputMaxHeight}`}
             style={inputStyle(isFocused ? 'focused' : 'default')}
             value={draft}
             onChangeText={setDraft}
@@ -114,13 +115,13 @@ export default function ChatRoomScreen() {
             disabled={!draft.trim()}
             accessibilityRole="button"
             accessibilityLabel="Enviar mensaje"
-            className={`h-[48px] w-[48px] items-center justify-center rounded-full ${
-              draft.trim() ? 'bg-primary active:opacity-80' : 'bg-disabled'
+            className={`${ChatRoomToken.send} ${
+              ChatRoomToken.sendState[draft.trim() ? 'active' : 'disabled']
             }`}
             style={draft.trim() ? { boxShadow: glow.primary } : undefined}>
             <MaterialDesignIcons
               name="send"
-              size={22}
+              size={ChatRoomToken.sendIconSize}
               color={draft.trim() ? colors.inkInverted : colors.disabledText}
             />
           </Pressable>

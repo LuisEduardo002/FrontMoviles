@@ -15,6 +15,7 @@ import {
   type RegisterOptions,
 } from 'react-hook-form';
 import { Animated, Platform, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { FieldToken } from '../theme/Token';
 import { colors } from '../theme/tokens';
 import { inputClassName, inputStyle, type InputState } from './inputStyle';
 
@@ -59,14 +60,14 @@ export default function Field<T extends FieldValues>({
               : 'default';
 
         return (
-          <View className="gap-2">
-            <Text className="font-body-semibold text-body text-ink">{label}</Text>
+          <View className={FieldToken.container}>
+            <Text className={FieldToken.label}>{label}</Text>
             <Shake trigger={error?.message}>
               <TextInput
                 // Con la ref, react-hook-form enfoca el primer campo con error al
                 // enviar: en formularios largos el usuario ve qué falló.
                 ref={ref}
-                className={`${inputClassName(state)} ${multiline ? 'min-h-[96px]' : ''}`}
+                className={`${inputClassName(state)} ${multiline ? FieldToken.multiline : ''}`}
                 style={inputStyle(state)}
                 value={value}
                 onChangeText={(text) => onChange(format === 'date' ? formatDateInput(text) : text)}
@@ -84,9 +85,9 @@ export default function Field<T extends FieldValues>({
             </Shake>
             {/* El mensaje sale de las `rules`: quien define la regla define el texto. */}
             {error ? (
-              <Text className="font-body text-caption text-danger">{error.message}</Text>
+              <Text className={FieldToken.error}>{error.message}</Text>
             ) : (
-              !!hint && <Text className="font-body text-caption text-ink/60">{hint}</Text>
+              !!hint && <Text className={FieldToken.hint}>{hint}</Text>
             )}
           </View>
         );
@@ -104,10 +105,10 @@ function Shake({ trigger, children }: { trigger?: string; children: ReactNode })
     const step = (toValue: number) =>
       Animated.timing(offset, {
         toValue,
-        duration: 50,
+        duration: FieldToken.shake.stepMs,
         useNativeDriver: Platform.OS !== 'web',
       });
-    Animated.sequence([step(-6), step(6), step(-4), step(4), step(0)]).start();
+    Animated.sequence(FieldToken.shake.steps.map(step)).start();
   }, [trigger, offset]);
 
   return <Animated.View style={{ transform: [{ translateX: offset }] }}>{children}</Animated.View>;

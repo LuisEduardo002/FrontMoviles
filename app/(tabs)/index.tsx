@@ -11,6 +11,7 @@ import StatTile from '../../src/components/StatTile';
 import { Caption, Heading } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
 import { useSession } from '../../src/session/context';
+import { AdminHomeToken, ScrollScreenToken } from '../../src/theme/Token';
 import { colors } from '../../src/theme/tokens';
 import type { AdminEvent, AdminUser, NfcTag } from '../../src/types';
 import { formatDate, plural } from '../../src/utils/format';
@@ -62,19 +63,19 @@ function AdminPanel() {
 
   return (
     <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName="gap-4 p-3 pb-6"
+      className={ScrollScreenToken.container}
+      contentContainerClassName={ScrollScreenToken.content}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />
       }>
-      <View className="gap-1">
+      <View className={AdminHomeToken.greeting}>
         <Heading level="h2">Hola, cazador</Heading>
         <Caption>{user?.email}</Caption>
       </View>
 
       {data.failed && <Notice message="Parte del resumen no se pudo cargar. Desliza hacia abajo para reintentar." />}
 
-      <View className="flex-row gap-2">
+      <View className={AdminHomeToken.stats}>
         <StatTile
           value={activeEvents.length}
           label="Eventos activos"
@@ -96,7 +97,7 @@ function AdminPanel() {
         />
       </View>
 
-      <View className="gap-3">
+      <View className={AdminHomeToken.section}>
         <Heading level="h3">Acciones rápidas</Heading>
         <Button text="Crear evento" icon="calendar-plus" onPress={() => router.push('/events/new')} />
         <Button
@@ -113,7 +114,7 @@ function AdminPanel() {
         />
       </View>
 
-      <View className="gap-3">
+      <View className={AdminHomeToken.section}>
         <Heading level="h3">Eventos activos</Heading>
         {activeEvents.length === 0 ? (
           <Caption>No hay eventos activos. Crea uno para empezar la cacería.</Caption>
@@ -122,7 +123,7 @@ function AdminPanel() {
             <Card
               key={event.id}
               onPress={() => router.push({ pathname: '/events/[id]', params: { id: event.id } })}>
-              <Text className="font-body-semibold text-h3 text-ink">{event.name}</Text>
+              <Text className={AdminHomeToken.eventName}>{event.name}</Text>
               <Caption>
                 {formatDate(event.startDate)} → {formatDate(event.endDate)} ·{' '}
                 {plural(data.tags.filter((tag) => tag.eventId === event.id).length, 'tag', 'tags')}

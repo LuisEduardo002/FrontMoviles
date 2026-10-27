@@ -10,6 +10,7 @@ import SearchBar from '../../src/components/SearchBar';
 import Segmented from '../../src/components/Segmented';
 import { Body, Caption, Heading } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
+import { CardTitleRowToken } from '../../src/theme/Token';
 import type { AdminEvent } from '../../src/types';
 import { formatDate } from '../../src/utils/format';
 
@@ -81,8 +82,8 @@ export default function Events() {
 function EventCard({ event, onOpen }: { event: AdminEvent; onOpen: () => void }) {
   return (
     <Card onPress={onOpen}>
-      <View className="flex-row items-start gap-2">
-        <Heading level="h3" className="flex-1" numberOfLines={2}>
+      <View className={CardTitleRowToken.container}>
+        <Heading level="h3" className={CardTitleRowToken.title} numberOfLines={2}>
           {event.name}
         </Heading>
         <Badge text={event.isActive ? 'Activo' : 'Inactivo'} tone={event.isActive ? 'primary' : 'muted'} />

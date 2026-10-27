@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
+import { TagQrToken } from '../theme/Token';
 import { colors } from '../theme/tokens';
 import Button from './Button';
 import Notice from './Notice';
@@ -33,9 +34,9 @@ export default function TagQr({ code }: { code: string }) {
     <FormSection
       title="QR de la etiqueta"
       description="Imprímelo y pégalo junto a la etiqueta NFC: los jugadores lo escanean desde la app.">
-      <View ref={qrRef} collapsable={false} className="items-center gap-2 self-center rounded-md bg-ink p-3">
-        <QRCode value={code} size={200} color={colors.inkInverted} backgroundColor={colors.ink} />
-        <Text className="font-data text-h3 text-ink-inverted">{code}</Text>
+      <View ref={qrRef} collapsable={false} className={TagQrToken.container}>
+        <QRCode value={code} size={TagQrToken.qrSize} color={colors.inkInverted} backgroundColor={colors.ink} />
+        <Text className={TagQrToken.code}>{code}</Text>
       </View>
       <Notice message={error} />
       {Platform.OS !== 'web' && (

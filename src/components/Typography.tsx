@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from 'react';
+import { TypographyToken } from '../theme/Token';
 import { Text } from 'react-native';
 
 /**
@@ -8,21 +9,14 @@ import { Text } from 'react-native';
 
 type TextProps = PropsWithChildren<{ className?: string; numberOfLines?: number }>;
 
-const HEADING = {
-  display: 'font-data-black text-display',
-  h1: 'font-data text-h1',
-  h2: 'font-data text-h2',
-  h3: 'font-body-semibold text-h3',
-} as const;
-
 export function Heading({
   level = 'h1',
   className,
   numberOfLines,
   children,
-}: TextProps & { level?: keyof typeof HEADING }) {
+}: TextProps & { level?: keyof typeof TypographyToken.heading }) {
   return (
-    <Text numberOfLines={numberOfLines} className={`${HEADING[level]} text-ink ${className ?? ''}`}>
+    <Text numberOfLines={numberOfLines} className={`${TypographyToken.heading[level]} ${TypographyToken.headingColor} ${className ?? ''}`}>
       {children}
     </Text>
   );
@@ -33,7 +27,7 @@ export function Body({ muted, className, numberOfLines, children }: TextProps & 
   return (
     <Text
       numberOfLines={numberOfLines}
-      className={`font-body text-body ${muted ? 'text-ink/70' : 'text-ink'} ${className ?? ''}`}>
+      className={`${TypographyToken.body} ${TypographyToken.bodyColor[muted ? 'muted' : 'default']} ${className ?? ''}`}>
       {children}
     </Text>
   );
@@ -42,7 +36,7 @@ export function Body({ muted, className, numberOfLines, children }: TextProps & 
 /** Metadatos: fechas, lugares, contadores. */
 export function Caption({ className, numberOfLines, children }: TextProps) {
   return (
-    <Text numberOfLines={numberOfLines} className={`font-body text-caption text-ink/60 ${className ?? ''}`}>
+    <Text numberOfLines={numberOfLines} className={`${TypographyToken.caption} ${className ?? ''}`}>
       {children}
     </Text>
   );

@@ -11,6 +11,7 @@ import SearchBar from '../../src/components/SearchBar';
 import Segmented from '../../src/components/Segmented';
 import { Caption, Heading } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
+import { TagsToken } from '../../src/theme/Token';
 import type { AdminEvent, NfcTag } from '../../src/types';
 
 type Filter = 'ALL' | 'VISIBLE' | 'HIDDEN';
@@ -98,11 +99,11 @@ export default function Tags() {
 function TagCard({ tag, eventName, onOpen }: { tag: NfcTag; eventName?: string; onOpen: () => void }) {
   return (
     <Card onPress={onOpen}>
-      <Text className="font-data text-overline uppercase text-secondary">{tag.code}</Text>
+      <Text className={TagsToken.code}>{tag.code}</Text>
       <Heading level="h3" numberOfLines={2}>
         {tag.name}
       </Heading>
-      <View className="flex-row flex-wrap gap-2">
+      <View className={TagsToken.badges}>
         <Badge text={`+${tag.pointsReward} pts`} tone="primary" />
         {tag.isHidden && <Badge text="Oculto" />}
         {!!eventName && <Badge text={eventName} tone="secondary" />}

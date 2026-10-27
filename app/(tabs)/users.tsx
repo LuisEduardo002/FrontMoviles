@@ -11,6 +11,7 @@ import SearchBar from '../../src/components/SearchBar';
 import Segmented from '../../src/components/Segmented';
 import { Caption, Heading } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
+import { UsersToken } from '../../src/theme/Token';
 import type { AdminUser, Role } from '../../src/types';
 
 type Filter = 'ALL' | Role;
@@ -72,18 +73,18 @@ export default function Users() {
 function UserCard({ user, onOpen }: { user: AdminUser; onOpen: () => void }) {
   return (
     <Card onPress={onOpen}>
-      <View className="flex-row items-center gap-3">
+      <View className={UsersToken.identity}>
         <Avatar nickname={user.nickname} url={user.avatarUrl} />
-        <View className="flex-1 gap-1">
+        <View className={UsersToken.identityText}>
           <Heading level="h3" numberOfLines={1}>
             {user.nickname}
           </Heading>
           <Caption numberOfLines={1}>{user.email}</Caption>
         </View>
       </View>
-      <View className="flex-row flex-wrap items-center gap-2">
+      <View className={UsersToken.meta}>
         <Badge text={user.role === 'ADMIN' ? 'Admin' : 'Jugador'} tone={user.role === 'ADMIN' ? 'secondary' : 'muted'} />
-        <Text className="font-data text-caption text-primary">{user.totalPoints} pts</Text>
+        <Text className={UsersToken.points}>{user.totalPoints} pts</Text>
         {!!user.levelTitle && <Caption>· {user.levelTitle}</Caption>}
       </View>
     </Card>

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
+import { ListScreenToken } from '../theme/Token';
 import { colors } from '../theme/tokens';
 import { plural } from '../utils/format';
 import Notice from './Notice';
@@ -36,18 +37,18 @@ export default function ListScreen<T extends { id: string }>({
 }) {
   return (
     <FlatList
-      className="flex-1 bg-canvas"
+      className={ListScreenToken.container}
       data={items}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => renderItem(item)}
-      contentContainerClassName="gap-3 p-3 pb-6"
+      contentContainerClassName={ListScreenToken.content}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={colors.primary} />
       }
       ListHeaderComponent={
-        <View className="gap-3 pb-1">
+        <View className={ListScreenToken.header}>
           {controls}
           <Notice message={error} />
           <Caption>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Platform, View } from 'react-native';
 import { uploadAvatar } from '../api/profile';
+import { AvatarEditorToken } from '../theme/Token';
 import type { MyProfile } from '../types';
 import { pickAvatar } from '../utils/avatar';
 import { hapticError, hapticSuccess } from '../utils/haptics';
@@ -40,9 +41,9 @@ export default function AvatarEditor({
   };
 
   return (
-    <View className="items-center gap-3">
+    <View className={AvatarEditorToken.container}>
       <Avatar nickname={profile.nickname} url={profile.avatarUrl} size="lg" highlight />
-      <View className="flex-row gap-2">
+      <View className={AvatarEditorToken.actions}>
         <Chip
           label={isUploading ? 'Subiendo…' : 'Galería'}
           selected={false}

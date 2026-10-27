@@ -9,6 +9,7 @@ import { Chip } from '../../src/components/Segmented';
 import { Caption } from '../../src/components/Typography';
 import { useFocusLoad } from '../../src/hooks/useFocusLoad';
 import { useSession } from '../../src/session/context';
+import { RankingToken } from '../../src/theme/Token';
 import { glow } from '../../src/theme/tokens';
 import type { AdminEvent, Ranking, RankingEntry } from '../../src/types';
 import { eventPhase } from '../../src/utils/events';
@@ -49,7 +50,7 @@ export default function RankingScreen() {
       onRefresh={refresh}
       controls={
         <>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName={RankingToken.filters}>
             <Chip label="General" selected={!eventId} onPress={() => setEventId(undefined)} />
             {data.events.map((event) => (
               <Chip
@@ -80,17 +81,17 @@ function RankingRow({ entry, isMe }: { entry: RankingEntry; isMe: boolean }) {
 
   return (
     <View
-      className={`flex-row items-center gap-3 rounded-md bg-surface p-3 ${isMe ? 'border-[1.5px] border-primary' : ''}`}
+      className={`${RankingToken.row} ${isMe ? RankingToken.rowMe : ''}`}
       style={{ boxShadow: isMe ? glow.primary : glow.card }}>
       <Text
-        className={`w-[40px] text-center font-data-black ${podium ? 'text-h1' : 'text-h3'} ${
-          entry.position === 1 ? 'text-primary' : podium ? 'text-secondary' : 'text-ink/60'
+        className={`${RankingToken.position} ${RankingToken.positionSize[podium ? 'podium' : 'rest']} ${
+          RankingToken.positionColor[entry.position === 1 ? 'first' : podium ? 'podium' : 'rest']
         }`}>
         {entry.position}
       </Text>
       <Avatar nickname={entry.nickname} url={entry.avatarUrl} highlight={entry.position === 1} />
-      <View className="flex-1 gap-1">
-        <Text numberOfLines={1} className="font-body-semibold text-h3 text-ink">
+      <View className={RankingToken.info}>
+        <Text numberOfLines={1} className={RankingToken.nickname}>
           {entry.nickname}
           {isMe ? ' (tú)' : ''}
         </Text>
@@ -98,7 +99,7 @@ function RankingRow({ entry, isMe }: { entry: RankingEntry; isMe: boolean }) {
           {entry.levelTitle ?? 'Cazador'} · {plural(entry.tagsFound, 'tag', 'tags')}
         </Caption>
       </View>
-      <Text className="font-data text-h3 text-primary">{entry.points}</Text>
+      <Text className={RankingToken.points}>{entry.points}</Text>
     </View>
   );
 }

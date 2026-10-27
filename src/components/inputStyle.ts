@@ -1,4 +1,5 @@
 import type { TextStyle } from 'react-native';
+import { InputToken } from '../theme/Token';
 import { glow } from '../theme/tokens';
 
 /**
@@ -8,15 +9,8 @@ import { glow } from '../theme/tokens';
  */
 export type InputState = 'default' | 'focused' | 'valid' | 'error';
 
-const BORDER: Record<InputState, string> = {
-  default: 'border-disabled',
-  focused: 'border-secondary',
-  valid: 'border-primary/60',
-  error: 'border-danger',
-};
-
 export function inputClassName(state: InputState): string {
-  return `min-h-[48px] rounded-sm border-2 bg-surface px-3 py-3 font-body text-body text-ink ${BORDER[state]}`;
+  return `${InputToken.base} ${InputToken.border[state]}`;
 }
 
 /** Resplandor del foco. `outlineWidth: 0` quita el anillo azul del navegador. */
