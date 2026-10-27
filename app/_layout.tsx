@@ -5,7 +5,7 @@
  *  1. Carga las fuentes de dict_style.md y mantiene el splash mientras tanto,
  *     para que ninguna pantalla se pinte con la fuente del sistema y cambie.
  *  2. Pone el proveedor de sesión, para que cualquier pantalla pueda saber
- *     quién entró.
+ *     quién entró, y `AlertHost`, que pinta las alertas de `showAlert`.
  *  3. Declara la navegación y decide, con `Stack.Protected`, qué pantallas
  *     existen según haya sesión o no. Sin sesión, las rutas privadas ni
  *     siquiera están registradas: no hay forma de llegar a ellas.
@@ -28,6 +28,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import '../global.css';
+import AlertHost from '../src/components/AlertHost';
 import { SessionProvider, useSession } from '../src/session/context';
 import { stackScreenOptions } from '../src/theme/navigation';
 
@@ -52,6 +53,7 @@ export default function RootLayout() {
     <SessionProvider>
       <StatusBar style="light" />
       <Navigator />
+      <AlertHost />
     </SessionProvider>
   );
 }

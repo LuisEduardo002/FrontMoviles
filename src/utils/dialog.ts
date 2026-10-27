@@ -1,30 +1,58 @@
-import { Alert, Platform } from 'react-native';
+/**
+ * Alertas y confirmaciones de NFHunter. No uses `Alert.alert` ni el `confirm`
+ * del navegador: se ven como el sistema y en web `Alert.alert` no hace nada.
+ *
+ * Estas funciones se llaman desde cualquier handler (no son hooks) y las
+ * pinta `AlertHost`, que vive una sola vez en el layout raíz.
+ */
+
+export type AlertTone = 'danger' | 'success' | 'info';
+
+export interface AlertOptions {
+  title: string;
+  message: string;
+  tone?: AlertTone;
+  /** Texto del botón principal. */
+  confirmText?: string;
+  /** Si viene, aparece un segundo botón que cancela. */
+  cancelText?: string;
+}
+
+export interface AlertRequest extends AlertOptions {
+  /** true si tocó el botón principal; false si canceló o cerró el diálogo. */
+  resolve: (confirmed: boolean) => void;
+}
+
+let present: ((request: AlertRequest) => void) | null = null;
+
+/** Lo usa `AlertHost` al montarse. Devuelve con qué desregistrarse. */
+export function registerAlertHost(host: (request: AlertRequest) => void) {
+  present = host;
+  return () => {
+    if (present === host) present = null;
+  };
+}
+
+/** Muestra un aviso. Se resuelve cuando el usuario lo cierra. */
+export function showAlert(options: AlertOptions): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (!present) {
+      console.warn('showAlert sin AlertHost montado:', options.title);
+      resolve(false);
+      return;
+    }
+    present({ ...options, resolve });
+  });
+}
 
 /**
  * Confirmación antes de una acción destructiva. Devuelve true si el usuario
  * aceptó.
- *
- * `Alert.alert` no hace nada en web (react-native-web lo deja vacío), así que
- * ahí se usa el `confirm` del navegador. Es la única razón de este archivo: no
- * llames a `Alert` directamente desde una pantalla.
  */
 export function confirmDestructive(
   title: string,
   message: string,
   confirmLabel = 'Eliminar',
 ): Promise<boolean> {
-  if (Platform.OS === 'web') {
-    return Promise.resolve(globalThis.confirm(`${title}\n\n${message}`));
-  }
-  return new Promise((resolve) => {
-    Alert.alert(
-      title,
-      message,
-      [
-        { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
-        { text: confirmLabel, style: 'destructive', onPress: () => resolve(true) },
-      ],
-      { cancelable: true, onDismiss: () => resolve(false) },
-    );
-  });
+  return showAlert({ title, message, tone: 'danger', confirmText: confirmLabel, cancelText: 'Cancelar' });
 }

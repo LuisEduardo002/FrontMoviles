@@ -252,6 +252,27 @@ export const TagQrToken = {
   code: 'font-data text-h3 text-ink-inverted',
 } as const;
 
+/** Diálogo propio que reemplaza a `Alert.alert` y al `confirm` del navegador. */
+export const AlertToken = {
+  overlay: 'flex-1 items-center justify-center bg-canvas/80 p-3',
+  backdrop: 'absolute inset-0',
+  card: 'w-full max-w-[400px] items-center gap-3 rounded-md border-[1.5px] bg-surface p-4',
+  icon: 'h-[56px] w-[56px] items-center justify-center rounded-full',
+  iconSize: 32,
+  title: 'text-center font-data text-h2 text-ink',
+  message: 'text-center font-body text-body text-ink/70',
+  actions: 'w-full flex-row gap-2 pt-2',
+  button: 'flex-1',
+  tone: {
+    danger: { border: 'border-danger', icon: 'bg-danger/15', iconName: 'alert-octagon-outline' },
+    success: { border: 'border-primary', icon: 'bg-primary/15', iconName: 'check-circle-outline' },
+    info: { border: 'border-secondary', icon: 'bg-secondary/15', iconName: 'information-outline' },
+  },
+  /** Entrada: crece desde `fromScale` en `durationMs`, sin rebote (dict_style.md §0). */
+  enter: { fromScale: 0.92, durationMs: 180 },
+  enterWrapper: { width: '100%', alignItems: 'center' },
+} as const;
+
 //pantallas
 /** Ingreso y registro: la marca arriba y el enlace para cambiar de una a otra. */
 export const AuthToken = {
