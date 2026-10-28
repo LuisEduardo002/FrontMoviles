@@ -4,6 +4,7 @@ import Field from '@/components/ui/Field';
 import Notice from '@/components/ui/Notice';
 import { FormScreen } from '@/components/ui/Screen';
 import { Body } from '@/components/ui/Typography';
+import { AuthToken } from '@/theme/Token';
 import { useRegister } from '@/hooks/useRegister';
 
 /** Pantalla de crear cuenta. La lógica vive en `useRegister`. */
@@ -70,9 +71,9 @@ export default function Register() {
 
       <Button text={isSubmitting ? 'Creando…' : 'Crear cuenta'} onPress={submit} disabled={isSubmitting} />
 
-      <Pressable onPress={goToLogin} accessibilityRole="link" className="items-center py-2">
-        <Text className="font-body text-body text-ink/70">
-          ¿Ya tienes cuenta? <Text className="font-body-semibold text-secondary">Inicia sesión</Text>
+      <Pressable onPress={goToLogin} accessibilityRole="link" className={AuthToken.switchLink}>
+        <Text className={AuthToken.switchText}>
+          ¿Ya tienes cuenta? <Text className={AuthToken.switchAction}>Inicia sesión</Text>
         </Text>
       </Pressable>
     </FormScreen>

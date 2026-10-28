@@ -17,6 +17,7 @@ import {
 import { Animated, Text, TextInput, View, type TextInputProps } from 'react-native';
 import { useInputFocus } from '@/hooks/useInputFocus';
 import { useShake } from '@/hooks/useShake';
+import { FieldToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 import { inputClassName, inputStyle, type InputState } from '@/components/ui/inputStyle';
 
@@ -61,14 +62,14 @@ export default function Field<T extends FieldValues>({
               : 'default';
 
         return (
-          <View className="gap-2">
-            <Text className="font-body-semibold text-body text-ink">{label}</Text>
+          <View className={FieldToken.container}>
+            <Text className={FieldToken.label}>{label}</Text>
             <Shake trigger={error?.message}>
               <TextInput
                 // Con la ref, react-hook-form enfoca el primer campo con error al
                 // enviar: en formularios largos el usuario ve qué falló.
                 ref={ref}
-                className={`${inputClassName(state)} ${multiline ? 'min-h-[96px]' : ''}`}
+                className={`${inputClassName(state)} ${multiline ? FieldToken.multiline : ''}`}
                 style={inputStyle(state)}
                 value={value}
                 onChangeText={(text) => onChange(format === 'date' ? formatDateInput(text) : text)}
@@ -86,9 +87,9 @@ export default function Field<T extends FieldValues>({
             </Shake>
             {/* El mensaje sale de las `rules`: quien define la regla define el texto. */}
             {error ? (
-              <Text className="font-body text-caption text-danger">{error.message}</Text>
+              <Text className={FieldToken.error}>{error.message}</Text>
             ) : (
-              !!hint && <Text className="font-body text-caption text-ink/60">{hint}</Text>
+              !!hint && <Text className={FieldToken.hint}>{hint}</Text>
             )}
           </View>
         );

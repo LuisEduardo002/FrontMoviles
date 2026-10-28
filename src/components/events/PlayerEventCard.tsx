@@ -4,6 +4,7 @@ import Card from '@/components/ui/Card';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { Body, Caption, Heading } from '@/components/ui/Typography';
 import type { EventProgress } from '@/hooks/usePlayerEvents';
+import { CardTitleRowToken } from '@/theme/Token';
 import type { AdminEvent } from '@/types';
 import { eventPhase, PHASE_LABEL, PHASE_TONE } from '@/utils/events';
 import { formatDateTime } from '@/utils/format';
@@ -22,8 +23,8 @@ export default function PlayerEventCard({
 
   return (
     <Card onPress={onOpen}>
-      <View className="flex-row items-start gap-2">
-        <Heading level="h3" className="flex-1" numberOfLines={2}>
+      <View className={CardTitleRowToken.container}>
+        <Heading level="h3" className={CardTitleRowToken.title} numberOfLines={2}>
           {event.name}
         </Heading>
         <Badge text={PHASE_LABEL[phase]} tone={PHASE_TONE[phase]} />

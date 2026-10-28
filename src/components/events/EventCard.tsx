@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 import { Body, Caption, Heading } from '@/components/ui/Typography';
+import { CardTitleRowToken } from '@/theme/Token';
 import type { AdminEvent } from '@/types';
 import { formatDate } from '@/utils/format';
 
@@ -9,8 +10,8 @@ import { formatDate } from '@/utils/format';
 export default function EventCard({ event, onOpen }: { event: AdminEvent; onOpen: () => void }) {
   return (
     <Card onPress={onOpen}>
-      <View className="flex-row items-start gap-2">
-        <Heading level="h3" className="flex-1" numberOfLines={2}>
+      <View className={CardTitleRowToken.container}>
+        <Heading level="h3" className={CardTitleRowToken.title} numberOfLines={2}>
           {event.name}
         </Heading>
         <Badge text={event.isActive ? 'Activo' : 'Inactivo'} tone={event.isActive ? 'primary' : 'muted'} />

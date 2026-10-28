@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
+import { StatTileToken } from '@/theme/Token';
 import { glow } from '@/theme/tokens';
 import { Caption } from '@/components/ui/Typography';
 
@@ -19,16 +20,15 @@ export default function StatTile({
   onPress?: () => void;
   highlight?: boolean;
 }) {
-  const className = `flex-1 gap-1 rounded-md bg-surface p-3 ${
-    highlight ? 'border-[1.5px] border-primary' : ''
-  }`;
+  const className = `${StatTileToken.container} ${highlight ? StatTileToken.highlight : ''}`;
   const style = { boxShadow: highlight ? glow.primary : glow.card };
+  const textColor = StatTileToken.textColor[highlight ? 'highlight' : 'default'];
   const content = (
     <>
-      <Text className={`font-data-black text-display ${highlight ? 'text-primary' : 'text-ink'}`}>
+      <Text className={`${StatTileToken.value} ${textColor}`}>
         {value}
       </Text>
-      <Text className={`font-body-semibold text-caption ${highlight ? 'text-primary' : 'text-ink'}`}>
+      <Text className={`${StatTileToken.label} ${textColor}`}>
         {label}
       </Text>
       {!!detail && <Caption>{detail}</Caption>}
@@ -48,7 +48,7 @@ export default function StatTile({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${value} ${label}${detail ? `, ${detail}` : ''}`}
-      className={`${className} active:opacity-80`}
+      className={`${className} ${StatTileToken.pressed}`}
       style={style}>
       {content}
     </Pressable>

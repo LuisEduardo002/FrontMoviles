@@ -2,6 +2,7 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { Pressable, TextInput, View } from 'react-native';
 import { inputClassName, inputStyle } from '@/components/ui/inputStyle';
 import { useInputFocus } from '@/hooks/useInputFocus';
+import { ChatComposerToken } from '@/theme/Token';
 import { colors, glow } from '@/theme/tokens';
 
 /** La caja de texto del chat con su botón de enviar. */
@@ -20,9 +21,9 @@ export default function ChatComposer({
   const state = focus.isFocused ? 'focused' : 'default';
 
   return (
-    <View className="flex-row items-end gap-2">
+    <View className={ChatComposerToken.container}>
       <TextInput
-        className={`flex-1 ${inputClassName(state)} max-h-[120px]`}
+        className={`${ChatComposerToken.input} ${inputClassName(state)} ${ChatComposerToken.inputMaxHeight}`}
         style={inputStyle(state)}
         value={draft}
         onChangeText={onChange}
@@ -40,11 +41,9 @@ export default function ChatComposer({
         disabled={!canSend}
         accessibilityRole="button"
         accessibilityLabel="Enviar mensaje"
-        className={`h-[48px] w-[48px] items-center justify-center rounded-full ${
-          canSend ? 'bg-primary active:opacity-80' : 'bg-disabled'
-        }`}
+        className={`${ChatComposerToken.send} ${ChatComposerToken.sendState[canSend ? 'active' : 'disabled']}`}
         style={canSend ? { boxShadow: glow.primary } : undefined}>
-        <MaterialDesignIcons name="send" size={22} color={canSend ? colors.inkInverted : colors.disabledText} />
+        <MaterialDesignIcons name="send" size={ChatComposerToken.sendIconSize} color={canSend ? colors.inkInverted : colors.disabledText} />
       </Pressable>
     </View>
   );

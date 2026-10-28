@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
+import { ChatBubbleToken } from '@/theme/Token';
 import type { ChatMessage } from '@/types';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
@@ -21,22 +22,22 @@ export default function ChatBubble({
   onLongPress?: () => void;
 }) {
   return (
-    <View className={`flex-row items-end gap-2 ${mine ? 'justify-end' : ''}`}>
+    <View className={`${ChatBubbleToken.row} ${mine ? ChatBubbleToken.rowMine : ''}`}>
       {!mine && <Avatar nickname={message.user.nickname} url={message.user.avatarUrl} size="sm" />}
       <Pressable
         onLongPress={onLongPress}
         disabled={!onLongPress}
-        className={`max-w-[80%] gap-1 rounded-md px-3 py-2 ${
-          mine ? 'rounded-br-sm border border-primary/40 bg-primary/15' : 'rounded-bl-sm bg-surface'
+        className={`${ChatBubbleToken.bubble} ${
+          mine ? ChatBubbleToken.bubbleMine : ChatBubbleToken.bubbleOther
         }`}>
         {!mine && (
-          <View className="flex-row items-center gap-2">
-            <Text className="font-body-semibold text-caption text-secondary">{message.user.nickname}</Text>
+          <View className={ChatBubbleToken.author}>
+            <Text className={ChatBubbleToken.authorName}>{message.user.nickname}</Text>
             {message.user.role === 'ADMIN' && <Badge text="Admin" tone="secondary" />}
           </View>
         )}
-        <Text className="font-body text-body text-ink">{message.content}</Text>
-        <Text className={`font-body text-caption text-ink/60 ${mine ? 'text-right' : ''}`}>
+        <Text className={ChatBubbleToken.content}>{message.content}</Text>
+        <Text className={`${ChatBubbleToken.time} ${mine ? ChatBubbleToken.timeMine : ''}`}>
           {time(message.createdAt)}
         </Text>
       </Pressable>

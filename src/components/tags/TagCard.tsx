@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 import { Caption, Heading } from '@/components/ui/Typography';
+import { TagCardToken } from '@/theme/Token';
 import type { NfcTag } from '@/types';
 
 /** Un tag en la lista del admin: código, nombre, puntos, visibilidad y evento. */
@@ -16,11 +17,11 @@ export default function TagCard({
 }) {
   return (
     <Card onPress={onOpen}>
-      <Text className="font-data text-overline uppercase text-secondary">{tag.code}</Text>
+      <Text className={TagCardToken.code}>{tag.code}</Text>
       <Heading level="h3" numberOfLines={2}>
         {tag.name}
       </Heading>
-      <View className="flex-row flex-wrap gap-2">
+      <View className={TagCardToken.badges}>
         <Badge text={`+${tag.pointsReward} pts`} tone="primary" />
         {tag.isHidden && <Badge text="Oculto" />}
         {!!eventName && <Badge text={eventName} tone="secondary" />}

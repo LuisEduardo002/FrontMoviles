@@ -9,6 +9,7 @@ import ProgressBar from '@/components/ui/ProgressBar';
 import { EmptyState, ErrorScreen, LoadingScreen } from '@/components/ui/Screen';
 import { Body, Caption, Heading } from '@/components/ui/Typography';
 import { usePlayerEvent } from '@/hooks/usePlayerEvent';
+import { PlayerEventDetailToken, ScrollScreenToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 import { PHASE_LABEL, PHASE_TONE } from '@/utils/events';
 import { formatDateTime } from '@/utils/format';
@@ -25,8 +26,8 @@ export default function PlayerEventDetail({ id }: { id: string }) {
 
   return (
     <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName="gap-4 p-3 pb-6"
+      className={ScrollScreenToken.container}
+      contentContainerClassName={ScrollScreenToken.content}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={colors.primary} />
       }>
@@ -41,7 +42,7 @@ export default function PlayerEventDetail({ id }: { id: string }) {
       </Card>
 
       {phase !== 'ended' && (
-        <View className="gap-3">
+        <View className={PlayerEventDetailToken.actions}>
           {phase === 'live' && (
             <Button text="Escanear un tag" icon="qrcode-scan" onPress={() => router.navigate('/(tabs)/scan')} />
           )}
@@ -68,9 +69,9 @@ export default function PlayerEventDetail({ id }: { id: string }) {
 
 function Schedule({ label, date }: { label: string; date: string }) {
   return (
-    <View className="flex-row items-center gap-2">
-      <MaterialDesignIcons name="clock-outline" size={18} color={colors.secondary} />
-      <Text className="font-body-semibold text-body text-ink">{label}</Text>
+    <View className={PlayerEventDetailToken.dateRow}>
+      <MaterialDesignIcons name="clock-outline" size={PlayerEventDetailToken.iconSize} color={colors.secondary} />
+      <Text className={PlayerEventDetailToken.dateLabel}>{label}</Text>
       <Caption>{formatDateTime(date)}</Caption>
     </View>
   );

@@ -1,5 +1,6 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Image, Text, View } from 'react-native';
+import { CollectibleCardToken } from '@/theme/Token';
 import { colors, glow } from '@/theme/tokens';
 
 /**
@@ -20,30 +21,30 @@ export default function CollectibleCard({
   points: number;
   locked?: boolean;
 }) {
+  const state = locked ? 'locked' : 'found';
+
   return (
     <View
-      className={`flex-1 gap-2 rounded-md border-[1.5px] bg-surface p-2 ${
-        locked ? 'border-disabled' : 'border-primary'
-      }`}
+      className={`${CollectibleCardToken.container} ${CollectibleCardToken.border[state]}`}
       style={{ boxShadow: locked ? glow.card : glow.primary }}>
-      <View className="aspect-square items-center justify-center overflow-hidden rounded-sm bg-canvas">
+      <View className={CollectibleCardToken.imageWrapper}>
         {locked ? (
-          <Text className="font-data-black text-h1 text-disabled-text">???</Text>
+          <Text className={CollectibleCardToken.lockedMark}>???</Text>
         ) : imageUrl ? (
-          <Image source={{ uri: imageUrl }} className="h-full w-full" accessibilityLabel={title} />
+          <Image source={{ uri: imageUrl }} className={CollectibleCardToken.image} accessibilityLabel={title} />
         ) : (
-          <MaterialDesignIcons name="nfc-variant" size={40} color={colors.primary} />
+          <MaterialDesignIcons name="nfc-variant" size={CollectibleCardToken.iconSize} color={colors.primary} />
         )}
       </View>
-      <Text numberOfLines={2} className={`font-body-semibold text-caption ${locked ? 'text-ink/60' : 'text-ink'}`}>
+      <Text numberOfLines={2} className={`${CollectibleCardToken.title} ${CollectibleCardToken.titleColor[state]}`}>
         {locked ? 'Sin descubrir' : title}
       </Text>
       {!!subtitle && subtitle !== title && !locked && (
-        <Text numberOfLines={1} className="font-body text-caption text-ink/60">
+        <Text numberOfLines={1} className={CollectibleCardToken.subtitle}>
           {subtitle}
         </Text>
       )}
-      <Text className={`font-data text-overline uppercase ${locked ? 'text-disabled-text' : 'text-primary'}`}>
+      <Text className={`${CollectibleCardToken.points} ${CollectibleCardToken.pointsColor[state]}`}>
         +{points} pts
       </Text>
     </View>

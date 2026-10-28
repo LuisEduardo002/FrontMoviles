@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import Avatar from '@/components/ui/Avatar';
 import { Caption } from '@/components/ui/Typography';
+import { RankingRowToken } from '@/theme/Token';
 import { glow } from '@/theme/tokens';
 import type { RankingEntry } from '@/types';
 import { plural } from '@/utils/format';
@@ -11,17 +12,17 @@ export default function RankingRow({ entry, isMe }: { entry: RankingEntry; isMe:
 
   return (
     <View
-      className={`flex-row items-center gap-3 rounded-md bg-surface p-3 ${isMe ? 'border-[1.5px] border-primary' : ''}`}
+      className={`${RankingRowToken.container} ${isMe ? RankingRowToken.me : ''}`}
       style={{ boxShadow: isMe ? glow.primary : glow.card }}>
       <Text
-        className={`w-[40px] text-center font-data-black ${podium ? 'text-h1' : 'text-h3'} ${
-          entry.position === 1 ? 'text-primary' : podium ? 'text-secondary' : 'text-ink/60'
+        className={`${RankingRowToken.position} ${RankingRowToken.positionSize[podium ? 'podium' : 'rest']} ${
+          RankingRowToken.positionColor[entry.position === 1 ? 'first' : podium ? 'podium' : 'rest']
         }`}>
         {entry.position}
       </Text>
       <Avatar nickname={entry.nickname} url={entry.avatarUrl} highlight={entry.position === 1} />
-      <View className="flex-1 gap-1">
-        <Text numberOfLines={1} className="font-body-semibold text-h3 text-ink">
+      <View className={RankingRowToken.info}>
+        <Text numberOfLines={1} className={RankingRowToken.nickname}>
           {entry.nickname}
           {isMe ? ' (tú)' : ''}
         </Text>
@@ -29,7 +30,7 @@ export default function RankingRow({ entry, isMe }: { entry: RankingEntry; isMe:
           {entry.levelTitle ?? 'Cazador'} · {plural(entry.tagsFound, 'tag', 'tags')}
         </Caption>
       </View>
-      <Text className="font-data text-h3 text-primary">{entry.points}</Text>
+      <Text className={RankingRowToken.points}>{entry.points}</Text>
     </View>
   );
 }

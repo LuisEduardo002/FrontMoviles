@@ -3,6 +3,7 @@ import RankingRow from '@/components/player/RankingRow';
 import ListScreen from '@/components/ui/ListScreen';
 import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
 import { Chip } from '@/components/ui/Segmented';
+import { RankingToken } from '@/theme/Token';
 import { useRanking } from '@/hooks/useRanking';
 
 /**
@@ -24,7 +25,7 @@ export default function Ranking() {
       onRefresh={ranking.refresh}
       controls={
         <>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName={RankingToken.filters}>
             <Chip label="General" selected={!ranking.eventId} onPress={() => ranking.setEventId(undefined)} />
             {ranking.liveEvents.map((event) => (
               <Chip

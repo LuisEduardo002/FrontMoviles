@@ -8,6 +8,7 @@ import Notice from '@/components/ui/Notice';
 import { FormScreen } from '@/components/ui/Screen';
 import { Body, Heading } from '@/components/ui/Typography';
 import { useScan } from '@/hooks/useScan';
+import { ScanToken } from '@/theme/Token';
 import { colors, glow } from '@/theme/tokens';
 
 /**
@@ -25,16 +26,16 @@ export default function Scan() {
 
   return (
     <FormScreen centered>
-      <View className="items-center gap-3 py-4">
+      <View className={ScanToken.intro}>
         <View
-          className="h-[120px] w-[120px] items-center justify-center rounded-full border-2 border-primary bg-surface"
+          className={ScanToken.introIcon}
           style={{ boxShadow: glow.primary }}>
-          <MaterialDesignIcons name="nfc-search-variant" size={64} color={colors.primary} />
+          <MaterialDesignIcons name="nfc-search-variant" size={ScanToken.introIconSize} color={colors.primary} />
         </View>
-        <Heading level="h2" className="text-center">
+        <Heading level="h2" className={ScanToken.centered}>
           ¿Encontraste un tag?
         </Heading>
-        <Body muted className="text-center">
+        <Body muted className={ScanToken.centered}>
           Escanea su QR estando junto a la etiqueta. Tu ubicación se valida al registrarlo.
         </Body>
       </View>

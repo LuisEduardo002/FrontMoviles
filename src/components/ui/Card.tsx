@@ -1,6 +1,7 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import type { PropsWithChildren } from 'react';
 import { Pressable, View } from 'react-native';
+import { CardToken } from '@/theme/Token';
 import { colors, glow } from '@/theme/tokens';
 
 /**
@@ -12,11 +13,11 @@ export default function Card({
   className,
   children,
 }: PropsWithChildren<{ onPress?: () => void; className?: string }>) {
-  const base = `rounded-md bg-surface p-3 ${className ?? ''}`;
+  const base = `${CardToken.container} ${className ?? ''}`;
 
   if (!onPress) {
     return (
-      <View className={`gap-3 ${base}`} style={{ boxShadow: glow.card }}>
+      <View className={`${CardToken.plain} ${base}`} style={{ boxShadow: glow.card }}>
         {children}
       </View>
     );
@@ -26,10 +27,10 @@ export default function Card({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      className={`flex-row items-center gap-3 active:opacity-80 ${base}`}
+      className={`${CardToken.pressable} ${base}`}
       style={{ boxShadow: glow.card }}>
-      <View className="flex-1 gap-2">{children}</View>
-      <MaterialDesignIcons name="chevron-right" size={24} color={colors.disabledText} />
+      <View className={CardToken.content}>{children}</View>
+      <MaterialDesignIcons name="chevron-right" size={CardToken.iconSize} color={colors.disabledText} />
     </Pressable>
   );
 }

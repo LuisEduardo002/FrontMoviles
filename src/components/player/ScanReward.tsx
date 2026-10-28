@@ -4,6 +4,7 @@ import CollectibleCard from '@/components/player/CollectibleCard';
 import Button from '@/components/ui/Button';
 import { FormScreen } from '@/components/ui/Screen';
 import { Body, Caption } from '@/components/ui/Typography';
+import { ScanRewardToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 import type { ScanResult } from '@/types';
 
@@ -13,17 +14,17 @@ export default function ScanReward({ result, onContinue }: { result: ScanResult;
 
   return (
     <FormScreen centered>
-      <View className="items-center gap-1">
+      <View className={ScanRewardToken.result}>
         <Caption>¡Tag encontrado!</Caption>
         <Text
-          className="font-data-black text-display text-primary"
-          style={{ textShadowColor: colors.primary, textShadowRadius: 16 }}>
+          className={ScanRewardToken.points}
+          style={{ textShadowColor: colors.primary, textShadowRadius: ScanRewardToken.pointsGlowRadius }}>
           +{result.pointsEarned}
         </Text>
         <Body muted>Ahora tienes {result.totalPoints} puntos</Body>
       </View>
 
-      <View className="w-[220px] self-center">
+      <View className={ScanRewardToken.card}>
         <CollectibleCard
           title={tag.cardTitle ?? tag.name}
           subtitle={tag.name}
@@ -33,8 +34,8 @@ export default function ScanReward({ result, onContinue }: { result: ScanResult;
       </View>
 
       {!!tag.cardFunFact && (
-        <View className="gap-1 rounded-md bg-surface p-3">
-          <Text className="font-body-semibold text-body text-secondary">Dato curioso</Text>
+        <View className={ScanRewardToken.funFact}>
+          <Text className={ScanRewardToken.funFactTitle}>Dato curioso</Text>
           <Body>{tag.cardFunFact}</Body>
         </View>
       )}
