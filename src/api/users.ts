@@ -5,8 +5,8 @@
  * distinto (ej. `/api/users`), se cambia SOLO el `PATH` de abajo.
  */
 
-import type { AdminUser, CreateUserDto, UpdateUserDto } from '../types';
-import { ApiRequestError, request } from './client';
+import type { AdminUser, CreateUserDto, UpdateUserDto } from '@/types';
+import { ApiRequestError, request } from '@/api/client';
 
 const PATH = '/users';
 

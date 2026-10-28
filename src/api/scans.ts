@@ -2,8 +2,8 @@
  * Escaneos (/scans): registrar que se encontró un tag y el álbum propio.
  */
 
-import type { MyScan, ScanRequest, ScanResult } from '../types';
-import { request } from './client';
+import type { MyScan, ScanRequest, ScanResult } from '@/types';
+import { request } from '@/api/client';
 
 /**
  * POST /scans. El servidor decide si cuenta: rechaza con un mensaje propio si

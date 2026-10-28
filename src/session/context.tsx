@@ -7,11 +7,11 @@
  */
 
 import { createContext, use, useEffect, useState, type PropsWithChildren } from 'react';
-import * as api from '../api/auth';
-import { setToken as setRequestToken, setUnauthorizedHandler } from '../api/client';
-import type { AuthResponse, AuthUser } from '../types';
-import { decodeJwt, isExpired } from './jwt';
-import { loadToken, removeToken, saveToken } from './storage';
+import * as api from '@/api/auth';
+import { setToken as setRequestToken, setUnauthorizedHandler } from '@/api/client';
+import type { AuthResponse, AuthUser } from '@/types';
+import { decodeJwt, isExpired } from '@/session/jwt';
+import { loadToken, removeToken, saveToken } from '@/session/storage';
 
 interface Session {
   /** null = nadie ha entrado. El layout raíz usa esto para decidir qué mostrar. */

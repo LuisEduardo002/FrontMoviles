@@ -4,8 +4,8 @@
  * A diferencia de `users.ts` (CRUD del admin), esto lo usa cualquier usuario.
  */
 
-import type { AdminUser, MyProfile, Ranking } from '../types';
-import { request } from './client';
+import type { AdminUser, MyProfile, Ranking } from '@/types';
+import { request } from '@/api/client';
 
 export function getMyProfile(): Promise<MyProfile> {
   return request<MyProfile>('/users/me');

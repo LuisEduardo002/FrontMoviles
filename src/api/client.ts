@@ -6,8 +6,8 @@
  * y nada más.
  */
 
-import { API_URL, REQUEST_TIMEOUT_MS } from '../config/env';
-import type { ApiError } from '../types';
+import { API_URL, REQUEST_TIMEOUT_MS } from '@/config/env';
+import type { ApiError } from '@/types';
 
 /**
  * Token JWT de la sesión activa, en memoria.

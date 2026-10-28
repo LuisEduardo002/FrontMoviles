@@ -20,19 +20,6 @@ para las props que no aceptan clases (`tintColor`, colores de íconos,
 **Nunca escribas un hex en un componente.** Usa la clase (`bg-canvas`) o el
 token (`colors.primary`).
 
-`src/theme/Token.ts` junta las clases de cada componente y pantalla: un
-objeto por componente (`ButtonToken`, `CardToken`, `ScanToken`...) con una
-clave por parte (`container`, `title`, `iconSize`...). Los componentes no
-escriben clases, las leen de ahí:
-
-```tsx
-<View className={CardToken.container}>
-<Text className={`${ChipToken.label} ${ChipToken.labelState[state]}`}>
-```
-
-Si cambias cómo se ve algo, cámbialo en `Token.ts`. Las variantes son mapas
-(`tone`, `state`, `size`): el componente elige la clave, no arma la clase.
-
 | Clase | Uso |
 |---|---|
 | `bg-canvas` | Fondo de toda pantalla |
@@ -93,6 +80,9 @@ otro color, usa `Text` con sus clases completas.
 
 ## Componentes
 
+Las piezas genéricas viven en `src/components/ui/`; las de un dominio, en
+su carpeta (`events/`, `tags/`, `player/`...).
+
 | Componente | Para |
 |---|---|
 | `Button` | Toda acción. `variant`: `primary` (una por pantalla), `secondary`, `danger`. Háptica incluida. |
@@ -120,17 +110,32 @@ otro color, usa `Text` con sus clases completas.
 
 ## Patrones de pantalla
 
-**Una ruta, dos roles**: cuando admin y jugador comparten ruta (`index`,
-`perfil`, `events/[id]`), el archivo de `app/` solo decide cuál pintar según
-`user.role`. La versión del jugador vive en `src/screens/player/`, porque
-expo-router trataría cualquier archivo de `app/` como una ruta.
+**Rutas vacías**: un archivo de `app/` solo monta su componente. Toda la
+lógica (estado, cargar, guardar, eliminar, permisos) va en un hook de
+`src/hooks/`; el componente solo pinta lo que el hook devuelve.
 
-**Lista** (tab): `ListScreen` + `useFocusLoad`, que recarga al volver de
-crear o editar. El "Nuevo" va en el header (`app/(tabs)/_layout.tsx`), no en
+```tsx
+// app/events/[id].tsx
+export default function EventRoute() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <EventDetail id={id} />;
+}
+
+// src/components/events/EventEditor.tsx
+const editor = useEventEditor(id); // carga, formulario, save, remove
+```
+
+**Una ruta, dos roles**: cuando admin y jugador comparten ruta (inicio,
+perfil, detalle de evento), un componente elige con `useRole()` cuál pintar
+(`Home`, `Profile`, `EventDetail`).
+
+**Lista** (tab): `ListScreen` + un hook de datos (`useTags`, `usePlayerEvents`...) o `useFocusLoad` directo
+construido sobre `useFocusLoad`, que recarga al volver de crear o editar. El "Nuevo" va en el header (`app/(tabs)/_layout.tsx`), no en
 la lista.
 
-**Crear**: `FormScreen` → secciones → `Notice` → un `Button` primario. Al
-guardar: `hapticSuccess()` y `router.back()`; la lista ya muestra lo nuevo.
+**Crear**: `FormScreen` → secciones → `Notice` → un `Button` primario. El
+hook `useCreateForm` hace `hapticSuccess()` y `router.back()` al
+guardar; la lista ya muestra lo nuevo.
 
 **Detalle**: igual que crear, más:
 - el título del header es el nombre del registro (`<Stack.Screen options>`);
@@ -138,9 +143,9 @@ guardar: `hapticSuccess()` y `router.back()`; la lista ya muestra lo nuevo.
 - al guardar, `Notice tone="success"` en vez de una alerta;
 - `DangerZone` al final.
 
-**Envío de formularios**: `handleSubmit(submit, hapticError)`. El segundo
-argumento hace vibrar cuando la validación falla, y `Field` enfoca el primer
-campo con error.
+**Envío de formularios**: el hook arma `handleSubmit(submit, hapticError)` y
+lo devuelve listo para el `onPress`. El segundo argumento hace vibrar cuando
+la validación falla, y `Field` enfoca el primer campo con error.
 
 ---
 
