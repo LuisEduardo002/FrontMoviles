@@ -6,9 +6,9 @@
  */
 
 import { io, type Socket } from 'socket.io-client';
-import { API_URL } from '../config/env';
-import type { ChatMessage, ChatRoom } from '../types';
-import { request } from './client';
+import { API_URL } from '@/config/env';
+import type { ChatMessage, ChatRoom } from '@/types';
+import { request } from '@/api/client';
 
 export function listRooms(): Promise<ChatRoom[]> {
   return request<ChatRoom[]>('/chat/rooms');

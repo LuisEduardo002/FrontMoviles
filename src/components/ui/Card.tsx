@@ -1,0 +1,36 @@
+import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import type { PropsWithChildren } from 'react';
+import { Pressable, View } from 'react-native';
+import { CardToken } from '@/theme/Token';
+import { colors, glow } from '@/theme/tokens';
+
+/**
+ * Tarjeta (dict_style.md §3.3). Con `onPress` toda la tarjeta se puede tocar
+ * y muestra un chevron: en las listas no hace falta un botón "Ver" aparte.
+ */
+export default function Card({
+  onPress,
+  className,
+  children,
+}: PropsWithChildren<{ onPress?: () => void; className?: string }>) {
+  const base = `${CardToken.container} ${className ?? ''}`;
+
+  if (!onPress) {
+    return (
+      <View className={`${CardToken.static} ${base}`} style={{ boxShadow: glow.card }}>
+        {children}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      className={`${CardToken.pressable} ${base}`}
+      style={{ boxShadow: glow.card }}>
+      <View className={CardToken.content}>{children}</View>
+      <MaterialDesignIcons name="chevron-right" size={CardToken.iconSize} color={colors.disabledText} />
+    </Pressable>
+  );
+}

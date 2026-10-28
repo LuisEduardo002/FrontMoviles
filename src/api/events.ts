@@ -7,8 +7,8 @@
  * con `NfcTag.eventId`; si no, `event.id === tag.eventId` nunca es cierto.
  */
 
-import type { AdminEvent, CreateEventDto, UpdateEventDto } from '../types';
-import { request } from './client';
+import type { AdminEvent, CreateEventDto, UpdateEventDto } from '@/types';
+import { request } from '@/api/client';
 
 const PATH = '/events';
 

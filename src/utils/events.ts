@@ -1,4 +1,4 @@
-import type { AdminEvent } from '../types';
+import type { AdminEvent } from '@/types';
 
 /**
  * En qué momento está un evento para el jugador. Un evento inactivo cuenta

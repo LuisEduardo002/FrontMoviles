@@ -6,8 +6,8 @@
  * El perfil completo vive en `src/api/profile.ts`.
  */
 
-import type { AuthResponse, LoginRequest, RegisterRequest } from '../types';
-import { request } from './client';
+import type { AuthResponse, LoginRequest, RegisterRequest } from '@/types';
+import { request } from '@/api/client';
 
 /** POST /auth/login -> token de sesión y usuario. Responde 201, no 200. */
 export function login(body: LoginRequest): Promise<AuthResponse> {
