@@ -29,7 +29,7 @@ export const ButtonToken = {
     secondary: 'border-2 border-secondary active:bg-secondary/15',
     danger: 'border-2 border-danger active:bg-danger/15',
   },
-  disabled: { primary: 'bg-disabled', outline: 'border-2 border-disabled' },
+  disabled: { primary: 'bg-disabled', bordered: 'border-2 border-disabled' },
   label: 'font-body-bold text-button',
   labelVariant: { primary: 'text-ink-inverted', secondary: 'text-secondary', danger: 'text-danger' },
   labelDisabled: 'text-disabled-text',
@@ -123,7 +123,7 @@ export const FieldToken = {
 
 export const CardToken = {
   container: 'rounded-md bg-surface p-3',
-  static: 'gap-3',
+  plain: 'gap-3',
   pressable: 'flex-row items-center gap-3 active:opacity-80',
   content: 'flex-1 gap-2',
   iconSize: 24,
