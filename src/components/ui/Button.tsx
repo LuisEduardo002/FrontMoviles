@@ -42,7 +42,7 @@ export default function Button({
   const container = disabled
     ? variant === 'primary'
       ? ButtonToken.disabled.primary
-      : ButtonToken.disabled.outline
+      : ButtonToken.disabled.bordered
     : ButtonToken.variant[variant];
 
   return (

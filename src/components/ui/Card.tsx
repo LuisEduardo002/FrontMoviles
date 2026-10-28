@@ -17,7 +17,7 @@ export default function Card({
 
   if (!onPress) {
     return (
-      <View className={`${CardToken.static} ${base}`} style={{ boxShadow: glow.card }}>
+      <View className={`${CardToken.plain} ${base}`} style={{ boxShadow: glow.card }}>
         {children}
       </View>
     );
