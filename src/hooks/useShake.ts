@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { FieldToken } from '@/theme/Token';
 import { Animated, Platform } from 'react-native';
 
 /**
@@ -12,8 +13,8 @@ export function useShake(trigger?: string) {
   useEffect(() => {
     if (!trigger) return;
     const step = (toValue: number) =>
-      Animated.timing(offset, { toValue, duration: 50, useNativeDriver: Platform.OS !== 'web' });
-    Animated.sequence([step(-6), step(6), step(-4), step(4), step(0)]).start();
+      Animated.timing(offset, { toValue, duration: FieldToken.shake.stepMs, useNativeDriver: Platform.OS !== 'web' });
+    Animated.sequence(FieldToken.shake.steps.map(step)).start();
   }, [trigger, offset]);
 
   return offset;

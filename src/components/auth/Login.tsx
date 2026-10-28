@@ -5,6 +5,7 @@ import Notice from '@/components/ui/Notice';
 import { FormScreen } from '@/components/ui/Screen';
 import { Body } from '@/components/ui/Typography';
 import { useLogin } from '@/hooks/useLogin';
+import { AuthToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 
 /** Pantalla de ingreso. La lógica vive en `useLogin`. */
@@ -13,13 +14,13 @@ export default function Login() {
 
   return (
     <FormScreen centered>
-      <View className="items-center gap-2 py-5">
+      <View className={AuthToken.header}>
         <Text
-          className="font-data-black text-display text-primary"
-          style={{ textShadowColor: colors.primary, textShadowRadius: 16 }}>
+          className={AuthToken.brand}
+          style={{ textShadowColor: colors.primary, textShadowRadius: AuthToken.brandGlowRadius }}>
           NFHunter
         </Text>
-        <Body muted className="text-center">
+        <Body muted className={AuthToken.slogan}>
           Cada esquina guarda una historia. Cada tag, un trofeo.
         </Body>
       </View>
@@ -56,9 +57,9 @@ export default function Login() {
 
       <Button text={isSubmitting ? 'Entrando…' : 'Entrar'} onPress={submit} disabled={isSubmitting} />
 
-      <Pressable onPress={goToRegister} accessibilityRole="link" className="items-center py-2">
-        <Text className="font-body text-body text-ink/70">
-          ¿No tienes cuenta? <Text className="font-body-semibold text-secondary">Crear cuenta</Text>
+      <Pressable onPress={goToRegister} accessibilityRole="link" className={AuthToken.switchLink}>
+        <Text className={AuthToken.switchText}>
+          ¿No tienes cuenta? <Text className={AuthToken.switchAction}>Crear cuenta</Text>
         </Text>
       </Pressable>
     </FormScreen>

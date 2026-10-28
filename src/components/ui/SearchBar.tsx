@@ -1,6 +1,7 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { Pressable, TextInput, View } from 'react-native';
 import { useInputFocus } from '@/hooks/useInputFocus';
+import { SearchBarToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 import { inputClassName, inputStyle } from '@/components/ui/inputStyle';
 
@@ -21,9 +22,9 @@ export default function SearchBar({
   const state = focus.isFocused ? 'focused' : 'default';
 
   return (
-    <View className="justify-center">
+    <View className={SearchBarToken.container}>
       <TextInput
-        className={`${inputClassName(state)} pl-6 pr-6`}
+        className={`${inputClassName(state)} ${SearchBarToken.input}`}
         style={inputStyle(state)}
         value={value}
         onChangeText={onChange}
@@ -35,10 +36,10 @@ export default function SearchBar({
         autoCorrect={false}
         returnKeyType="search"
       />
-      <View pointerEvents="none" className="absolute left-3">
+      <View pointerEvents="none" className={SearchBarToken.searchIcon}>
         <MaterialDesignIcons
           name="magnify"
-          size={20}
+          size={SearchBarToken.iconSize}
           color={focus.isFocused ? colors.secondary : colors.disabledText}
         />
       </View>
@@ -47,8 +48,8 @@ export default function SearchBar({
           onPress={() => onChange('')}
           accessibilityLabel="Limpiar búsqueda"
           hitSlop={8}
-          className="absolute right-3">
-          <MaterialDesignIcons name="close-circle" size={20} color={colors.disabledText} />
+          className={SearchBarToken.clearButton}>
+          <MaterialDesignIcons name="close-circle" size={SearchBarToken.iconSize} color={colors.disabledText} />
         </Pressable>
       )}
     </View>

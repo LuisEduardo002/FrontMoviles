@@ -8,6 +8,7 @@ import StatTile from '@/components/ui/StatTile';
 import { Caption, Heading } from '@/components/ui/Typography';
 import { useAdminSummary } from '@/hooks/useAdminSummary';
 import { useRole } from '@/hooks/useRole';
+import { AdminPanelToken, ScrollScreenToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 import { formatDate, plural } from '@/utils/format';
 
@@ -23,12 +24,12 @@ export default function AdminPanel() {
 
   return (
     <ScrollView
-      className="flex-1 bg-canvas"
-      contentContainerClassName="gap-4 p-3 pb-6"
+      className={ScrollScreenToken.container}
+      contentContainerClassName={ScrollScreenToken.content}
       refreshControl={
         <RefreshControl refreshing={summary.isRefreshing} onRefresh={summary.refresh} tintColor={colors.primary} />
       }>
-      <View className="gap-1">
+      <View className={AdminPanelToken.greeting}>
         <Heading level="h2">Hola, cazador</Heading>
         <Caption>{user?.email}</Caption>
       </View>
@@ -37,7 +38,7 @@ export default function AdminPanel() {
         <Notice message="Parte del resumen no se pudo cargar. Desliza hacia abajo para reintentar." />
       )}
 
-      <View className="flex-row gap-2">
+      <View className={AdminPanelToken.stats}>
         <StatTile
           value={summary.activeEvents.length}
           label="Eventos activos"
@@ -59,7 +60,7 @@ export default function AdminPanel() {
         />
       </View>
 
-      <View className="gap-3">
+      <View className={AdminPanelToken.section}>
         <Heading level="h3">Acciones rápidas</Heading>
         <Button text="Crear evento" icon="calendar-plus" onPress={() => router.push('/events/new')} />
         <Button text="Crear tag" icon="nfc-variant" variant="secondary" onPress={() => router.push('/tags/new')} />
@@ -71,14 +72,14 @@ export default function AdminPanel() {
         />
       </View>
 
-      <View className="gap-3">
+      <View className={AdminPanelToken.section}>
         <Heading level="h3">Eventos activos</Heading>
         {summary.activeEvents.length === 0 ? (
           <Caption>No hay eventos activos. Crea uno para empezar la cacería.</Caption>
         ) : (
           summary.activeEvents.map((event) => (
             <Card key={event.id} onPress={() => router.push({ pathname: '/events/[id]', params: { id: event.id } })}>
-              <Text className="font-body-semibold text-h3 text-ink">{event.name}</Text>
+              <Text className={AdminPanelToken.eventName}>{event.name}</Text>
               <Caption>
                 {formatDate(event.startDate)} → {formatDate(event.endDate)} ·{' '}
                 {plural(summary.tagsInEvent(event.id), 'tag', 'tags')}

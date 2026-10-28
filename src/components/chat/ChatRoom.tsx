@@ -6,6 +6,7 @@ import ChatComposer from '@/components/chat/ChatComposer';
 import Notice from '@/components/ui/Notice';
 import { EmptyState, LoadingScreen } from '@/components/ui/Screen';
 import { Caption } from '@/components/ui/Typography';
+import { ChatRoomToken } from '@/theme/Token';
 import { useChatComposer } from '@/hooks/useChatComposer';
 import { useChatModeration } from '@/hooks/useChatModeration';
 import { useChatRoom } from '@/hooks/useChatRoom';
@@ -29,14 +30,14 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-canvas"
+      className={ChatRoomToken.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={insets.top + HEADER_HEIGHT}>
       <Stack.Screen options={{ title: name ?? 'Chat' }} />
 
       <FlatList
         inverted
-        className="flex-1"
+        className={ChatRoomToken.list}
         data={chat.messages}
         keyExtractor={(message) => message.id}
         renderItem={({ item }) => (
@@ -46,7 +47,7 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
             onLongPress={moderation.moderate && (() => void moderation.moderate?.(item))}
           />
         )}
-        contentContainerClassName="gap-2 p-3"
+        contentContainerClassName={ChatRoomToken.listContent}
         onEndReached={() => void chat.loadOlder()}
         onEndReachedThreshold={0.3}
         keyboardShouldPersistTaps="handled"
@@ -58,7 +59,8 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
         }
       />
 
-      <View className="gap-2 border-t border-disabled bg-surface p-3" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
+      <View className={ChatRoomToken.composer}
+        style={{ paddingBottom: Math.max(insets.bottom, ChatRoomToken.composerMinBottom) }}>
         <Notice message={composer.error ?? moderation.error ?? chat.error} />
         {!chat.isConnected && !chat.error && <Caption>Conectando con el chat…</Caption>}
         <ChatComposer

@@ -264,7 +264,7 @@ export const AuthToken = {
   switchAction: 'font-body-semibold text-secondary',
 } as const;
 
-export const AdminHomeToken = {
+export const AdminPanelToken = {
   greeting: 'gap-1',
   stats: 'flex-row gap-2',
   section: 'gap-3',
@@ -276,16 +276,32 @@ export const AdminProfileToken = {
   name: 'text-center',
 } as const;
 
+export const PlayerProfileToken = {
+  header: 'items-center gap-2',
+  name: 'text-center',
+  stats: 'flex-row gap-2',
+  section: 'gap-3',
+  sectionHeader: 'flex-row items-baseline justify-between',
+  album: 'flex-row flex-wrap gap-3',
+  albumItem: 'w-[47%]',
+} as const;
+
 export const ScanToken = {
-  camera: 'flex-1 bg-canvas',
-  cameraOverlay: 'absolute inset-0 items-center justify-center gap-4 p-4',
-  frame: 'h-[240px] w-[240px] rounded-md border-2 border-primary',
-  cameraHint: 'rounded-full bg-canvas/80 px-3 py-2 font-body-semibold text-body text-ink',
-  cancel: 'absolute bottom-4 left-3 right-3',
   intro: 'items-center gap-3 py-4',
   introIcon: 'h-[120px] w-[120px] items-center justify-center rounded-full border-2 border-primary bg-surface',
   introIconSize: 64,
   centered: 'text-center',
+} as const;
+
+export const ScanCameraToken = {
+  container: 'flex-1 bg-canvas',
+  overlay: 'absolute inset-0 items-center justify-center gap-4 p-4',
+  frame: 'h-[240px] w-[240px] rounded-md border-2 border-primary',
+  hint: 'rounded-full bg-canvas/80 px-3 py-2 font-body-semibold text-body text-ink',
+  cancel: 'absolute bottom-4 left-3 right-3',
+} as const;
+
+export const ScanRewardToken = {
   result: 'items-center gap-1',
   points: 'font-data-black text-display text-primary',
   pointsGlowRadius: 16,
@@ -296,8 +312,11 @@ export const ScanToken = {
 
 export const RankingToken = {
   filters: 'gap-2',
-  row: 'flex-row items-center gap-3 rounded-md bg-surface p-3',
-  rowMe: 'border-[1.5px] border-primary',
+} as const;
+
+export const RankingRowToken = {
+  container: 'flex-row items-center gap-3 rounded-md bg-surface p-3',
+  me: 'border-[1.5px] border-primary',
   position: 'w-[40px] text-center font-data-black',
   positionSize: { podium: 'text-h1', rest: 'text-h3' },
   positionColor: { first: 'text-primary', podium: 'text-secondary', rest: 'text-ink/60' },
@@ -306,7 +325,7 @@ export const RankingToken = {
   points: 'font-data text-h3 text-primary',
 } as const;
 
-export const ChatRoomsToken = {
+export const RoomCardToken = {
   identity: 'flex-row items-center gap-3',
   icon: 'h-[44px] w-[44px] items-center justify-center rounded-full bg-secondary/15',
   iconSize: 24,
@@ -318,7 +337,12 @@ export const ChatRoomToken = {
   list: 'flex-1',
   listContent: 'gap-2 p-3',
   composer: 'gap-2 border-t border-disabled bg-surface p-3',
-  composerRow: 'flex-row items-end gap-2',
+  /** Mínimo bajo el compositor cuando el teléfono no tiene zona segura abajo. */
+  composerMinBottom: 16,
+} as const;
+
+export const ChatComposerToken = {
+  container: 'flex-row items-end gap-2',
   input: 'flex-1',
   inputMaxHeight: 'max-h-[120px]',
   send: 'h-[48px] w-[48px] items-center justify-center rounded-full',
@@ -326,34 +350,28 @@ export const ChatRoomToken = {
   sendIconSize: 22,
 } as const;
 
-export const UsersToken = {
+export const UserCardToken = {
   identity: 'flex-row items-center gap-3',
   identityText: 'flex-1 gap-1',
   meta: 'flex-row flex-wrap items-center gap-2',
   points: 'font-data text-caption text-primary',
 } as const;
 
-export const TagsToken = {
+export const TagCardToken = {
   code: 'font-data text-overline uppercase text-secondary',
   badges: 'flex-row flex-wrap gap-2',
 } as const;
 
-export const PlayerEventDetailToken = {
-  actions: 'gap-3',
-  dateRow: 'flex-row items-center gap-2',
-  dateLabel: 'font-body-semibold text-body text-ink',
+export const PlayerTagCardToken = {
   badges: 'flex-row flex-wrap gap-2',
   clue: 'flex-row gap-2 rounded-sm bg-secondary/10 p-2',
   clueText: 'flex-1 font-body text-body text-secondary',
   iconSize: 18,
 } as const;
 
-export const PlayerProfileToken = {
-  header: 'items-center gap-2',
-  name: 'text-center',
-  stats: 'flex-row gap-2',
-  section: 'gap-3',
-  sectionHeader: 'flex-row items-baseline justify-between',
-  album: 'flex-row flex-wrap gap-3',
-  albumItem: 'w-[47%]',
+export const PlayerEventDetailToken = {
+  actions: 'gap-3',
+  dateRow: 'flex-row items-center gap-2',
+  dateLabel: 'font-body-semibold text-body text-ink',
+  iconSize: 18,
 } as const;

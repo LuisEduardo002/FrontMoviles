@@ -3,6 +3,7 @@ import Avatar from '@/components/ui/Avatar';
 import Notice from '@/components/ui/Notice';
 import { Chip } from '@/components/ui/Segmented';
 import { useAvatarUpload } from '@/hooks/useAvatarUpload';
+import { AvatarEditorToken } from '@/theme/Token';
 import type { MyProfile } from '@/types';
 
 /**
@@ -20,9 +21,9 @@ export default function AvatarEditor({
   const { change, isUploading, error, canUseCamera } = useAvatarUpload(onChanged);
 
   return (
-    <View className="items-center gap-3">
+    <View className={AvatarEditorToken.container}>
       <Avatar nickname={profile.nickname} url={profile.avatarUrl} size="lg" highlight />
-      <View className="flex-row gap-2">
+      <View className={AvatarEditorToken.actions}>
         <Chip label={isUploading ? 'Subiendo…' : 'Galería'} selected={false} onPress={() => void change('library')} />
         {canUseCamera && <Chip label="Cámara" selected={false} onPress={() => void change('camera')} />}
       </View>

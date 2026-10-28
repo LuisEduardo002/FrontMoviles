@@ -8,6 +8,7 @@ import { useMyProfile } from '@/hooks/useMyProfile';
 import { API_URL } from '@/config/env';
 import { useSession } from '@/session/context';
 import { decodeJwt } from '@/session/jwt';
+import { AdminProfileToken, ScrollScreenToken } from '@/theme/Token';
 import { formatDateTime } from '@/utils/format';
 
 /** Perfil del admin: su cuenta, la sesión, a qué servidor apunta la app y la salida. */
@@ -18,10 +19,10 @@ export default function AdminProfile() {
   const expiresAt = payload ? formatDateTime(new Date(payload.exp * 1000).toISOString()) : null;
 
   return (
-    <ScrollView className="flex-1 bg-canvas" contentContainerClassName="gap-4 p-3 pb-6">
-      <View className="items-center gap-2 py-3">
+    <ScrollView className={ScrollScreenToken.container} contentContainerClassName={ScrollScreenToken.content}>
+      <View className={AdminProfileToken.header}>
         {profile && <AvatarEditor profile={profile} onChanged={setAvatar} />}
-        <Heading level="h3" className="text-center">
+        <Heading level="h3" className={AdminProfileToken.name}>
           {profile?.nickname ?? user?.email}
         </Heading>
         <Caption>{user?.email}</Caption>

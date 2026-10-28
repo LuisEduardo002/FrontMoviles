@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
+import { ChipToken, SegmentedToken } from '@/theme/Token';
 import { hapticSelect } from '@/utils/haptics';
 
 /**
@@ -19,6 +20,8 @@ export function Chip({
   onPress: () => void;
   grow?: boolean;
 }) {
+  const state = selected ? 'selected' : 'default';
+
   return (
     <Pressable
       onPress={() => {
@@ -27,12 +30,10 @@ export function Chip({
       }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      className={`min-h-[40px] items-center justify-center rounded-full border-2 px-3 py-2 ${
-        grow ? 'flex-1' : ''
-      } ${selected ? 'border-secondary bg-secondary/15' : 'border-disabled active:bg-disabled/40'}`}>
+      className={`${ChipToken.container} ${grow ? ChipToken.grow : ''} ${ChipToken.state[state]}`}>
       <Text
         numberOfLines={1}
-        className={`font-body-semibold text-caption ${selected ? 'text-secondary' : 'text-ink/70'}`}>
+        className={`${ChipToken.label} ${ChipToken.labelState[state]}`}>
         {label}
       </Text>
     </Pressable>
@@ -51,9 +52,9 @@ export default function Segmented<T extends string | boolean>({
   onChange: (value: T) => void;
 }) {
   return (
-    <View className="gap-2">
-      {!!label && <Text className="font-body-semibold text-body text-ink">{label}</Text>}
-      <View className="flex-row gap-2">
+    <View className={SegmentedToken.container}>
+      {!!label && <Text className={SegmentedToken.label}>{label}</Text>}
+      <View className={SegmentedToken.options}>
         {options.map((option) => (
           <Chip
             key={String(option.value)}

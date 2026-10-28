@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button';
 import Notice from '@/components/ui/Notice';
 import { FormSection } from '@/components/ui/Screen';
 import { useShareImage } from '@/hooks/useShareImage';
+import { TagQrToken } from '@/theme/Token';
 import { colors } from '@/theme/tokens';
 
 /**
@@ -20,9 +21,9 @@ export default function TagQr({ code }: { code: string }) {
     <FormSection
       title="QR de la etiqueta"
       description="Imprímelo y pégalo junto a la etiqueta NFC: los jugadores lo escanean desde la app.">
-      <View ref={ref} collapsable={false} className="items-center gap-2 self-center rounded-md bg-ink p-3">
-        <QRCode value={code} size={200} color={colors.inkInverted} backgroundColor={colors.ink} />
-        <Text className="font-data text-h3 text-ink-inverted">{code}</Text>
+      <View ref={ref} collapsable={false} className={TagQrToken.container}>
+        <QRCode value={code} size={TagQrToken.qrSize} color={colors.inkInverted} backgroundColor={colors.ink} />
+        <Text className={TagQrToken.code}>{code}</Text>
       </View>
       <Notice message={error} />
       {canShare && (

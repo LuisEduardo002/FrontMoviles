@@ -20,6 +20,21 @@ para las props que no aceptan clases (`tintColor`, colores de íconos,
 **Nunca escribas un hex en un componente.** Usa la clase (`bg-canvas`) o el
 token (`colors.primary`).
 
+`src/theme/Token.ts` junta las clases de cada componente: un objeto por
+componente (`ButtonToken`, `CardToken`, `ScanCameraToken`...) con una clave
+por parte (`container`, `title`, `iconSize`...). Los componentes no escriben
+clases, las leen de ahí:
+
+```tsx
+<View className={CardToken.container}>
+<Text className={`${ChipToken.label} ${ChipToken.labelState[state]}`}>
+```
+
+Si cambias cómo se ve algo, cámbialo en `Token.ts`. Las variantes son mapas
+(`tone`, `state`, `size`): el componente elige la clave, no arma la clase.
+Un componente nuevo agrega su propio `XxxToken` en la sección que le toca
+(átomos, moléculas, organismos o pantallas).
+
 | Clase | Uso |
 |---|---|
 | `bg-canvas` | Fondo de toda pantalla |
