@@ -120,6 +120,7 @@ su carpeta (`events/`, `tags/`, `player/`...).
 | `ProgressBar` | "3 de 5 tags" con su barra. |
 | `ChatBubble` | Mensaje del chat; los propios a la derecha. |
 | `TagQr` | QR imprimible del código de un tag. |
+| `AlertHost` | Pinta las alertas de `showAlert` y `confirmDestructive`. Va solo en `navigation/AppRoot.tsx`. |
 
 ---
 
@@ -166,8 +167,15 @@ la validación falla, y `Field` enfoca el primer campo con error.
 
 ## Lo que no se usa
 
-- `Alert.alert`: no funciona en web. Para confirmar una eliminación usa
-  `confirmDestructive` (`src/utils/dialog.ts`); para avisar, `Notice`.
+- `Alert.alert` ni el `confirm` del navegador: se ven como el sistema y
+  `Alert.alert` no funciona en web. Usa las alertas propias de
+  `src/utils/dialog.ts`, que pinta `AlertHost`:
+  - `confirmDestructive(título, mensaje, 'Borrar')` antes de eliminar.
+  - `showAlert({ title, message, tone, confirmText, cancelText })` para
+    cualquier otro aviso; `tone` es `danger`, `success` o `info`. Las dos
+    devuelven `true` si el usuario tocó el botón principal.
+
+  Para un error o un "Cambios guardados" dentro de la pantalla, `Notice`.
 - `Pressable` con `Keyboard.dismiss` envolviendo la pantalla: `FormScreen` ya
   cierra el teclado al tocar fuera de un campo.
 - Colores de Tailwind por defecto (`text-white`, `text-neutral-400`,
