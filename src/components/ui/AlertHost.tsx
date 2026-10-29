@@ -27,11 +27,13 @@ export default function AlertHost() {
   const [queue, setQueue] = useState<AlertRequest[]>([]);
   const current = queue[0];
   const scale = useRef(new Animated.Value(1)).current;
+  const shownAt = useRef(0);
 
   useEffect(() => registerAlertHost((request) => setQueue((pending) => [...pending, request])), []);
 
   useEffect(() => {
     if (!current) return;
+    shownAt.current = Date.now();
     if (current.tone === 'danger') hapticError();
     if (current.tone === 'success') hapticSuccess();
     scale.setValue(AlertToken.enter.fromScale);
@@ -43,8 +45,13 @@ export default function AlertHost() {
   }, [current, scale]);
 
   const close = (confirmed: boolean) => {
-    current?.resolve(confirmed);
-    setQueue((pending) => pending.slice(1));
+    // Mientras entra, un doble toque en la alerta anterior la cerraría sin que
+    // el usuario alcance a leerla.
+    if (!current || Date.now() - shownAt.current < AlertToken.enter.durationMs) return;
+    current.resolve(confirmed);
+    // Por identidad y no `slice(1)`: si `close` corre dos veces antes de
+    // repintar, la segunda no se lleva otra alerta de la cola.
+    setQueue((pending) => pending.filter((request) => request !== current));
   };
 
   const tone = current?.tone ?? 'info';
