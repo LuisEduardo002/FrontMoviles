@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "scheme": "fromzeroapp",
+    "scheme": "nfhunter",
     "ios": {
       "supportsTablet": true
     },
@@ -23,7 +23,7 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.danielesp190steam.nfhunter"
+      "package": "com.nfhunter.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -62,6 +62,12 @@
         {
           "photosPermission": "NFHunter usa tus fotos para tu foto de perfil.",
           "cameraPermission": "NFHunter usa la cámara para tu foto de perfil."
+        }
+      ],
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "NFHunter usa el NFC para leer las etiquetas de los tags."
         }
       ]
     ],

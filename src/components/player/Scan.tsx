@@ -1,6 +1,8 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { View } from 'react-native';
+import PermissionDenied from '@/components/player/PermissionDenied';
 import ScanCamera from '@/components/player/ScanCamera';
+import ScanNfcReady from '@/components/player/ScanNfcReady';
 import ScanReward from '@/components/player/ScanReward';
 import Button from '@/components/ui/Button';
 import Field from '@/components/ui/Field';
@@ -20,6 +22,10 @@ export default function Scan() {
 
   if (scan.result) return <ScanReward result={scan.result} onContinue={scan.clearResult} />;
 
+  if (scan.blocked) return <PermissionDenied permission={scan.blocked} onBack={scan.closeBlocked} />;
+
+  if (scan.mode === 'nfc') return <ScanNfcReady isSubmitting={scan.isSubmitting} onCancel={scan.cancel} />;
+
   if (scan.mode === 'camera') {
     return <ScanCamera onQrScanned={scan.onQrScanned} onCancel={scan.cancel} isSubmitting={scan.isSubmitting} />;
   }
@@ -36,11 +42,17 @@ export default function Scan() {
           ¿Encontraste un tag?
         </Heading>
         <Body muted className={ScanToken.centered}>
-          Escanea su QR estando junto a la etiqueta. Tu ubicación se valida al registrarlo.
+          Acerca el celular a la etiqueta o escanea su QR. Tu ubicación se valida al registrarlo.
         </Body>
       </View>
 
       <Notice message={scan.error} />
+      {scan.nfc === 'disabled' && (
+        <>
+          <Notice message="El NFC está apagado. Enciéndelo para leer la etiqueta." />
+          <Button text="Abrir ajustes de NFC" icon="cog-outline" onPress={() => void scan.openNfcSettings()} />
+        </>
+      )}
 
       {scan.mode === 'manual' ? (
         <>
@@ -63,12 +75,19 @@ export default function Scan() {
         </>
       ) : (
         <>
-          <Button
-            text="Escanear QR"
-            icon="qrcode-scan"
-            onPress={() => void scan.openCamera()}
-            disabled={scan.isSubmitting}
-          />
+          {scan.nfc !== 'unsupported' ? (
+            <>
+              <Button text="Escanear por NFC" icon="nfc-variant" onPress={() => void scan.openNfc()} />
+              <Button text="Escanear QR" icon="qrcode-scan" variant="secondary" onPress={() => void scan.openCamera()} />
+            </>
+          ) : (
+            <Button
+              text="Escanear QR"
+              icon="qrcode-scan"
+              onPress={() => void scan.openCamera()}
+              disabled={scan.isSubmitting}
+            />
+          )}
           <Button text="Escribir el código" icon="keyboard-outline" variant="secondary" onPress={scan.openManual} />
         </>
       )}
