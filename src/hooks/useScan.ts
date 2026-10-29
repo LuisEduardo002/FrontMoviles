@@ -1,27 +1,44 @@
 import { useCameraPermissions } from 'expo-camera';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { registerScan } from '@/api/scans';
 import type { ScanResult } from '@/types';
 import { hapticError, hapticSuccess } from '@/utils/haptics';
-import { codeFromQr, currentPosition } from '@/utils/scan';
+import { cancelNfcRead, nfcStatus, openNfcSettings, readNfcCode, type NfcStatus } from '@/utils/nfc';
+import { codeFromQr, currentPosition, PermissionDeniedError, type BlockedPermission } from '@/utils/scan';
 
-export type ScanMode = 'idle' | 'camera' | 'manual';
+export type ScanMode = 'idle' | 'camera' | 'manual' | 'nfc';
 
 /**
- * El flujo de registrar un tag encontrado: con la cámara (QR de la etiqueta)
- * o escribiendo el código. La ubicación se toma del GPS al enviar y el
- * servidor decide; si rechaza, su mensaje queda en `error` tal cual.
+ * El flujo de registrar un tag encontrado: acercando el celular a la etiqueta
+ * (NFC, solo Android), con la cámara (QR) o escribiendo el código. La
+ * ubicación se toma del GPS al enviar y el servidor decide; si rechaza, su
+ * mensaje queda en `error` tal cual. Los tres caminos terminan en `submit`.
  */
 export function useScan() {
   const [mode, setMode] = useState<ScanMode>('idle');
   const [isSubmitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Permiso que el sistema ya no vuelve a preguntar: se arregla en Ajustes
+  const [blocked, setBlocked] = useState<BlockedPermission | null>(null);
+  const [nfc, setNfc] = useState<NfcStatus>('unsupported');
   const [permission, requestPermission] = useCameraPermissions();
   // La cámara dispara el mismo QR muchas veces por segundo: se procesa uno
   const handlingScan = useRef(false);
+  // Para ignorar el fallo de la lectura NFC que el propio jugador cancela
+  const nfcActive = useRef(false);
   const { control, handleSubmit, reset } = useForm<{ code: string }>({ defaultValues: { code: '' } });
+
+  const refreshNfc = async () => setNfc(await nfcStatus());
+
+  useEffect(() => {
+    void refreshNfc();
+    return () => {
+      nfcActive.current = false;
+      void cancelNfcRead();
+    };
+  }, []);
 
   const submit = async (code: string) => {
     setSubmitting(true);
@@ -34,7 +51,8 @@ export function useScan() {
       reset();
     } catch (failure) {
       hapticError();
-      setError((failure as Error).message);
+      if (failure instanceof PermissionDeniedError) setBlocked(failure.permission);
+      else setError((failure as Error).message);
     } finally {
       setMode('idle');
       setSubmitting(false);
@@ -46,10 +64,40 @@ export function useScan() {
     setError(null);
     const granted = permission?.granted || (await requestPermission()).granted;
     if (!granted) {
-      setError('Sin permiso para usar la cámara. Actívalo en los ajustes o escribe el código.');
+      setBlocked('camera');
       return;
     }
     setMode('camera');
+  };
+
+  /** Espera el sticker; al leerlo, sigue el mismo camino que el QR. */
+  const openNfc = async () => {
+    setError(null);
+    const status = await nfcStatus();
+    setNfc(status);
+    if (status !== 'ready') return;
+    nfcActive.current = true;
+    setMode('nfc');
+    try {
+      const code = await readNfcCode();
+      if (!nfcActive.current) return;
+      nfcActive.current = false;
+      await submit(code);
+    } catch (failure) {
+      if (!nfcActive.current) return;
+      nfcActive.current = false;
+      hapticError();
+      setError((failure as Error).message);
+      setMode('idle');
+    }
+  };
+
+  const cancel = () => {
+    if (nfcActive.current) {
+      nfcActive.current = false;
+      void cancelNfcRead();
+    }
+    setMode('idle');
   };
 
   /** Para `onBarcodeScanned` de la cámara. */
@@ -63,9 +111,18 @@ export function useScan() {
 
   return {
     mode,
+    nfc,
+    blocked,
+    closeBlocked: () => setBlocked(null),
+    openNfc,
+    openNfcSettings: async () => {
+      await openNfcSettings();
+      // Al volver de Ajustes se vuelve a leer si ya quedó encendido
+      void refreshNfc();
+    },
     openCamera,
     openManual: () => setMode('manual'),
-    cancel: () => setMode('idle'),
+    cancel,
     onQrScanned,
     control,
     submitCode,

@@ -314,6 +314,19 @@ export const ScanToken = {
   centered: 'text-center',
 } as const;
 
+export const ScanNfcReadyToken = {
+  intro: 'items-center gap-3 py-4',
+  icon: 'h-[160px] w-[160px] items-center justify-center rounded-full border-2 border-primary bg-surface',
+  iconSize: 88,
+  centered: 'text-center',
+} as const;
+
+export const PermissionDeniedToken = {
+  intro: 'items-center gap-3 py-4',
+  iconSize: 64,
+  centered: 'text-center',
+} as const;
+
 export const ScanCameraToken = {
   container: 'flex-1 bg-canvas',
   overlay: 'absolute inset-0 items-center justify-center gap-4 p-4',
