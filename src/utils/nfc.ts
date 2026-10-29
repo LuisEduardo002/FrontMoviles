@@ -58,13 +58,36 @@ export async function cancelNfcRead() {
 export function codeFromPayload(payload: number[]): string {
   const [status = 0, ...rest] = payload;
   if (status & 0x80) return ''; // UTF-16: los códigos de los tags son ASCII
-  const text = rest.slice(status & 0x3f);
-  const decoded = text.map((byte) => `%${byte.toString(16).padStart(2, '0')}`).join('');
+  return decodeCode(rest.slice(status & 0x3f));
+}
+
+/** Un registro "U" (URL): el primer byte es un prefijo abreviado, no cuenta. */
+export function codeFromUriPayload(payload: number[]): string {
+  return decodeCode(payload.slice(1));
+}
+
+function decodeCode(bytes: number[]): string {
+  const encoded = bytes.map((byte) => `%${byte.toString(16).padStart(2, '0')}`).join('');
   try {
-    return codeFromQr(decodeURIComponent(decoded));
+    return codeFromQr(decodeURIComponent(encoded));
   } catch {
     return '';
   }
+}
+
+// El tipo del registro llega como texto o como bytes según la plataforma
+const recordType = (type: number[] | string) =>
+  typeof type === 'string' ? type : String.fromCharCode(...type);
+
+/** Busca entre los registros del sticker el primero de texto o URL con código. */
+export function codeFromRecords(records: { type: number[] | string; payload: number[] }[]): string {
+  for (const record of records) {
+    const type = recordType(record.type);
+    const code =
+      type === 'T' ? codeFromPayload(record.payload) : type === 'U' ? codeFromUriPayload(record.payload) : '';
+    if (code) return code;
+  }
+  return '';
 }
 
 /**
@@ -79,8 +102,7 @@ export async function readNfcCode(): Promise<string> {
   try {
     await NfcManager.requestTechnology(NfcTech.Ndef);
     const tag = await NfcManager.getTag();
-    const record = tag?.ndefMessage?.[0];
-    const code = record ? codeFromPayload(record.payload as number[]) : '';
+    const code = codeFromRecords(tag?.ndefMessage ?? []);
     if (!code) throw new Error('Esa etiqueta no tiene un código de NFHunter. Prueba con otra o usa el QR.');
     return code;
   } finally {
