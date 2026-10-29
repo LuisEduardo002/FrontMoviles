@@ -1,5 +1,6 @@
 import { useCameraPermissions } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { registerScan } from '@/api/scans';
 import type { ScanResult } from '@/types';
@@ -34,7 +35,12 @@ export function useScan() {
 
   useEffect(() => {
     void refreshNfc();
+    // Al volver de los ajustes del sistema, el NFC puede haber quedado encendido
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void refreshNfc();
+    });
     return () => {
+      subscription.remove();
       nfcActive.current = false;
       void cancelNfcRead();
     };
@@ -115,11 +121,7 @@ export function useScan() {
     blocked,
     closeBlocked: () => setBlocked(null),
     openNfc,
-    openNfcSettings: async () => {
-      await openNfcSettings();
-      // Al volver de Ajustes se vuelve a leer si ya quedó encendido
-      void refreshNfc();
-    },
+    openNfcSettings: () => void openNfcSettings(),
     openCamera,
     openManual: () => setMode('manual'),
     cancel,
