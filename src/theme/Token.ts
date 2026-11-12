@@ -409,3 +409,43 @@ export const PlayerEventDetailToken = {
   dateLabel: 'font-body-semibold text-body text-ink',
   iconSize: 18,
 } as const;
+
+// Mapa del jugador (react-native-maps). Los tags con coordenadas se pintan con
+// `TagMarker`; los avisos flotantes y la ficha salen de los otros tokens.
+export const TagMarkerToken = {
+  container: 'h-[36px] w-[36px] items-center justify-center rounded-full border-2 bg-canvas',
+  border: { pending: 'border-primary', found: 'border-secondary' },
+  iconSize: 18,
+} as const;
+
+export const MapStatusToken = {
+  container: 'absolute left-3 right-3 top-3 gap-2',
+  banner: 'flex-row items-center gap-2 rounded-md border-2 bg-canvas/95 p-3',
+  tone: {
+    error: 'border-danger/60',
+    info: 'border-secondary/40',
+    muted: 'border-disabled',
+  },
+  text: 'flex-1 font-body text-caption text-ink',
+  action: 'min-h-[44px] justify-center rounded-full border-2 border-secondary px-3 py-1 active:bg-secondary/15',
+  actionText: 'font-body-semibold text-caption text-secondary',
+  iconSize: 18,
+} as const;
+
+export const MapScreenToken = {
+  container: 'flex-1 bg-canvas',
+  fabStack: 'absolute bottom-3 right-3 gap-2',
+  fab: 'h-[48px] w-[48px] items-center justify-center rounded-full border-2 border-secondary bg-canvas/95 active:bg-secondary/15',
+  fabIconSize: 22,
+  sheet: 'absolute bottom-3 left-3 right-3 gap-2',
+  sheetClose:
+    'h-[44px] w-[44px] items-center justify-center self-end rounded-full border-2 border-disabled bg-canvas/95 active:bg-disabled/40',
+  sheetCloseIconSize: 20,
+  legend: 'absolute bottom-3 left-3 rounded-full border border-disabled bg-canvas/90 px-3 py-1',
+} as const;
+
+export const MapScreenWebToken = {
+  banner: 'items-center gap-2 rounded-md border-2 border-secondary/40 bg-surface p-4',
+  iconSize: 40,
+  centered: 'text-center',
+} as const;

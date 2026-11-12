@@ -28,6 +28,7 @@
     "react-hook-form": "^7.87.0",
     "react-native": "0.86.3",
     "react-native-css-interop": "^0.2.7",
+    "react-native-maps": "1.27.2",
     "react-native-nfc-manager": "^4.2.0",
     "react-native-qrcode-svg": "^6.3.26",
     "react-native-reanimated": "4.5.1",

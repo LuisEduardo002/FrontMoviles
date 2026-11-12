@@ -12,8 +12,9 @@ import { tabScreenOptions } from '@/theme/navigation';
  *
  * - ADMIN: Panel · Eventos · Tags · Usuarios · Chat · Perfil. El orden de las
  *   listas sigue el flujo del juego: primero el evento, luego sus tags.
- * - Jugador: Eventos · Escanear · Chat · Ranking · Perfil. "Escanear" va al
- *   lado de Eventos porque es lo que se hace con ellos.
+ * - Jugador: Eventos · Escanear · Mapa · Chat · Ranking · Perfil. "Escanear"
+ *   va al lado de Eventos porque es lo que se hace con ellos; el mapa sirve
+ *   para ubicar los tags antes de salir a buscarlos.
  *
  * `index` y `perfil` son de los dos: cada uno pinta su versión según el rol.
  */
@@ -74,6 +75,7 @@ export default function TabsNavigator() {
 
       <Tabs.Protected guard={!isAdmin}>
         <Tabs.Screen name="scan" options={{ title: 'Escanear', tabBarIcon: icon('qrcode-scan') }} />
+        <Tabs.Screen name="map" options={{ title: 'Mapa', tabBarIcon: icon('map-marker-radius') }} />
       </Tabs.Protected>
 
       <Tabs.Screen name="chat" options={{ title: 'Chat', tabBarIcon: icon('forum') }} />
