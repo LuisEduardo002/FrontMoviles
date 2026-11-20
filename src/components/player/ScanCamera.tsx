@@ -1,5 +1,6 @@
 import { CameraView } from 'expo-camera';
 import { Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
 import { ScanCameraToken } from '@/theme/Token';
 import { glow } from '@/theme/tokens';
@@ -14,6 +15,8 @@ export default function ScanCamera({
   onCancel: () => void;
   isSubmitting: boolean;
 }) {
+  const insets = useSafeAreaInsets();
+
   return (
     <View className={ScanCameraToken.container}>
       <CameraView
@@ -28,7 +31,9 @@ export default function ScanCamera({
           {isSubmitting ? 'Validando tu ubicación…' : 'Apunta al QR de la etiqueta'}
         </Text>
       </View>
-      <View className={ScanCameraToken.cancel}>
+      <View
+        className={ScanCameraToken.cancel}
+        style={{ bottom: Math.max(insets.bottom, 16) }}>
         <Button text="Cancelar" variant="secondary" onPress={onCancel} disabled={isSubmitting} />
       </View>
     </View>

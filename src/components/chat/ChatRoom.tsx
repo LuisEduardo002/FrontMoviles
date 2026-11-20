@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
-import { FlatList, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { FlatList, Keyboard, KeyboardAvoidingView, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ChatBubble from '@/components/chat/ChatBubble';
 import ChatComposer from '@/components/chat/ChatComposer';
@@ -25,6 +26,18 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
   const composer = useChatComposer(chat.send);
   const moderation = useChatModeration(chat.remove);
   const insets = useSafeAreaInsets();
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => setKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(hideEvent, () => setKeyboardVisible(false));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   if (chat.isLoading) return <LoadingScreen />;
 
@@ -52,15 +65,17 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
         onEndReachedThreshold={0.3}
         keyboardShouldPersistTaps="handled"
         ListEmptyComponent={
-          // En una lista invertida el vacío sale de cabeza: se voltea de nuevo
-          <View style={{ transform: [{ scaleY: -1 }] }}>
-            <EmptyState icon="forum-outline" title="Nadie ha escrito aún" message="Rompe el hielo: propón una cacería." />
-          </View>
+          <EmptyState icon="forum-outline" title="Nadie ha escrito aún" message="Rompe el hielo: propón una cacería." />
         }
       />
 
-      <View className={ChatRoomToken.composer}
-        style={{ paddingBottom: Math.max(insets.bottom, ChatRoomToken.composerMinBottom) }}>
+      <View
+        className={ChatRoomToken.composer}
+        style={{
+          paddingBottom: isKeyboardVisible
+            ? 8
+            : Math.max(insets.bottom, ChatRoomToken.composerMinBottom),
+        }}>
         <Notice message={composer.error ?? moderation.error ?? chat.error} />
         {!chat.isConnected && !chat.error && <Caption>Conectando con el chat…</Caption>}
         <ChatComposer
