@@ -65,7 +65,12 @@ export default function ChatRoom({ room, name }: { room: string; name?: string }
         onEndReachedThreshold={0.3}
         keyboardShouldPersistTaps="handled"
         ListEmptyComponent={
-          <EmptyState icon="forum-outline" title="Nadie ha escrito aún" message="Rompe el hielo: propón una cacería." />
+          // En un FlatList inverted Android aplica rotate(180°) al contenedor;
+          // el ListEmptyComponent hereda esa transformación sin el contador que
+          // sí reciben los items normales → se ve girado. Lo cancelamos aquí.
+          <View style={{ transform: [{ scaleY: -1 }, { scaleX: -1 }] }}>
+            <EmptyState icon="forum-outline" title="Nadie ha escrito aún" message="Rompe el hielo: propón una cacería." />
+          </View>
         }
       />
 

@@ -1,4 +1,5 @@
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import PermissionDenied from '@/components/player/PermissionDenied';
 import ScanCamera from '@/components/player/ScanCamera';
@@ -16,9 +17,29 @@ import { colors, glow } from '@/theme/tokens';
 /**
  * Registrar un tag encontrado. Muestra la cámara, la recompensa o el inicio
  * (con el código escrito a mano) según el paso; el flujo vive en `useScan`.
+ *
+ * Props opcionales para abrir directo a cámara desde el FAB de eventos:
+ * - `initialMode`: si es `'camera'` abre la cámara al montar.
+ * - `triggerKey`: clave que cambia en cada navegación (timestamp) para que el
+ *   efecto se dispare incluso si la tab ya estaba activa.
  */
-export default function Scan() {
+export default function Scan({
+  initialMode,
+  triggerKey,
+}: {
+  initialMode?: string;
+  triggerKey?: string;
+}) {
   const scan = useScan();
+
+  // Abre la cámara directamente cuando se navega con mode=camera
+  // (triggerKey cambia cada vez, así el efecto se re-ejecuta siempre)
+  useEffect(() => {
+    if (initialMode === 'camera') {
+      void scan.openCamera();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerKey]);
 
   if (scan.result) return <ScanReward result={scan.result} onContinue={scan.clearResult} />;
 

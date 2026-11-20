@@ -63,7 +63,12 @@ export default function PlayerEventList() {
       />
 
       <Pressable
-        onPress={() => router.navigate('/(tabs)/scan')}
+        onPress={() =>
+          router.navigate({
+            pathname: '/(tabs)/scan',
+            params: { mode: 'camera', t: Date.now().toString() },
+          })
+        }
         className="absolute right-4 flex-row items-center gap-2 rounded-full bg-primary px-4 py-3 active:opacity-80"
         style={{
           bottom: Math.max(insets.bottom, 16) + 4,
